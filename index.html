@@ -110,6 +110,24 @@
   .check-item input{width:auto;margin:0;}
   .check-item span{font-size:13px;color:var(--text-2);}
 
+  .upload-label{display:block;font-size:13px;color:var(--text-2);margin-bottom:8px;}
+  .upload-btn{
+    display:inline-block;background:var(--card);border:1px dashed var(--line-strong);
+    border-radius:5px;padding:9px 166px;font-size:12.5px;color:var(--amber);cursor:pointer;
+    text-align: center; width: 100%;
+  }
+  .upload-btn:hover{border-color:var(--amber);}
+  .thumb-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+  .thumb{position:relative;width:70px;height:70px;border-radius:5px;overflow:hidden;border:1px solid var(--line-strong);}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .thumb .rm{
+    position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;
+    background:rgba(0,0,0,.7);color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;
+    cursor:pointer;border:none;padding:0;
+  }
+  .thumb-view{width:110px;height:110px;border-radius:5px;overflow:hidden;border:1px solid var(--line-strong);}
+  .thumb-view img{width:100%;height:100%;object-fit:cover;display:block;}
+
   .output-box{
     background:var(--card);border:1px solid var(--line-strong);border-radius:6px;padding:16px;
     white-space:pre-wrap;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.8;color:var(--text);
@@ -312,10 +330,19 @@
 
     <div class="section-title"><span class="num">07</span> 📌 ተጨማሪ ማያያዝ ወይም መላክ ያለባቸው</div>
     <div class="card">
-      <div class="checklist">
-        <label class="check-item"><input type="checkbox" id="chk-warranty"><span>✅ የተጠናቀቁ ሁሉንም ስራዎች የዋራንቲ ካርድ እና ሎጎ ፎቶ ተያይዟል</span></label>
-        <label class="check-item"><input type="checkbox" id="chk-receipt"><span>✅ ወደ ድርጅቱ የገባውን ገንዘብ የባንክ ደረሰኝ ተያይዟል</span></label>
+      <div class="upload-block">
+        <label class="upload-label">✅ የተጠናቀቁ ስራዎች የዋራንቲ ካርድ እና ሎጎ ፎቶ</label>
+        <label class="upload-btn" for="f-warranty-file">📎 ፎቶ ይስቀሉ (ብዙ ፎቶ መምረጥ ይቻላል)</label>
+        <input type="file" id="f-warranty-file" accept="image/*" multiple style="display:none;">
+        <div class="thumb-row" id="warranty-preview"></div>
       </div>
+      <div class="upload-block" style="margin-top:16px;">
+        <label class="upload-label">✅ ወደ ድርጅቱ የገባውን ገንዘብ የባንክ ደረሰኝ</label>
+        <label class="upload-btn" for="f-receipt-file">📎 ፎቶ ይስቀሉ (ብዙ ፎቶ መምረጥ ይቻላል)</label>
+        <input type="file" id="f-receipt-file" accept="image/*" multiple style="display:none;">
+        <div class="thumb-row" id="receipt-preview"></div>
+      </div>
+      <div class="hint" id="upload-status" style="margin-top:10px;"></div>
     </div>
 
     <div class="form-actions">
@@ -326,6 +353,7 @@
     <div class="section-title"><span class="num">08</span> ለመላክ ዝግጁ ሪፖርት</div>
     <div class="card">
       <div class="output-box" id="output">ገና ምንም ሪፖርት አልተፈጠረም። ከላይ "ሪፖርት አመንጭ" የሚለውን ይጫኑ።</div>
+      <div id="view-gallery"></div>
       <div class="copy-msg" id="copy-msg">✅ ጽሁፉ ተኮፒ ተደርጓል!</div>
       <div class="form-actions">
         <button type="button" class="ghost" id="btn-copy">ጽሁፉን ኮፒ አድርግ</button>
@@ -393,24 +421,127 @@ function todayISO(){ return new Date().toISOString().slice(0,10); }
 function round(n){ return Math.round((Number(n)||0)*100)/100; }
 function money(n){ return round(n).toLocaleString('en-US'); }
 
-// LocalStorage Integration
-function loadUsers(){
+// ---- Photo upload handling (warranty / receipt) ----
+let warrantyImages = [];
+let receiptImages = [];
+
+function compressImage(file){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = (e)=>{
+      const img = new Image();
+      img.onload = ()=>{
+        const maxDim = 900;
+        let w = img.width, h = img.height;
+        if(w > maxDim || h > maxDim){
+          if(w > h){ h = Math.round(h * maxDim / w); w = maxDim; }
+          else{ w = Math.round(w * maxDim / h); h = maxDim; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.6));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderThumbs(containerId, arr, kind){
+  const box = document.getElementById(containerId);
+  box.innerHTML = arr.map((src, i)=>`
+    <div class="thumb">
+      <img src="${src}">
+      <button type="button" class="rm" onclick="removePhoto('${kind}', ${i})">✕</button>
+    </div>
+  `).join('');
+  updateUploadStatus();
+}
+
+function updateUploadStatus(){
+  const el = document.getElementById('upload-status');
+  if(!el) return;
+  el.textContent = `የተያያዙ ፎቶዎች — ዋራንቲ: ${warrantyImages.length}, ደረሰኝ: ${receiptImages.length}`;
+}
+
+window.removePhoto = function(kind, idx){
+  if(kind === 'warranty'){ warrantyImages.splice(idx,1); renderThumbs('warranty-preview', warrantyImages, 'warranty'); }
+  else{ receiptImages.splice(idx,1); renderThumbs('receipt-preview', receiptImages, 'receipt'); }
+};
+
+function clearUploads(){
+  warrantyImages = [];
+  receiptImages = [];
+  const wf = document.getElementById('f-warranty-file'); if(wf) wf.value = '';
+  const rf = document.getElementById('f-receipt-file'); if(rf) rf.value = '';
+  const wp = document.getElementById('warranty-preview'); if(wp) wp.innerHTML = '';
+  const rp = document.getElementById('receipt-preview'); if(rp) rp.innerHTML = '';
+  updateUploadStatus();
+}
+
+if(document.getElementById('f-warranty-file')){
+  document.getElementById('f-warranty-file').addEventListener('change', async (e)=>{
+    const files = Array.from(e.target.files || []);
+    for(const f of files){
+      try{ warrantyImages.push(await compressImage(f)); }catch(err){ console.error(err); }
+    }
+    renderThumbs('warranty-preview', warrantyImages, 'warranty');
+    e.target.value = '';
+  });
+  document.getElementById('f-receipt-file').addEventListener('change', async (e)=>{
+    const files = Array.from(e.target.files || []);
+    for(const f of files){
+      try{ receiptImages.push(await compressImage(f)); }catch(err){ console.error(err); }
+    }
+    renderThumbs('receipt-preview', receiptImages, 'receipt');
+    e.target.value = '';
+  });
+}
+
+async function saveReportImages(reportId){
+  if(warrantyImages.length === 0 && receiptImages.length === 0) return;
+  try{
+    localStorage.setItem('report-images:' + reportId, JSON.stringify({warrantyImages, receiptImages}));
+  }catch(e){
+    console.error('Image storage error', e);
+  }
+}
+
+async function loadReportImages(reportId){
+  try{
+    const res = localStorage.getItem('report-images:' + reportId);
+    return res ? JSON.parse(res) : null;
+  }catch(e){
+    return null;
+  }
+}
+
+async function deleteReportImages(reportId){
+  try{ localStorage.removeItem('report-images:' + reportId); }
+  catch(e){ /* key may not exist, ignore */ }
+}
+
+async function loadUsers(){
   try{
     const res = localStorage.getItem(USERS_KEY);
     users = res ? JSON.parse(res) : [];
   }catch(e){ users = []; }
 }
-function saveUsers(){
+async function saveUsers(){
   try{ localStorage.setItem(USERS_KEY, JSON.stringify(users)); }
   catch(e){ console.error('Storage error', e); }
 }
-function loadReports(){
+async function loadReports(){
   try{
     const res = localStorage.getItem(REPORTS_KEY);
     reports = res ? JSON.parse(res) : [];
   }catch(e){ reports = []; }
 }
-function saveReports(){
+async function saveReports(){
   try{ localStorage.setItem(REPORTS_KEY, JSON.stringify(reports)); }
   catch(e){ console.error('Storage error', e); }
 }
@@ -445,7 +576,7 @@ document.getElementById('btn-register').addEventListener('click', async ()=>{
   const isAdmin = adminCode.trim() === ADMIN_SECRET;
   const user = { id, name, passwordHash, isAdmin };
   users.push(user);
-  saveUsers();
+  await saveUsers();
   currentUser = user;
   enterApp();
 });
@@ -513,11 +644,11 @@ document.getElementById('btn-save-profile').addEventListener('click', async ()=>
 
   userRef.name = newName;
   currentUser.name = newName;
-  saveUsers();
+  await saveUsers();
 
   document.getElementById('who-name').textContent = currentUser.name;
   reports.forEach(r=>{ if(r.workerId === currentUser.id) r.workerName = currentUser.name; });
-  saveReports();
+  await saveReports();
   if(currentUser.isAdmin){ populateWorkerFilter(); renderUsersList(); }
   renderHistory();
 
@@ -544,10 +675,10 @@ function renderUsersList(){
   `).join('');
 }
 
-window.removeUser = function(id){
+window.removeUser = async function(id){
   if(!currentUser.isAdmin) return;
   users = users.filter(u=>u.id!==id);
-  saveUsers();
+  await saveUsers();
   renderUsersList();
   if(document.getElementById('f-filter-worker')) populateWorkerFilter();
 };
@@ -675,8 +806,8 @@ function buildReportText(){
   const share = document.getElementById('f-share').value || 0;
   const company = document.getElementById('r-company').textContent;
   const notes = document.getElementById('f-notes').value.trim();
-  const warranty = document.getElementById('chk-warranty').checked ? '✅ ተያይዟል' : '❌ አልተያያዘም';
-  const receipt = document.getElementById('chk-receipt').checked ? '✅ ተያይዟል' : '❌ አልተያያዘም';
+  const warranty = warrantyImages.length > 0 ? `✅ ተያይዟል (${warrantyImages.length} ፎቶ)` : '❌ አልተያያዘም';
+  const receipt = receiptImages.length > 0 ? `✅ ተያይዟል (${receiptImages.length} ፎቶ)` : '❌ አልተያያዘም';
 
   let jobsText = '';
   document.querySelectorAll('.job').forEach((j, idx)=>{
@@ -685,7 +816,7 @@ function buildReportText(){
     const reason = j.querySelector('.job-reason input') ? j.querySelector('.job-reason input').value.trim() : '';
     jobsText += `${idx+1}. ${name ? name + ' — ' : ''}${status}\n`;
     if(status === '❌'){
-      jobsText += `   ካልተጠናቀቀ ምክንያቱ: ${reason || '—'}\n`;
+      jobsText += `ካልተጠናቀቀ ምክንያቱ: ${reason || '—'}\n`;
     }
   });
 
@@ -746,10 +877,10 @@ document.getElementById('btn-clear').addEventListener('click', ()=>{
   document.getElementById('f-expense-detail').value = '';
   document.getElementById('f-share').value = 0;
   document.getElementById('f-notes').value = '';
-  document.getElementById('chk-warranty').checked = false;
-  document.getElementById('chk-receipt').checked = false;
+  clearUploads();
   updateFinance();
   document.getElementById('output').textContent = 'ገና ምንም ሪፖርት አልተፈጠረም። ከላይ "ሪፖርት አመንጭ" የሚለውን ይጫኑ።';
+  const gal = document.getElementById('view-gallery'); if(gal) gal.innerHTML = '';
 });
 
 function populateWorkerFilter(){
@@ -796,7 +927,7 @@ function renderHistory(){
   }
   box.innerHTML = items.map(r => `
     <div class="hist-item">
-      <div class="meta"><span class="d">${r.date}</span> · ${r.day}${currentUser.isAdmin ? ' · ' + escapeAttr(r.workerName) : ''} · ${r.jobcount} ስራዎች · ትርፍ ${r.profit} ብር</div>
+      <div class="meta"><span class="d">${r.date}</span> · ${r.day}${currentUser.isAdmin ? ' · ' + escapeAttr(r.workerName) : ''} · ${r.jobcount} ስራዎች · ትርፍ ${r.profit} ብር${((r.warrantyCount||0)+(r.receiptCount||0))>0 ? ' · 📎 ' + ((r.warrantyCount||0)+(r.receiptCount||0)) : ''}</div>
       <div class="hist-actions">
         <button type="button" class="ghost small" onclick="viewHistory('${r.id}')">ተመልከት</button>
         <button type="button" class="ghost small" onclick="deleteHistory('${r.id}')">ሰርዝ</button>
@@ -805,10 +936,11 @@ function renderHistory(){
   `).join('');
 }
 
-document.getElementById('btn-save').addEventListener('click', ()=>{
+document.getElementById('btn-save').addEventListener('click', async () => {
   const text = buildReportText();
+  const reportId = Date.now().toString();
   const entry = {
-    id: Date.now().toString(),
+    id: reportId,
     workerId: currentUser.id,
     workerName: currentUser.name,
     date: document.getElementById('f-date').value,
@@ -817,37 +949,61 @@ document.getElementById('btn-save').addEventListener('click', ()=>{
     income: document.getElementById('f-income').value || 0,
     profit: document.getElementById('r-profit').textContent,
     company: document.getElementById('r-company').textContent,
+    warrantyCount: warrantyImages.length,
+    receiptCount: receiptImages.length,
     text
   };
+  await saveReportImages(reportId);
   reports.push(entry);
-  saveReports();
+  await saveReports();
   if(currentUser.isAdmin){ populateWorkerFilter(); renderDashboard(); }
   renderHistory();
 });
 
-window.viewHistory = function(id){
+window.viewHistory = async function(id){
   const r = reports.find(x=>x.id===id);
   if(!r) return;
   if(!currentUser.isAdmin && r.workerId !== currentUser.id) return;
   document.getElementById('output').textContent = r.text;
   document.getElementById('output').scrollIntoView({behavior:'smooth'});
+
+  const galleryBox = document.getElementById('view-gallery');
+  if(galleryBox){
+    galleryBox.innerHTML = '<div class="hint">ፎቶ በመጫን ላይ...</div>';
+    const imgs = await loadReportImages(id);
+    if(!imgs || (imgs.warrantyImages.length===0 && imgs.receiptImages.length===0)){
+      galleryBox.innerHTML = '';
+      return;
+    }
+    let html = '';
+    if(imgs.warrantyImages.length){
+      html += '<div class="hint" style="margin-top:10px;">ዋራንቲ ፎቶዎች</div><div class="thumb-row">' +
+        imgs.warrantyImages.map(src=>`<div class="thumb-view"><img src="${src}"></div>`).join('') + '</div>';
+    }
+    if(imgs.receiptImages.length){
+      html += '<div class="hint" style="margin-top:10px;">የደረሰኝ ፎቶዎች</div><div class="thumb-row">' +
+        imgs.receiptImages.map(src=>`<div class="thumb-view"><img src="${src}"></div>`).join('') + '</div>';
+    }
+    galleryBox.innerHTML = html;
+  }
 };
 
-window.deleteHistory = function(id){
+window.deleteHistory = async function(id){
   const r = reports.find(x=>x.id===id);
   if(!r) return;
   if(!currentUser.isAdmin && r.workerId !== currentUser.id) return;
   reports = reports.filter(x=>x.id!==id);
-  saveReports();
+  await saveReports();
+  await deleteReportImages(id);
   if(currentUser.isAdmin){ populateWorkerFilter(); renderDashboard(); }
   renderHistory();
 };
 
-// Initialization on load
-(function init(){
-  loadUsers();
-  loadReports();
-})();
+async function init(){
+  await loadUsers();
+  await loadReports();
+}
+init();
 </script>
 </body>
 </html>
