@@ -416,6 +416,42 @@ async function sendTelegramNotification(text){
     console.error('Telegram notification error', e);
   }
 }
+
+function dataURLtoBlob(dataUrl){
+  const parts = dataUrl.split(',');
+  const mimeMatch = parts[0].match(/:(.*?);/);
+  const mime = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+  const binary = atob(parts[1]);
+  const arr = new Uint8Array(binary.length);
+  for(let i=0; i<binary.length; i++){ arr[i] = binary.charCodeAt(i); }
+  return new Blob([arr], {type: mime});
+}
+
+async function sendTelegramPhoto(dataUrl, caption){
+  if(!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return;
+  try{
+    const blob = dataURLtoBlob(dataUrl);
+    const formData = new FormData();
+    formData.append('chat_id', TELEGRAM_CHAT_ID);
+    formData.append('caption', caption);
+    formData.append('photo', blob, 'photo.jpg');
+    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
+      method: 'POST',
+      body: formData
+    });
+  }catch(e){
+    console.error('Telegram photo error', e);
+  }
+}
+
+async function sendTelegramReportPhotos(workerName, date){
+  for(const img of warrantyImages){
+    await sendTelegramPhoto(img, `📎 ዋራንቲ ፎቶ — ${workerName} — ${date}`);
+  }
+  for(const img of receiptImages){
+    await sendTelegramPhoto(img, `📎 ደረሰኝ ፎቶ — ${workerName} — ${date}`);
+  }
+}
 const DAYS_AM = ['እሁድ','ሰኞ','ማክሰኞ','ረቡዕ','ሐሙስ','አርብ','ቅዳሜ'];
 
 let users = [];
@@ -682,18 +718,22 @@ function renderUsersList(){
     box.innerHTML = '<div class="empty">ምንም የተመዘገበ ተጠቃሚ የለም።</div>';
     return;
   }
-  box.innerHTML = users.map(u => `
+  box.innerHTML = users.map(u => {
+    const reportCount = reports.filter(r=>r.workerId === u.id).length;
+    return `
     <div class="hist-item">
-      <div class="meta">${escapeAttr(u.name)} — ${escapeAttr(u.id)} ${u.isAdmin ? '<span class="badge-admin">አድሚን</span>' : '<span class="badge-worker">ሠራተኛ</span>'}</div>
+      <div class="meta">${escapeAttr(u.name)} — ${escapeAttr(u.id)} ${u.isAdmin ? '<span class="badge-admin">አድሚን</span>' : '<span class="badge-worker">ሠራተኛ</span>'} · ${reportCount} ሪፖርት</div>
       <div class="hist-actions">
-        ${u.id === currentUser.id ? '<span style="font-size:11.5px;color:var(--text-3);">(እርስዎ)</span>' : `<button type="button" class="ghost small" onclick="removeUser('${u.id}')">አጥፋ</button>`}
+        ${u.id === currentUser.id ? '<span style="font-size:11.5px;color:var(--text-3);">(እርስዎ)</span>' : `<button type="button" class="ghost small" onclick="removeUser('${u.id}', '${escapeAttr(u.name)}')">አጥፋ</button>`}
       </div>
     </div>
-  `).join('');
+  `;}).join('');
 }
 
-window.removeUser = async function(id){
+window.removeUser = async function(id, name){
   if(!currentUser.isAdmin) return;
+  const ok = confirm(`"${name}" የተባለውን ተጠቃሚ ማጥፋት ይፈልጋሉ? ይህ ተመልሶ አይመጣም። (ያስቀመጡት ሪፖርቶች ግን አይጠፉም)`);
+  if(!ok) return;
   users = users.filter(u=>u.id!==id);
   await saveUsers();
   renderUsersList();
@@ -974,6 +1014,8 @@ document.getElementById('btn-save').addEventListener('click', async ()=>{
   reports.push(entry);
   await saveReports();
   await sendTelegramNotification(text);
+  await sendTelegramReportPhotos(entry.workerName, entry.date);
+  clearUploads();
   const saveMsg = document.getElementById('save-msg');
   if(saveMsg){ saveMsg.style.display='block'; setTimeout(()=>{saveMsg.style.display='none';}, 3000); }
   if(currentUser.isAdmin){ populateWorkerFilter(); renderDashboard(); }
