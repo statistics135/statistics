@@ -135,6 +135,16 @@
   .hist-actions{display:flex;gap:8px;}
   .hist-actions button{padding:6px 12px;font-size:12px;}
   .empty{text-align:center;padding:30px 20px;color:var(--text-3);border:1px dashed var(--line-strong);border-radius:6px;font-size:13px;}
+  .day-group{margin-top:18px;}
+  .day-group:first-child{margin-top:0;}
+  .day-header{
+    display:flex;align-items:center;gap:10px;margin-bottom:8px;
+    font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--amber);
+  }
+  .day-header .line{flex:1;height:1px;background:var(--line-strong);}
+  .day-header .today-tag{
+    background:var(--amber-dim);color:var(--amber);padding:2px 8px;border-radius:20px;font-size:10px;
+  }
 
   .auth-tabs{display:flex;gap:8px;margin-bottom:16px;}
   .auth-tab{flex:1;text-align:center;padding:10px;border-radius:5px;border:1px solid var(--line-strong);cursor:pointer;font-size:13px;color:var(--text-2);}
@@ -242,12 +252,22 @@
     <div class="card">
       <div class="grid2">
         <div class="field">
-          <label>📅 ቀን</label>
+          <label>📅 ቀን (Gregorian)</label>
           <input type="date" id="f-date" class="mono">
         </div>
         <div class="field">
           <label>📆 ዕለት</label>
           <input type="text" id="f-day" readonly>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label>🇪🇹 የኢትዮጵያ ቀን</label>
+          <input type="text" id="f-eth-date" class="mono" readonly>
+        </div>
+        <div class="field">
+          <label>🕐 የኢትዮጵያ ሰዓት (አሁን)</label>
+          <input type="text" id="f-eth-time" class="mono" readonly>
         </div>
       </div>
       <div class="field">
@@ -398,6 +418,47 @@ const ADMIN_SECRET = 'FUAD-ADMIN-2026';
 const TELEGRAM_BOT_TOKEN = '8816155815:AAGaxgc9bhIGjqLAxNTMvvFZq7StXRZ6Pus';
 const TELEGRAM_CHAT_ID = '6853753240';
 const DAYS_AM = ['እሁድ','ሰኞ','ማክሰኞ','ረቡዕ','ሐሙስ','አርብ','ቅዳሜ'];
+const ETH_MONTHS = ['መስከረም','ጥቅምት','ኅዳር','ታኅሳስ','ጥር','የካቲት','መጋቢት','ሚያዝያ','ግንቦት','ሰኔ','ሐምሌ','ነሐሴ','ጳጉሜን'];
+
+// Gregorian -> Julian Day Number
+function gregorianToJDN(y, m, d){
+  return Math.floor((1461 * (y + 4800 + Math.floor((m - 14) / 12))) / 4) +
+    Math.floor((367 * (m - 2 - 12 * Math.floor((m - 14) / 12))) / 12) -
+    Math.floor((3 * Math.floor((y + 4900 + Math.floor((m - 14) / 12)) / 100)) / 4) +
+    d - 32075;
+}
+// JDN -> Ethiopian {year, month, day}
+function jdnToEthiopian(jdn){
+  const r = (jdn - 1723856) % 1461;
+  const n = (r % 365) + 365 * Math.floor(r / 1460);
+  const year = 4 * Math.floor((jdn - 1723856) / 1461) + Math.floor(r / 365) - Math.floor(r / 1460);
+  const month = Math.floor(n / 30) + 1;
+  const day = (n % 30) + 1;
+  return { year, month, day };
+}
+function toEthiopianDate(isoDateStr){
+  if(!isoDateStr) return '';
+  const [y,m,d] = isoDateStr.split('-').map(Number);
+  const jdn = gregorianToJDN(y, m, d);
+  const eth = jdnToEthiopian(jdn);
+  const monthName = ETH_MONTHS[eth.month - 1] || '';
+  return `${eth.day} ${monthName} ${eth.year} ዓ.ም`;
+}
+// Ethiopian-style clock (12-hour, offset 6 from standard time, with period label)
+function toEthiopianTime(date){
+  let h = date.getHours();
+  const min = String(date.getMinutes()).padStart(2,'0');
+  let ethHour = (h - 6 + 24) % 12;
+  if(ethHour === 0) ethHour = 12;
+  let period;
+  if(h >= 0 && h < 6) period = 'ለሊት';
+  else if(h >= 6 && h < 12) period = 'ጠዋት';
+  else if(h >= 12 && h < 18) period = 'ቀን';
+  else period = 'ማታ';
+  return `${ethHour}:${min} ${period}`;
+}
+
+function todayISO(){ return new Date().toISOString().slice(0,10); }
 
 let currentUser = null; // {name, phone, isAdmin}
 let allReports = [];
@@ -419,11 +480,21 @@ function escapeAttr(str){
   div.textContent = str || '';
   return div.innerHTML;
 }
-function todayISO(){ return new Date().toISOString().slice(0,10); }
 function round(n){ return Math.round((Number(n)||0)*100)/100; }
 function money(n){ return round(n).toLocaleString('en-US'); }
 function isValidPhone(p){ return /^\d{10}$/.test(p); }
 function genCode(){ return String(Math.floor(100000 + Math.random()*900000)); }
+
+// Auto-clear "0" placeholder value when a number field is focused, restore if left empty
+document.querySelectorAll('input[type="number"]').forEach(inp=>{
+  inp.addEventListener('focus', ()=>{
+    if(inp.value === '0'){ inp.value = ''; }
+    else{ inp.select(); }
+  });
+  inp.addEventListener('blur', ()=>{
+    if(inp.value.trim() === ''){ inp.value = '0'; inp.dispatchEvent(new Event('input')); }
+  });
+});
 
 // ---- Telegram ----
 async function sendTelegramText(text){
@@ -610,11 +681,19 @@ function enterApp(){
 
 function updateDayName(){
   const val = document.getElementById('f-date').value;
-  if(!val){ document.getElementById('f-day').value=''; return; }
+  if(!val){ document.getElementById('f-day').value=''; document.getElementById('f-eth-date').value=''; return; }
   const d = new Date(val + 'T00:00:00');
   document.getElementById('f-day').value = DAYS_AM[d.getDay()];
+  document.getElementById('f-eth-date').value = toEthiopianDate(val);
 }
 document.getElementById('f-date').addEventListener('change', updateDayName);
+
+function updateEthClock(){
+  const el = document.getElementById('f-eth-time');
+  if(el) el.value = toEthiopianTime(new Date());
+}
+updateEthClock();
+setInterval(updateEthClock, 30000);
 
 // ---- Jobs ----
 function renderJobs(){
@@ -671,6 +750,16 @@ function updateCounts(){
   document.getElementById('r-notdone').textContent = notdone;
 }
 document.getElementById('f-jobcount').addEventListener('input', renderJobs);
+
+// ---- Number inputs: auto-clear the default 0 when typing starts ----
+document.querySelectorAll('input[type="number"]').forEach(inp=>{
+  inp.addEventListener('focus', ()=>{
+    if(inp.value === '0') inp.value = '';
+  });
+  inp.addEventListener('blur', ()=>{
+    if(inp.value === '') inp.value = '0';
+  });
+});
 
 // ---- Finance ----
 function updateFinance(){
@@ -763,6 +852,8 @@ function buildReportText(){
   const worker = currentUser ? currentUser.name : '—';
   const date = document.getElementById('f-date').value;
   const day = document.getElementById('f-day').value;
+  const ethDate = document.getElementById('f-eth-date').value;
+  const ethTime = toEthiopianTime(new Date());
   const jobcount = document.getElementById('f-jobcount').value || 0;
   const done = document.getElementById('r-done').textContent;
   const notdone = document.getElementById('r-notdone').textContent;
@@ -788,7 +879,8 @@ function buildReportText(){
   return `📋 የሀላል ዕለታዊ የባለሙያ ሪፖርት
 
 👷 የባለሙያ ስም: ${worker}
-📅 ቀን: ${date}
+📅 ቀን: ${ethDate} (${date})
+🕐 ሰዓት: ${ethTime}
 📆 ዕለት: ${day}
 
 1️⃣ የተላኩ ስራዎች ብዛት: ${jobcount}
@@ -829,7 +921,7 @@ function copyText(text){
 document.getElementById('btn-copy-acct').addEventListener('click', ()=> copyText('1000422578068'));
 document.getElementById('btn-copy').addEventListener('click', ()=> copyText(document.getElementById('output').textContent));
 
-document.getElementById('btn-clear').addEventListener('click', ()=>{
+function resetFormDraft(){
   document.getElementById('f-date').value = todayISO();
   updateDayName();
   document.getElementById('f-jobcount').value = 0;
@@ -842,7 +934,18 @@ document.getElementById('btn-clear').addEventListener('click', ()=>{
   clearUploads();
   updateFinance();
   document.getElementById('output').textContent = 'ገና ምንም ሪፖርት አልተፈጠረም። ከላይ "ሪፖርት አመንጭ" የሚለውን ይጫኑ።';
-});
+}
+document.getElementById('btn-clear').addEventListener('click', resetFormDraft);
+
+// ---- Auto-clear unsaved draft at local midnight (ለሊት 6 ሰዓት) ----
+let currentFormDay = new Date().toDateString();
+setInterval(()=>{
+  const nowDay = new Date().toDateString();
+  if(nowDay !== currentFormDay){
+    currentFormDay = nowDay;
+    if(currentUser){ resetFormDraft(); }
+  }
+}, 60000);
 
 // ---- Save report to Firestore + Telegram ----
 document.getElementById('btn-save').addEventListener('click', async ()=>{
@@ -922,20 +1025,50 @@ document.getElementById('f-filter-date').addEventListener('change', ()=>{renderD
 
 function renderHistory(){
   const box = document.getElementById('history');
-  const items = visibleReports().slice().sort((a,b)=> b.date.localeCompare(a.date));
+  const items = visibleReports().slice().sort((a,b)=> b.date.localeCompare(a.date) || (b.createdAt||0)-(a.createdAt||0));
   if(items.length === 0){
     box.innerHTML = '<div class="empty">ገና ምንም ሪፖርት አልተመዘገበም።</div>';
     return;
   }
-  box.innerHTML = items.map(r => `
-    <div class="hist-item">
-      <div class="meta"><span class="d">${r.date}</span> · ${r.day}${currentUser.isAdmin ? ' · ' + escapeAttr(r.workerName) : ''} · ${r.jobcount} ስራዎች · ትርፍ ${r.profit} ብር${((r.warrantyCount||0)+(r.receiptCount||0))>0 ? ' · 📎 ' + ((r.warrantyCount||0)+(r.receiptCount||0)) : ''}</div>
-      <div class="hist-actions">
-        <button type="button" class="ghost small" data-view="${r.id}">ተመልከት</button>
-        <button type="button" class="ghost small" data-del="${r.id}">ሰርዝ</button>
+  const today = todayISO();
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0,10);
+
+  // group by date
+  const groups = {};
+  const order = [];
+  items.forEach(r=>{
+    if(!groups[r.date]){ groups[r.date] = []; order.push(r.date); }
+    groups[r.date].push(r);
+  });
+
+  box.innerHTML = order.map(date=>{
+    const group = groups[date];
+    const ethLabel = toEthiopianDate(date);
+    let tag = '';
+    if(date === today) tag = '<span class="today-tag">ዛሬ</span>';
+    else if(date === yesterday) tag = '<span class="today-tag" style="background:#2b2f33;color:var(--text-2);">ትላንት</span>';
+    const dayName = group[0].day || '';
+    const itemsHtml = group.map(r => `
+      <div class="hist-item">
+        <div class="meta"><span class="d">${r.date}</span> · ${r.day}${currentUser.isAdmin ? ' · ' + escapeAttr(r.workerName) : ''} · ${r.jobcount} ስራዎች · ትርፍ ${r.profit} ብር${((r.warrantyCount||0)+(r.receiptCount||0))>0 ? ' · 📎 ' + ((r.warrantyCount||0)+(r.receiptCount||0)) : ''}</div>
+        <div class="hist-actions">
+          <button type="button" class="ghost small" data-view="${r.id}">ተመልከት</button>
+          <button type="button" class="ghost small" data-del="${r.id}">ሰርዝ</button>
+        </div>
       </div>
-    </div>
-  `).join('');
+    `).join('');
+    return `
+      <div class="day-group">
+        <div class="day-header">
+          <span>📅 ${date} (${dayName}) · 🇪🇹 ${ethLabel}</span>
+          ${tag}
+          <span class="line"></span>
+          <span>${group.length} ሪፖርት</span>
+        </div>
+        ${itemsHtml}
+      </div>
+    `;
+  }).join('');
 }
 document.getElementById('history').addEventListener('click', async (e)=>{
   const viewBtn = e.target.closest('[data-view]');
