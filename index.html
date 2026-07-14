@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>የወተት ሽያጭ ዕለታዊ መዝገብ</title>
+<title>የመስክ ስታትስቲክስ መዝገብ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#12181C; --panel:#182126; --card:#1D272D;
+    --bg:#12171A; --panel:#181F23; --card:#1D2529;
+    --teal:#3FAE7A; --teal-dim:#123326;
     --blue:#4FA8D8; --blue-dim:#123244;
-    --green:#4CAF6D; --green-dim:#1E3A28;
     --red:#E4572E; --red-dim:#3A2018;
     --text:#ECEFF1; --text-2:#93A5AD; --text-3:#5E6E75;
     --line:#243138; --line-strong:#324349;
@@ -19,34 +19,29 @@
   *{box-sizing:border-box;}
   body{margin:0;background:var(--bg);color:var(--text);font-family:'Noto Sans Ethiopic',sans-serif;line-height:1.6;}
   .mono{font-family:'JetBrains Mono',monospace;}
-  .wrap{max-width:820px;margin:0 auto;padding:26px 18px 80px;}
+  .wrap{max-width:860px;margin:0 auto;padding:26px 18px 80px;}
   .hidden{display:none !important;}
 
   .plate{
-    background:linear-gradient(180deg,#1A262C,#141C20);
+    background:linear-gradient(180deg,#1A2226,#141A1D);
     border:1px solid var(--line-strong);border-radius:6px;
     padding:20px 22px;position:relative;overflow:hidden;
   }
   .plate::before{
     content:"";position:absolute;top:0;left:0;right:0;height:3px;
-    background:repeating-linear-gradient(135deg,var(--blue) 0 10px,#0e1518 10px 20px);
+    background:repeating-linear-gradient(135deg,var(--teal) 0 10px,#0e1315 10px 20px);
   }
   .plate h1{margin:0;font-size:19px;font-weight:700;}
   .plate p{margin:4px 0 0;font-size:12.5px;color:var(--text-2);}
 
-  .session-bar{display:flex;justify-content:space-between;align-items:center;margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 16px;flex-wrap:wrap;gap:8px;}
-  .session-bar .who{font-size:13px;}
-  .session-bar .who .name{font-weight:600;}
-  .badge-admin{font-size:10.5px;background:var(--blue-dim);color:var(--blue);padding:2px 8px;border-radius:20px;margin-left:8px;font-family:'JetBrains Mono',monospace;}
-  .badge-worker{font-size:10.5px;background:#232f34;color:var(--text-2);padding:2px 8px;border-radius:20px;margin-left:8px;font-family:'JetBrains Mono',monospace;}
-
   .section-title{display:flex;align-items:center;gap:10px;margin:28px 0 12px;font-size:13px;color:var(--text-2);}
-  .section-title .num{font-family:'JetBrains Mono',monospace;color:var(--blue);font-size:12px;border:1px solid var(--line-strong);border-radius:4px;padding:1px 6px;}
+  .section-title .num{font-family:'JetBrains Mono',monospace;color:var(--teal);font-size:12px;border:1px solid var(--line-strong);border-radius:4px;padding:1px 6px;}
   .section-title::after{content:"";flex:1;height:1px;background:var(--line);}
 
   .card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px 20px;}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
   .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
   .field{margin-bottom:14px;}
   .field label{display:block;font-size:12px;color:var(--text-2);margin-bottom:5px;}
   input,select,textarea{
@@ -54,92 +49,56 @@
     color:var(--text);font-family:'Noto Sans Ethiopic',sans-serif;font-size:14px;padding:9px 10px;
   }
   input.mono{font-family:'JetBrains Mono',monospace;}
-  textarea{resize:vertical;min-height:56px;}
-  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);}
-  input[readonly]{color:var(--text-2);background:#141c20;}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);}
 
   .readout{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;}
-  .readout .chip{
-    flex:1;min-width:120px;background:var(--card);border:1px solid var(--line-strong);
-    border-radius:5px;padding:10px 12px;
-  }
+  .readout .chip{flex:1;min-width:130px;background:var(--card);border:1px solid var(--line-strong);border-radius:5px;padding:12px 14px;}
   .readout .chip .k{font-size:11px;color:var(--text-2);}
-  .readout .chip .v{font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:700;margin-top:3px;}
-  .readout .chip.green .v{color:var(--green);}
-  .readout .chip.red .v{color:var(--red);}
+  .readout .chip .v{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;margin-top:4px;}
+  .readout .chip .sub{font-size:10.5px;color:var(--text-3);margin-top:3px;font-family:'JetBrains Mono',monospace;}
+  .readout .chip.teal .v{color:var(--teal);}
   .readout .chip.blue .v{color:var(--blue);}
+  .readout .chip.red .v{color:var(--red);}
 
   .form-actions{display:flex;gap:10px;margin-top:16px;justify-content:flex-end;flex-wrap:wrap;}
   button{
     font-family:'Noto Sans Ethiopic',sans-serif;font-size:13.5px;border-radius:5px;padding:10px 18px;
     cursor:pointer;border:1px solid var(--line-strong);background:var(--card);color:var(--text);
   }
-  button:hover{border-color:var(--blue);}
-  button.primary{background:var(--blue);color:#08202c;border-color:var(--blue);font-weight:600;}
-  button.primary:hover{background:#6cb9e0;}
+  button:hover{border-color:var(--teal);}
+  button.primary{background:var(--teal);color:#08201a;border-color:var(--teal);font-weight:600;}
+  button.primary:hover{background:#5fc494;}
   button.ghost{background:transparent;border-color:var(--line);}
   button.small{padding:6px 12px;font-size:12px;}
   button:disabled{opacity:.5;cursor:not-allowed;}
 
-  .expense-row{display:flex;gap:8px;margin-bottom:8px;align-items:center;}
-  .expense-row input{flex:1;}
-  .expense-row input.amt{max-width:120px;}
-  .expense-row .rm-row{flex-shrink:0;width:34px;height:34px;padding:0;display:flex;align-items:center;justify-content:center;}
-
-  .contract-card{background:var(--card);border:1px solid var(--line-strong);border-radius:6px;padding:14px 16px;margin-bottom:10px;}
-  .contract-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;}
-  .contract-top h4{margin:0;font-size:15px;}
-  .contract-meta{font-size:12px;color:var(--text-2);margin-top:3px;}
-  .balance-pill{font-size:11px;padding:3px 10px;border-radius:20px;font-family:'JetBrains Mono',monospace;white-space:nowrap;}
-  .balance-pill.owe{background:var(--red-dim);color:var(--red);}
-  .balance-pill.clear{background:var(--green-dim);color:var(--green);}
-  .contract-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line-strong);}
-  .contract-grid .item .k{font-size:10.5px;color:var(--text-3);}
-  .contract-grid .item .v{font-size:13px;font-family:'JetBrains Mono',monospace;margin-top:2px;}
-  .contract-actions{display:flex;gap:8px;margin-top:10px;}
-
-  .output-box{
-    background:var(--card);border:1px solid var(--line-strong);border-radius:6px;padding:16px;
-    white-space:pre-wrap;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.8;color:var(--text);
-    max-height:420px;overflow-y:auto;
-  }
-  .copy-msg{font-size:12px;color:var(--green);margin-top:8px;display:none;}
-
-  .history{display:flex;flex-direction:column;gap:8px;}
-  .hist-item{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
-  .hist-item .meta{font-size:12.5px;color:var(--text-2);}
-  .hist-item .meta .d{color:var(--text);font-weight:600;font-family:'JetBrains Mono',monospace;}
-  .hist-actions{display:flex;gap:8px;}
-  .hist-actions button{padding:6px 12px;font-size:12px;}
-  .empty{text-align:center;padding:30px 20px;color:var(--text-3);border:1px dashed var(--line-strong);border-radius:6px;font-size:13px;}
-  .day-group{margin-top:18px;}
-  .day-group:first-child{margin-top:0;}
-  .day-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--blue);}
-  .day-header .line{flex:1;height:1px;background:var(--line-strong);}
-  .day-header .today-tag{background:var(--blue-dim);color:var(--blue);padding:2px 8px;border-radius:20px;font-size:10px;}
-
-  .month-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:12px;}
-  .month-cell{display:flex;flex-direction:column;gap:3px;}
-  .month-cell label{font-size:9.5px;color:var(--text-3);text-align:center;}
-  .month-cell input{padding:5px 4px;font-size:11.5px;text-align:center;}
-  .past-months-toggle{font-size:11.5px;color:var(--blue);cursor:pointer;margin-top:10px;display:inline-block;}
-  .past-month-row{display:flex;justify-content:space-between;font-size:12px;color:var(--text-2);padding:6px 0;border-bottom:1px solid var(--line);}
-
-  .auth-tabs{display:flex;gap:8px;margin-bottom:16px;}
-  .auth-tab{flex:1;text-align:center;padding:10px;border-radius:5px;border:1px solid var(--line-strong);cursor:pointer;font-size:13px;color:var(--text-2);}
-  .auth-tab.active{background:var(--blue-dim);color:var(--blue);border-color:var(--blue);}
+  .lock-box{text-align:center;padding:24px;}
+  .lock-box .icon{font-size:32px;margin-bottom:10px;}
+  .lock-box input{max-width:260px;margin:0 auto 12px;text-align:center;}
   .error-msg{color:var(--red);font-size:12.5px;margin-top:10px;display:none;}
-  .hint{font-size:11.5px;color:var(--text-3);margin-top:4px;}
-  .notice{background:var(--card);border:1px solid var(--line-strong);border-radius:5px;padding:12px 14px;font-size:12px;color:var(--text-2);}
 
-  .grid-in{width:64px;padding:5px 6px;font-size:12px;background:var(--card);border:1px solid var(--line-strong);border-radius:4px;color:var(--text);font-family:'JetBrains Mono',monospace;}
-  #grid-table td{padding:4px;white-space:nowrap;}
-  #grid-table tr:nth-child(even){background:rgba(255,255,255,0.02);}
-  .grid-day-today{color:var(--blue);font-weight:700;}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  th{text-align:left;padding:8px 6px;color:var(--text-2);border-bottom:1px solid var(--line-strong);font-weight:600;}
+  td{padding:8px 6px;border-bottom:1px solid var(--line);}
+  tr:hover td{background:rgba(255,255,255,0.02);}
+  .pill{font-size:10.5px;padding:2px 8px;border-radius:20px;font-family:'JetBrains Mono',monospace;white-space:nowrap;}
+  .pill.unemployed{background:var(--red-dim);color:var(--red);}
+  .pill.employed{background:var(--teal-dim);color:var(--teal);}
+  .pill.ins-new{background:var(--blue-dim);color:var(--blue);}
+  .pill.ins-renew{background:var(--teal-dim);color:var(--teal);}
+  .pill.ins-none{background:#2b2f33;color:var(--text-2);}
+
+  .empty{text-align:center;padding:30px 20px;color:var(--text-3);border:1px dashed var(--line-strong);border-radius:6px;font-size:13px;}
+  .toast{
+    position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+    background:var(--teal);color:#08201a;padding:10px 20px;border-radius:6px;font-size:13px;font-weight:600;
+    display:none;z-index:50;box-shadow:0 4px 14px rgba(0,0,0,.3);
+  }
 
   @media(max-width:640px){
-    .grid2, .grid3, .contract-grid{grid-template-columns:1fr;}
+    .grid2,.grid3,.grid4{grid-template-columns:1fr;}
     .readout{flex-direction:column;}
+    table{font-size:11.5px;}
   }
 </style>
 </head>
@@ -147,2120 +106,363 @@
 <div class="wrap">
 
   <div class="plate">
-    <h1>🥛 የወተት ሽያጭ ዕለታዊ መዝገብ</h1>
-    <p>የታለበ ወተት፣ ኮንትራት ደንበኞች፣ ገቢ እና ወጪ መከታተያ</p>
+    <h1>📊 የመስክ ስታትስቲክስ መዝገብ</h1>
+    <p>የስራ አጥ እና ኢንሹራንስ ምዝገባ ማጠቃለያ</p>
   </div>
 
-  <!-- AUTH SCREEN -->
-  <div id="auth-screen">
-    <div class="section-title"><span class="num">01</span> መግቢያ</div>
-    <div class="card">
-      <div class="auth-tabs">
-        <div class="auth-tab active" data-tab="login">ግባ (Login)</div>
-        <div class="auth-tab" data-tab="register">አዲስ ተመዝገብ</div>
+  <div class="section-title"><span class="num">01</span> ጠቅላላ ማጠቃለያ (ለሁሉም ይታያል)</div>
+  <div class="card">
+    <div class="readout">
+      <div class="chip"><div class="k">ጠቅላላ የተመዘገቡ</div><div class="v" id="s-total">0</div></div>
+    </div>
+    <div class="section-title" style="margin:18px 0 8px;"><span class="num">--</span> የስራ አጥ ብዛት</div>
+    <div class="readout">
+      <div class="chip red"><div class="k">ወንድ</div><div class="v" id="s-unemp-m">0</div></div>
+      <div class="chip red"><div class="k">ሴት</div><div class="v" id="s-unemp-f">0</div></div>
+      <div class="chip red"><div class="k">ድምር</div><div class="v" id="s-unemp-t">0</div></div>
+    </div>
+    <div class="section-title" style="margin:18px 0 8px;"><span class="num">--</span> አዲስ ኢንሹራንስ ያወጡ</div>
+    <div class="readout">
+      <div class="chip blue"><div class="k">ወንድ</div><div class="v" id="s-insnew-m">0</div></div>
+      <div class="chip blue"><div class="k">ሴት</div><div class="v" id="s-insnew-f">0</div></div>
+      <div class="chip blue"><div class="k">ድምር</div><div class="v" id="s-insnew-t">0</div></div>
+    </div>
+    <div class="section-title" style="margin:18px 0 8px;"><span class="num">--</span> ኢንሹራንስ ያደሱ</div>
+    <div class="readout">
+      <div class="chip teal"><div class="k">ወንድ</div><div class="v" id="s-insrenew-m">0</div></div>
+      <div class="chip teal"><div class="k">ሴት</div><div class="v" id="s-insrenew-f">0</div></div>
+      <div class="chip teal"><div class="k">ድምር</div><div class="v" id="s-insrenew-t">0</div></div>
+    </div>
+    <div class="section-title" style="margin:18px 0 8px;"><span class="num">--</span> በስራ አይነት</div>
+    <div class="grid4" id="s-by-job"></div>
+  </div>
+
+  <!-- ADMIN LOCK -->
+  <div id="lock-screen">
+    <div class="section-title"><span class="num">02</span> የአድሚን መዳረሻ</div>
+    <div class="card lock-box">
+      <div class="icon">🔒</div>
+      <div style="font-size:13px;color:var(--text-2);margin-bottom:14px;">ዳታ ለማስገባት/ለማየት/ለማጥፋት የአድሚን ኮድ ያስፈልጋል</div>
+      <input type="password" id="admin-pass" placeholder="የአድሚን ኮድ">
+      <div class="form-actions" style="justify-content:center;">
+        <button type="button" class="primary" id="btn-unlock">ክፈት</button>
       </div>
-
-      <div id="tab-login">
-        <div class="field">
-          <label>📱 ስልክ ቁጥር (10 ዲጂት)</label>
-          <input type="tel" id="login-phone" class="mono" maxlength="10" placeholder="0912345678">
-        </div>
-        <div class="field">
-          <label>የይለፍ ቃል</label>
-          <input type="password" id="login-pass" placeholder="የይለፍ ቃል">
-        </div>
-        <div class="form-actions">
-          <button type="button" class="primary" id="btn-login">ግባ</button>
-        </div>
-      </div>
-
-      <div id="tab-register" class="hidden">
-        <div id="reg-step1">
-          <div class="field">
-            <label>👷 ሙሉ ስም</label>
-            <input type="text" id="reg-name" placeholder="ሙሉ ስም">
-          </div>
-          <div class="field">
-            <label>📱 ስልክ ቁጥር (በትክክል 10 ዲጂት)</label>
-            <input type="tel" id="reg-phone" class="mono" maxlength="10" placeholder="0912345678">
-          </div>
-          <div class="field">
-            <label>የይለፍ ቃል</label>
-            <input type="password" id="reg-pass" placeholder="ቢያንስ 4 ፊደል/ቁጥር">
-          </div>
-          <div class="field">
-            <label>የይለፍ ቃል ድገም</label>
-            <input type="password" id="reg-pass2" placeholder="ድገም">
-          </div>
-          <div class="field">
-            <label>የአድሚን ኮድ (ለአድሚን ብቻ — ካልሆነ ባዶ ይተውት)</label>
-            <input type="password" id="reg-admin-code" placeholder="ለመደበኛ ሠራተኛ ባዶ ይተውት">
-          </div>
-          <div class="form-actions">
-            <button type="button" class="primary" id="btn-reg-step1">ቀጣይ — ኮድ ላክ</button>
-          </div>
-        </div>
-
-        <div id="reg-step2" class="hidden">
-          <div class="notice" style="margin-bottom:14px;">📨 የማረጋገጫ ኮድ ወደ ድርጅቱ አድሚን Telegram ተልኳል። አድሚኑ የደረሰውን ባለ 6-ዲጂት ኮድ ይንገርዎት፣ ከታች ያስገቡ።</div>
-          <div class="field">
-            <label>🔑 ከአድሚን የደረሰዎት ኮድ</label>
-            <input type="text" id="reg-verify-code" class="mono" maxlength="6" placeholder="000000">
-          </div>
-          <div class="form-actions">
-            <button type="button" class="ghost" id="btn-reg-back">ተመለስ</button>
-            <button type="button" class="ghost" id="btn-reg-resend">ኮድ እንደገና ላክ</button>
-            <button type="button" class="primary" id="btn-reg-verify">አረጋግጥ እና ተመዝገብ</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="error-msg" id="auth-error"></div>
+      <div class="error-msg" id="lock-error"></div>
     </div>
   </div>
 
-  <!-- APP SCREEN -->
-  <div id="app-screen" class="hidden">
+  <!-- ADMIN AREA -->
+  <div id="admin-area" class="hidden">
 
-    <div class="session-bar">
-      <div class="who">
-        <span class="name" id="who-name"></span>
-        <span id="who-badge"></span>
-      </div>
-      <button type="button" class="ghost small" id="btn-logout">ውጣ</button>
-    </div>
-
-    <div class="section-title"><span class="num">02</span> ቀን</div>
+    <div class="section-title"><span class="num">03</span> አዲስ ምዝገባ (አድሚን ብቻ)</div>
     <div class="card">
       <div class="grid2">
         <div class="field">
-          <label>📅 ቀን (Gregorian)</label>
+          <label>👤 ሙሉ ስም</label>
+          <input type="text" id="f-name" placeholder="ሙሉ ስም">
+        </div>
+        <div class="field">
+          <label>⚧ ጾታ</label>
+          <select id="f-gender">
+            <option value="ወንድ">ወንድ</option>
+            <option value="ሴት">ሴት</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label>💼 የስራ አይነት</label>
+          <select id="f-jobtype"></select>
+        </div>
+        <div class="field">
+          <label>📌 የስራ ሁኔታ</label>
+          <select id="f-empstatus">
+            <option value="ስራ አጥ">ስራ አጥ</option>
+            <option value="ስራ ላይ">ስራ ላይ</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label>🛡️ የኢንሹራንስ ሁኔታ</label>
+          <select id="f-insstatus">
+            <option value="የለውም">የለውም</option>
+            <option value="አዲስ ያወጣ">አዲስ ያወጣ</option>
+            <option value="ያደሰ">ያደሰ</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>📅 ቀን</label>
           <input type="date" id="f-date" class="mono">
         </div>
-        <div class="field">
-          <label>📆 ዕለት</label>
-          <input type="text" id="f-day" readonly>
-        </div>
       </div>
-      <div class="field">
-        <label>🇪🇹 የኢትዮጵያ ቀን</label>
-        <input type="text" id="f-eth-date" class="mono" readonly>
-      </div>
-    </div>
-
-    <div class="section-title"><span class="num">03</span> 1️⃣ የታለበ ወተት (ሊትር)</div>
-    <div class="card">
-      <div class="grid2">
-        <div class="field">
-          <label>🌅 ጠዋት (ሊትር)</label>
-          <input type="number" id="f-morning" class="mono" min="0" step="0.5" value="0">
-        </div>
-        <div class="field">
-          <label>🌇 ማታ (ሊትር)</label>
-          <input type="number" id="f-evening" class="mono" min="0" step="0.5" value="0">
-        </div>
-      </div>
-      <div class="readout">
-        <div class="chip blue"><div class="k">ድምር የታለበ ወተት</div><div class="v" id="r-total-milk">0 ሊ</div></div>
-        <div class="chip red"><div class="k">ለኮንትራት የተሰጠ (በራስ-ሰር)</div><div class="v" id="r-contract-milk">0 ሊ</div></div>
-        <div class="chip green"><div class="k">የቀረው (ችርቻሮ)</div><div class="v" id="r-remaining-milk">0 ሊ</div></div>
-      </div>
-      <div class="field" style="margin-top:14px;">
-        <label>💵 ከችርቻሮ የተገኘ ገቢ (ብር) — ካለ</label>
-        <input type="number" id="f-retail-income" class="mono" min="0" value="0">
-      </div>
-    </div>
-
-    <div class="section-title"><span class="num">04</span> 2️⃣ ወጪ</div>
-    <div class="card">
-      <div id="expense-rows"></div>
-      <button type="button" class="ghost small" id="btn-add-expense">+ ወጪ ጨምር</button>
-      <div class="readout" style="margin-top:14px;">
-        <div class="chip red"><div class="k">ጠቅላላ ወጪ</div><div class="v" id="r-total-expense">0 ብር</div></div>
-      </div>
-    </div>
-
-    <div class="section-title"><span class="num">05</span> ማጠቃለያ</div>
-    <div class="card">
-      <div class="readout">
-        <div class="chip blue"><div class="k">ኮንትራት ገቢ (ዕለታዊ)</div><div class="v" id="r-contract-income">0 ብር</div></div>
-        <div class="chip green"><div class="k">ጠቅላላ ገቢ</div><div class="v" id="r-total-income">0 ብር</div></div>
-        <div class="chip" id="r-profit-chip"><div class="k">የተጣራ ትርፍ</div><div class="v" id="r-profit">0 ብር</div></div>
-      </div>
-      <div class="field" style="margin-top:14px;">
-        <label>🎤 ተጨማሪ ማብራሪያ</label>
-        <textarea id="f-notes" placeholder="ማንኛውም ተጨማሪ ማስታወሻ..."></textarea>
-      </div>
-    </div>
-
-    <div class="form-actions">
-      <button type="button" class="ghost" id="btn-clear">አጽዳ</button>
-      <button type="button" class="primary" id="btn-generate">ሪፖርት አመንጭ</button>
-    </div>
-
-    <div class="section-title"><span class="num">06</span> ለመላክ ዝግጁ ሪፖርት</div>
-    <div class="card">
-      <div class="output-box" id="output">ገና ምንም ሪፖርት አልተፈጠረም። ከላይ "ሪፖርት አመንጭ" የሚለውን ይጫኑ።</div>
-      <div class="copy-msg" id="copy-msg">✅ ጽሁፉ ተኮፒ ተደርጓል!</div>
-      <div class="copy-msg" id="save-msg">✅ ሪፖርት ተልኳል እና ተቀምጧል!</div>
       <div class="form-actions">
-        <button type="button" class="ghost" id="btn-copy">ጽሁፉን ኮፒ አድርግ</button>
-        <button type="button" class="primary" id="btn-save">ሪፖርት ላክ እና አስቀምጥ</button>
+        <button type="button" class="primary" id="btn-submit">መዝግብ</button>
       </div>
     </div>
 
-    <div id="contracts-section" class="hidden">
-      <div class="section-title"><span class="num">07</span> 3️⃣ ኮንትራት ደንበኞች (አድሚን ብቻ)</div>
-      <div class="card">
-        <div class="grid2">
-          <div class="field">
-            <label>ስም</label>
-            <input type="text" id="c-name" placeholder="የደንበኛ ስም">
-          </div>
-          <div class="field">
-            <label>ዋጋ በሊትር (ብር)</label>
-            <input type="number" id="c-price" class="mono" min="0" value="160">
-          </div>
+    <div class="section-title"><span class="num">04</span> ጥሬ ዝርዝር (አድሚን ብቻ)</div>
+    <div class="card">
+      <div class="grid3">
+        <div class="field">
+          <label>🔍 ፈልግ (ስም)</label>
+          <input type="text" id="search-box" placeholder="ስም ይፈልጉ...">
         </div>
-        <div class="form-actions">
-          <button type="button" class="primary" id="btn-add-contract">ኮንትራት ደንበኛ ጨምር</button>
+        <div class="field">
+          <label>የስራ አይነት አጣራ</label>
+          <select id="filter-job"><option value="">ሁሉም</option></select>
         </div>
-        <div class="hint">ከተመዘገበ በኋላ ከታች ባለው ሠንጠረዥ ውስጥ ከቀን 1 እስከ 30 (የኢትዮጵያ ወር) ዕለታዊ ሊትር በተናጠል ያስገቡ። ወሩ ሲሞላ (30 ቀን) ራሱ ተቀምጦ ይቀራል፣ አዲስ ወር በራሱ ይጀምራል።</div>
-      </div>
-      <div id="contracts-list" style="margin-top:14px;"></div>
-    </div>
-
-    <div id="admin-section" class="hidden">
-      <div class="section-title"><span class="num">08</span> 🗂️ የስራ አስኪያጅ ማጠቃለያ (እውነተኛ-ጊዜ)</div>
-      <div class="card">
-        <div class="readout">
-          <div class="chip"><div class="k">ጠቅላላ ሪፖርቶች</div><div class="v" id="d-count">0</div></div>
-          <div class="chip blue"><div class="k">ጠቅላላ ወተት (ሊ)</div><div class="v" id="d-milk">0</div></div>
-          <div class="chip green"><div class="k">ጠቅላላ ገቢ</div><div class="v" id="d-income">0</div></div>
-          <div class="chip red"><div class="k">ጠቅላላ ወጪ</div><div class="v" id="d-expense">0</div></div>
+        <div class="field">
+          <label>ጾታ አጣራ</label>
+          <select id="filter-gender">
+            <option value="">ሁሉም</option>
+            <option value="ወንድ">ወንድ</option>
+            <option value="ሴት">ሴት</option>
+          </select>
         </div>
       </div>
-
-      <div class="section-title"><span class="num">09</span> 📊 ወርሃዊ ሠንጠረዥ (1-30፣ ኢትዮጵያ አቆጣጠር) — አድሚን ብቻ</div>
-      <div class="card" style="overflow-x:auto;">
-        <div class="grid-nav" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
-          <button type="button" class="ghost small" id="btn-grid-prev">◀ ቀዳሚ ወር</button>
-          <div id="grid-month-label" style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--blue);"></div>
-          <button type="button" class="ghost small" id="btn-grid-next">ቀጣይ ወር ▶</button>
-        </div>
-        <table style="width:100%;border-collapse:collapse;font-size:12px;" id="grid-table">
+      <div class="form-actions" style="justify-content:flex-start;">
+        <button type="button" class="ghost small" id="export-csv">⬇️ CSV አውርድ</button>
+      </div>
+      <div style="overflow-x:auto;margin-top:12px;">
+        <table>
           <thead>
-            <tr style="color:var(--text-2);text-align:left;border-bottom:1px solid var(--line-strong);">
-              <th style="padding:6px 4px;">ቀን</th>
-              <th style="padding:6px 4px;">ጠዋት ሊ</th>
-              <th style="padding:6px 4px;">ማታ ሊ</th>
-              <th style="padding:6px 4px;">ድምር</th>
-              <th style="padding:6px 4px;">ኮንትራት ሊ</th>
-              <th style="padding:6px 4px;">ችርቻሮ ገቢ</th>
-              <th style="padding:6px 4px;">ወጪ</th>
-              <th style="padding:6px 4px;">ትርፍ</th>
+            <tr>
+              <th>ስም</th><th>ጾታ</th><th>የስራ አይነት</th><th>ሁኔታ</th><th>ኢንሹራንስ</th><th>ቀን</th><th></th>
             </tr>
           </thead>
-          <tbody id="grid-body"></tbody>
-          <tfoot>
-            <tr style="border-top:1px solid var(--line-strong);font-weight:700;color:var(--blue);">
-              <td style="padding:8px 4px;">ድምር</td>
-              <td style="padding:8px 4px;" id="gt-morning">0</td>
-              <td style="padding:8px 4px;" id="gt-evening">0</td>
-              <td style="padding:8px 4px;" id="gt-total">0</td>
-              <td style="padding:8px 4px;" id="gt-contract">0</td>
-              <td style="padding:8px 4px;" id="gt-retail">0</td>
-              <td style="padding:8px 4px;" id="gt-expense">0</td>
-              <td style="padding:8px 4px;" id="gt-profit">0</td>
-            </tr>
-          </tfoot>
+          <tbody id="records-body"></tbody>
         </table>
-        <div class="hint" style="margin-top:10px;">ወር ሲያልቅ (ኢትዮጵያ አቆጣጠር 30) ራሱ ይቀመጣል፣ ሲቀጥለው ወር ላይ አዲስ ባዶ ሠንጠረዥ በራሱ ይጀምራል። ቀዳሚ ወራትን ለማየት "ቀዳሚ ወር" ይጫኑ።</div>
       </div>
-
-      <div class="section-title"><span class="num">10</span> 👥 የተጠቃሚዎች አስተዳደር</div>
-      <div class="card">
-        <div class="history" id="users-list"></div>
-      </div>
+      <div id="records-empty" class="empty hidden">ምንም የተመዘገበ ዳታ የለም።</div>
     </div>
-
-    <div class="section-title"><span class="num">11</span> <span id="history-title">የኔ ያለፉ ሪፖርቶች</span></div>
-    <div class="history" id="history"></div>
-
   </div>
 
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-import {
-  getFirestore, collection, doc, setDoc, getDoc, addDoc,
-  deleteDoc, onSnapshot, query
-} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAZ7MU2B58bWcu-8jH9Pvv5Ob9XGQyx4NU",
-  authDomain: "halal-report-2.firebaseapp.com",
-  projectId: "halal-report-2",
-  storageBucket: "halal-report-2.firebasestorage.app",
-  messagingSenderId: "242965792260",
-  appId: "1:242965792260:web:8dd83989172924f8c5d751"
-};
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-const ADMIN_SECRET = 'MILK-ADMIN-2026';
-const TELEGRAM_BOT_TOKEN = '8816155815:AAGaxgc9bhIGjqLAxNTMvvFZq7StXRZ6Pus';
-const TELEGRAM_CHAT_ID = '6853753240';
-const DEFAULT_PRICE = 160;
-const DAYS_AM = ['እሁድ','ሰኞ','ማክሰኞ','ረቡዕ','ሐሙስ','አርብ','ቅዳሜ'];
-const ETH_MONTHS = ['መስከረም','ጥቅምት','ኅዳር','ታኅሳስ','ጥር','የካቲት','መጋቢት','ሚያዝያ','ግንቦት','ሰኔ','ሐምሌ','ነሐሴ','ጳጉሜን'];
-
-let currentUser = null; // {name, phone, isAdmin}
-let allReports = [];
-let allUsers = [];
-let allContracts = [];
-let allContractMonths = [];
-let allPayments = [];
-let pendingReg = null;
-let lastSavedText = null;
-let isSaving = false;
-let reportsUnsub=null, usersUnsub=null, contractsUnsub=null, contractMonthsUnsub=null, paymentsUnsub=null, gridUnsub=null;
-let gridEthYear=null, gridEthMonth=null, gridData={};
-
-// ---- helpers ----
-async function sha256(text){
-  const enc = new TextEncoder().encode(text);
-  const buf = await crypto.subtle.digest('SHA-256', enc);
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-function escapeAttr(str){
-  const div = document.createElement('div');
-  div.textContent = str || '';
-  return div.innerHTML;
-}
-function todayISO(){ return new Date().toISOString().slice(0,10); }
-function round(n){ return Math.round((Number(n)||0)*100)/100; }
-function money(n){ return round(n).toLocaleString('en-US'); }
-function isValidPhone(p){ return /^\d{10}$/.test(p); }
-function genCode(){ return String(Math.floor(100000 + Math.random()*900000)); }
-function daysBetweenInclusive(startISO, endISO){
-  const s = new Date(startISO+'T00:00:00'), e = new Date(endISO+'T00:00:00');
-  const diff = Math.round((e-s)/86400000);
-  return Math.max(0, diff) + 1;
-}
-
-// Gregorian -> Ethiopian calendar
-function gregorianToJDN(y, m, d){
-  return Math.floor((1461 * (y + 4800 + Math.floor((m - 14) / 12))) / 4) +
-    Math.floor((367 * (m - 2 - 12 * Math.floor((m - 14) / 12))) / 12) -
-    Math.floor((3 * Math.floor((y + 4900 + Math.floor((m - 14) / 12)) / 100)) / 4) +
-    d - 32075;
-}
-function jdnToEthiopian(jdn){
-  const r = (jdn - 1723856) % 1461;
-  const n = (r % 365) + 365 * Math.floor(r / 1460);
-  const year = 4 * Math.floor((jdn - 1723856) / 1461) + Math.floor(r / 365) - Math.floor(r / 1460);
-  const month = Math.floor(n / 30) + 1;
-  const day = (n % 30) + 1;
-  return { year, month, day };
-}
-function getEthParts(isoDateStr){
-  const [y,m,d] = isoDateStr.split('-').map(Number);
-  const jdn = gregorianToJDN(y, m, d);
-  return jdnToEthiopian(jdn);
-}
-function toEthiopianDate(isoDateStr){
-  if(!isoDateStr) return '';
-  const eth = getEthParts(isoDateStr);
-  const monthName = ETH_MONTHS[eth.month - 1] || '';
-  return `${eth.day} ${monthName} ${eth.year} ዓ.ም`;
-}
-function currentEthYearMonth(){
-  const eth = getEthParts(todayISO());
-  return { year: eth.year, month: eth.month };
-}
-// Ethiopian -> JDN -> Gregorian (reverse conversion, for the monthly grid)
-function ethiopianToJDN(ethYear, ethMonth, ethDay){
-  return 1723856 + 365 * (ethYear - 1) + Math.floor(ethYear / 4) + 30 * (ethMonth - 1) + (ethDay - 1);
-}
-function jdnToGregorian(jdn){
-  const a = jdn + 32044;
-  const b = Math.floor((4 * a + 3) / 146097);
-  const c = a - Math.floor((146097 * b) / 4);
-  const d = Math.floor((4 * c + 3) / 1461);
-  const e = c - Math.floor((1461 * d) / 4);
-  const m = Math.floor((5 * e + 2) / 153);
-  const day = e - Math.floor((153 * m + 2) / 5) + 1;
-  const month = m + 3 - 12 * Math.floor(m / 10);
-  const year = 100 * b + d - 4800 + Math.floor(m / 10);
-  return { year, month, day };
-}
-function ethiopianToGregorianISO(ethYear, ethMonth, ethDay){
-  const jdn = ethiopianToJDN(ethYear, ethMonth, ethDay);
-  const g = jdnToGregorian(jdn);
-  return `${g.year}-${String(g.month).padStart(2,'0')}-${String(g.day).padStart(2,'0')}`;
-}
-function monthKey(contractId, ethYear, ethMonth){
-  return `${contractId}_${ethYear}_${ethMonth}`;
-}
-function toEthiopianTime(date){
-  let h = date.getHours();
-  const min = String(date.getMinutes()).padStart(2,'0');
-  let ethHour = (h - 6 + 24) % 12;
-  if(ethHour === 0) ethHour = 12;
-  let period;
-  if(h >= 0 && h < 6) period = 'ለሊት';
-  else if(h >= 6 && h < 12) period = 'ጠዋት';
-  else if(h >= 12 && h < 18) period = 'ቀን';
-  else period = 'ማታ';
-  return `${ethHour}:${min} ${period}`;
-}
-
-// ---- Telegram ----
-async function sendTelegramText(text){
-  try{
-    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text })
-    });
-  }catch(e){ console.error('Telegram error', e); }
-}
-
-// ---- Auth tabs ----
-document.querySelectorAll('.auth-tab').forEach(tab=>{
-  tab.addEventListener('click', ()=>{
-    document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
-    tab.classList.add('active');
-    document.getElementById('tab-login').classList.toggle('hidden', tab.dataset.tab!=='login');
-    document.getElementById('tab-register').classList.toggle('hidden', tab.dataset.tab!=='register');
-    document.getElementById('reg-step1').classList.remove('hidden');
-    document.getElementById('reg-step2').classList.add('hidden');
-    hideAuthError();
-  });
-});
-function showAuthError(msg){ const el=document.getElementById('auth-error'); el.textContent=msg; el.style.display='block'; }
-function hideAuthError(){ document.getElementById('auth-error').style.display='none'; }
-
-document.getElementById('btn-login').addEventListener('click', async ()=>{
-  hideAuthError();
-  const phone = document.getElementById('login-phone').value.trim();
-  const pass = document.getElementById('login-pass').value;
-  if(!isValidPhone(phone)){ showAuthError('ስልክ ቁጥር በትክክል 10 ዲጂት መሆን አለበት።'); return; }
-  if(!pass){ showAuthError('የይለፍ ቃል ያስገቡ።'); return; }
-  try{
-    const snap = await getDoc(doc(db,'milk_users',phone));
-    if(!snap.exists()){ showAuthError('ተጠቃሚ አልተገኘም። መጀመሪያ ይመዝገቡ።'); return; }
-    const user = snap.data();
-    const hash = await sha256(pass);
-    if(hash !== user.passwordHash){ showAuthError('የይለፍ ቃል ትክክል አይደለም።'); return; }
-    currentUser = { name: user.name, phone, isAdmin: !!user.isAdmin };
-    enterApp();
-  }catch(e){
-    console.error(e);
-    showAuthError('ግንኙነት ላይ ችግር ተፈጥሯል፣ Firestore መንቃቱን ያረጋግጡ።');
-  }
-});
-
-document.getElementById('btn-reg-step1').addEventListener('click', async ()=>{
-  hideAuthError();
-  const name = document.getElementById('reg-name').value.trim();
-  const phone = document.getElementById('reg-phone').value.trim();
-  const pass = document.getElementById('reg-pass').value;
-  const pass2 = document.getElementById('reg-pass2').value;
-  const adminCode = document.getElementById('reg-admin-code').value;
-  if(!name){ showAuthError('ስም ያስገቡ።'); return; }
-  if(!isValidPhone(phone)){ showAuthError('ስልክ ቁጥር በትክክል 10 ዲጂት መሆን አለበት።'); return; }
-  if(pass.length < 4){ showAuthError('የይለፍ ቃል ቢያንስ 4 ፊደል/ቁጥር ይያዝ።'); return; }
-  if(pass !== pass2){ showAuthError('የይለፍ ቃል ግጥሚያ የለውም።'); return; }
-  const btn = document.getElementById('btn-reg-step1');
-  btn.disabled = true; btn.textContent = 'በማረጋገጥ ላይ...';
-  try{
-    const snap = await getDoc(doc(db,'milk_users',phone));
-    if(snap.exists()){
-      showAuthError('ይህ ስልክ ቁጥር ቀድሞ ተመዝግቧል። "ግባ" የሚለውን ይጠቀሙ።');
-      btn.disabled = false; btn.textContent = 'ቀጣይ — ኮድ ላክ';
-      return;
-    }
-    const passwordHash = await sha256(pass);
-    const isAdmin = adminCode.trim() === ADMIN_SECRET;
-    const code = genCode();
-    pendingReg = { name, phone, passwordHash, isAdmin, code };
-    await sendTelegramText(`🥛 አዲስ የመዳረሻ ጥያቄ (ወተት ስርዓት)\n👤 ስም: ${name}\n📱 ስልክ: ${phone}\n🔑 ኮድ: ${code}${isAdmin ? '\n⚠️ አድሚን ለመሆን ጠይቋል' : ''}`);
-    document.getElementById('reg-step1').classList.add('hidden');
-    document.getElementById('reg-step2').classList.remove('hidden');
-  }catch(e){
-    console.error(e);
-    showAuthError('ግንኙነት ላይ ችግር ተፈጥሯል፣ Firestore መንቃቱን ያረጋግጡ።');
-  }
-  btn.disabled = false; btn.textContent = 'ቀጣይ — ኮድ ላክ';
-});
-document.getElementById('btn-reg-back').addEventListener('click', ()=>{
-  document.getElementById('reg-step1').classList.remove('hidden');
-  document.getElementById('reg-step2').classList.add('hidden');
-  pendingReg = null; hideAuthError();
-});
-document.getElementById('btn-reg-resend').addEventListener('click', async ()=>{
-  if(!pendingReg) return;
-  pendingReg.code = genCode();
-  await sendTelegramText(`🔁 ድጋሚ ኮድ (ወተት ስርዓት)\n👤 ስም: ${pendingReg.name}\n📱 ስልክ: ${pendingReg.phone}\n🔑 ኮድ: ${pendingReg.code}`);
-  showAuthError('አዲስ ኮድ ተልኳል።');
-});
-document.getElementById('btn-reg-verify').addEventListener('click', async ()=>{
-  hideAuthError();
-  if(!pendingReg){ showAuthError('እባክዎ ከመጀመሪያው ይጀምሩ።'); return; }
-  const entered = document.getElementById('reg-verify-code').value.trim();
-  if(entered !== pendingReg.code){ showAuthError('ኮዱ ትክክል አይደለም።'); return; }
-  try{
-    await setDoc(doc(db,'milk_users',pendingReg.phone), {
-      name: pendingReg.name, phone: pendingReg.phone,
-      passwordHash: pendingReg.passwordHash, isAdmin: pendingReg.isAdmin, createdAt: Date.now()
-    });
-    currentUser = { name: pendingReg.name, phone: pendingReg.phone, isAdmin: pendingReg.isAdmin };
-    pendingReg = null;
-    enterApp();
-  }catch(e){
-    console.error(e);
-    showAuthError('ምዝገባ አልተሳካም፣ እንደገና ይሞክሩ።');
-  }
-});
-
-document.getElementById('btn-logout').addEventListener('click', ()=>{
-  currentUser = null;
-  [reportsUnsub,usersUnsub,contractsUnsub,contractMonthsUnsub,paymentsUnsub,gridUnsub].forEach(u=>{ if(u) u(); });
-  reportsUnsub=usersUnsub=contractsUnsub=contractMonthsUnsub=paymentsUnsub=gridUnsub=null;
-  document.getElementById('app-screen').classList.add('hidden');
-  document.getElementById('auth-screen').classList.remove('hidden');
-  document.getElementById('login-phone').value=''; document.getElementById('login-pass').value='';
-});
-
-function enterApp(){
-  document.getElementById('auth-screen').classList.add('hidden');
-  document.getElementById('app-screen').classList.remove('hidden');
-  document.getElementById('who-name').textContent = currentUser.name;
-  document.getElementById('who-badge').innerHTML = currentUser.isAdmin
-    ? '<span class="badge-admin">አድሚን</span>' : '<span class="badge-worker">ሠራተኛ</span>';
-  document.getElementById('admin-section').classList.toggle('hidden', !currentUser.isAdmin);
-  document.getElementById('contracts-section').classList.toggle('hidden', !currentUser.isAdmin);
-  document.getElementById('history-title').textContent = currentUser.isAdmin ? 'ሁሉም ሪፖርቶች' : 'የኔ ያለፉ ሪፖርቶች';
-
-  document.getElementById('f-date').value = todayISO();
-  updateDayName();
-  renderExpenseRows();
-  updateAll();
-
-  reportsUnsub = onSnapshot(query(collection(db,'milk_entries')), (snap)=>{
-    allReports = []; snap.forEach(d=> allReports.push({id:d.id, ...d.data()}));
-    if(currentUser.isAdmin) renderDashboard();
-    renderHistory();
-  });
-  // Everyone needs contracts + current-month data to compute the daily auto-deduction,
-  // even though only admin can edit/see the management UI.
-  contractsUnsub = onSnapshot(query(collection(db,'milk_contracts')), (snap)=>{
-    allContracts = []; snap.forEach(d=> allContracts.push({id:d.id, ...d.data()}));
-    if(currentUser.isAdmin) renderContracts();
-    updateAll();
-  });
-  contractMonthsUnsub = onSnapshot(query(collection(db,'milk_contract_months')), (snap)=>{
-    allContractMonths = []; snap.forEach(d=> allContractMonths.push({id:d.id, ...d.data()}));
-    if(currentUser.isAdmin) renderContracts();
-    updateAll();
-  });
-  paymentsUnsub = onSnapshot(query(collection(db,'milk_payments')), (snap)=>{
-    allPayments = []; snap.forEach(d=> allPayments.push({id:d.id, ...d.data()}));
-    if(currentUser.isAdmin) renderContracts();
-  });
-  if(currentUser.isAdmin){
-    usersUnsub = onSnapshot(query(collection(db,'milk_users')), (snap)=>{
-      allUsers = []; snap.forEach(d=> allUsers.push({id:d.id, ...d.data()}));
-      renderUsersList();
-    });
-    const nowEth = currentEthYearMonth();
-    loadGridMonth(nowEth.year, nowEth.month);
-  }
-}
-
-function updateDayName(){
-  const val = document.getElementById('f-date').value;
-  if(!val){ document.getElementById('f-day').value=''; document.getElementById('f-eth-date').value=''; return; }
-  const d = new Date(val + 'T00:00:00');
-  document.getElementById('f-day').value = DAYS_AM[d.getDay()];
-  document.getElementById('f-eth-date').value = toEthiopianDate(val);
-  updateAll();
-}
-document.getElementById('f-date').addEventListener('change', updateDayName);
-
-// ---- Expense rows ----
-function renderExpenseRows(rows){
-  const container = document.getElementById('expense-rows');
-  const data = rows || [{reason:'', amount:''}];
-  container.innerHTML = '';
-  data.forEach((row, i)=>{
-    const div = document.createElement('div');
-    div.className = 'expense-row';
-    div.innerHTML = `
-      <input type="text" class="exp-reason" placeholder="የወጪ ምክንያት" value="${escapeAttr(row.reason)}">
-      <input type="number" class="exp-amount amt mono" placeholder="ብር" min="0" value="${row.amount}">
-      <button type="button" class="ghost rm-row">✕</button>
-    `;
-    container.appendChild(div);
-  });
-}
-document.getElementById('btn-add-expense').addEventListener('click', ()=>{
-  const container = document.getElementById('expense-rows');
-  const div = document.createElement('div');
-  div.className = 'expense-row';
-  div.innerHTML = `
-    <input type="text" class="exp-reason" placeholder="የወጪ ምክንያት">
-    <input type="number" class="exp-amount amt mono" placeholder="ብር" min="0" value="0">
-    <button type="button" class="ghost rm-row">✕</button>
-  `;
-  container.appendChild(div);
-});
-document.getElementById('expense-rows').addEventListener('click', (e)=>{
-  if(e.target.closest('.rm-row')){
-    const rows = document.querySelectorAll('.expense-row');
-    if(rows.length > 1){ e.target.closest('.expense-row').remove(); } else { e.target.closest('.expense-row').querySelector('.exp-reason').value=''; e.target.closest('.expense-row').querySelector('.exp-amount').value='0'; }
-    updateAll();
-  }
-});
-document.getElementById('expense-rows').addEventListener('input', updateAll);
-
-function getExpenseData(){
-  return Array.from(document.querySelectorAll('.expense-row')).map(row=>({
-    reason: row.querySelector('.exp-reason').value.trim(),
-    amount: Number(row.querySelector('.exp-amount').value)||0
-  })).filter(r=> r.reason || r.amount);
-}
-
-// ---- Contract auto-calc for a given date ----
-function activeContractsForDate(dateISO){
-  return allContracts.filter(c=> c.active !== false && c.startDate <= dateISO);
-}
-function contractLitersForDate(dateISO){
-  return activeContractsForDate(dateISO).reduce((s,c)=> s + (Number(c.dailyLiters)||0), 0);
-}
-function contractIncomeForDate(dateISO){
-  return activeContractsForDate(dateISO).reduce((s,c)=> s + (Number(c.dailyLiters)||0) * (Number(c.pricePerLiter)||DEFAULT_PRICE), 0);
-}
-
-// ---- Master calculation ----
-function updateAll(){
-  const date = document.getElementById('f-date').value || todayISO();
-  const morning = Number(document.getElementById('f-morning').value)||0;
-  const evening = Number(document.getElementById('f-evening').value)||0;
-  const total = morning + evening;
-  const contractLiters = contractLitersForDate(date);
-  const remaining = Math.max(0, total - contractLiters);
-  const contractIncome = contractIncomeForDate(date);
-  const retailIncome = Number(document.getElementById('f-retail-income').value)||0;
-  const totalIncome = contractIncome + retailIncome;
-  const expenses = getExpenseData();
-  const totalExpense = expenses.reduce((s,e)=> s + e.amount, 0);
-  const profit = totalIncome - totalExpense;
-
-  document.getElementById('r-total-milk').textContent = round(total) + ' ሊ';
-  document.getElementById('r-contract-milk').textContent = round(contractLiters) + ' ሊ';
-  document.getElementById('r-remaining-milk').textContent = round(remaining) + ' ሊ';
-  document.getElementById('r-contract-income').textContent = money(contractIncome) + ' ብር';
-  document.getElementById('r-total-income').textContent = money(totalIncome) + ' ብር';
-  document.getElementById('r-total-expense').textContent = money(totalExpense) + ' ብር';
-  document.getElementById('r-profit').textContent = money(profit) + ' ብር';
-  const chip = document.getElementById('r-profit-chip');
-  chip.className = 'chip ' + (profit >= 0 ? 'green' : 'red');
-}
-['f-morning','f-evening','f-retail-income'].forEach(id=>{
-  document.getElementById(id).addEventListener('input', updateAll);
-});
-
-// ---- Number inputs: auto-clear 0 ----
-document.addEventListener('focusin', (e)=>{
-  if(e.target.matches('input[type="number"]') && e.target.value === '0') e.target.value = '';
-});
-document.addEventListener('focusout', (e)=>{
-  if(e.target.matches('input[type="number"]') && e.target.value === '') e.target.value = '0';
-});
-
-// ---- Report text ----
-function buildReportText(){
-  const worker = currentUser ? currentUser.name : '—';
-  const date = document.getElementById('f-date').value;
-  const day = document.getElementById('f-day').value;
-  const ethDate = document.getElementById('f-eth-date').value;
-  const ethTime = toEthiopianTime(new Date());
-  const morning = Number(document.getElementById('f-morning').value)||0;
-  const evening = Number(document.getElementById('f-evening').value)||0;
-  const total = morning + evening;
-  const contractLiters = contractLitersForDate(date);
-  const remaining = Math.max(0, total - contractLiters);
-  const contractIncome = contractIncomeForDate(date);
-  const retailIncome = Number(document.getElementById('f-retail-income').value)||0;
-  const totalIncome = contractIncome + retailIncome;
-  const expenses = getExpenseData();
-  const totalExpense = expenses.reduce((s,e)=> s + e.amount, 0);
-  const profit = totalIncome - totalExpense;
-  const notes = document.getElementById('f-notes').value.trim();
-
-  let expenseText = expenses.length
-    ? expenses.map((e,i)=> `${i+1}. ${e.reason || '—'} — ${money(e.amount)} ብር`).join('\n')
-    : '—';
-
-  const activeContracts = activeContractsForDate(date);
-  let contractText = activeContracts.length
-    ? activeContracts.map(c=> `• ${c.customerName} — ${c.dailyLiters} ሊ × ${c.pricePerLiter||DEFAULT_PRICE} ብር`).join('\n')
-    : '—';
-
-  return `🥛 የወተት ሽያጭ ዕለታዊ ሪፖርት
-
-👷 የባለሙያ ስም: ${worker}
-📅 ቀን: ${ethDate} (${date})
-📆 ዕለት: ${day}
-🕐 ሰዓት: ${ethTime}
-
-1️⃣ የታለበ ወተት
-🌅 ጠዋት: ${morning} ሊትር
-🌇 ማታ: ${evening} ሊትር
-ድምር: ${total} ሊትር
-
-ለኮንትራት የተሰጠ: ${contractLiters} ሊትር
-${contractText}
-
-የቀረው (ችርቻሮ): ${remaining} ሊትር
-ችርቻሮ ገቢ: ${money(retailIncome)} ብር
-
-2️⃣ ወጪ
-${expenseText}
-ጠቅላላ ወጪ: ${money(totalExpense)} ብር
-
-💰 ኮንትራት ገቢ (ዕለታዊ): ${money(contractIncome)} ብር
-💰 ጠቅላላ ገቢ: ${money(totalIncome)} ብር
-💵 የተጣራ ትርፍ: ${money(profit)} ብር
-
-🎤 ማብራሪያ: ${notes || '—'}`;
-}
-
-document.getElementById('btn-generate').addEventListener('click', ()=>{
-  document.getElementById('output').textContent = buildReportText();
-});
-function copyText(text){
-  navigator.clipboard.writeText(text).then(()=>{
-    const msg = document.getElementById('copy-msg');
-    msg.style.display='block'; setTimeout(()=>{msg.style.display='none';}, 2000);
-  }).catch(()=>{});
-}
-document.getElementById('btn-copy').addEventListener('click', ()=> copyText(document.getElementById('output').textContent));
-
-function resetFormDraft(){
-  document.getElementById('f-date').value = todayISO();
-  updateDayName();
-  document.getElementById('f-morning').value = 0;
-  document.getElementById('f-evening').value = 0;
-  document.getElementById('f-retail-income').value = 0;
-  renderExpenseRows();
-  document.getElementById('f-notes').value = '';
-  updateAll();
-  document.getElementById('output').textContent = 'ገና ምንም ሪፖርት አልተፈጠረም። ከላይ "ሪፖርት አመንጭ" የሚለውን ይጫኑ።';
-}
-document.getElementById('btn-clear').addEventListener('click', resetFormDraft);
-
-let currentFormDay = new Date().toDateString();
-setInterval(()=>{
-  const nowDay = new Date().toDateString();
-  if(nowDay !== currentFormDay){
-    currentFormDay = nowDay;
-    if(currentUser) resetFormDraft();
-  }
-}, 60000);
-
-// ---- Save daily entry ----
-document.getElementById('btn-save').addEventListener('click', async ()=>{
-  if(isSaving) return;
-  const text = buildReportText();
-  if(text === lastSavedText){
-    const ok = confirm('ይህ ሪፖርት ልክ አሁን ተልኳል (ምንም ለውጥ የለውም)። ደግመው መላክ ይፈልጋሉ?');
-    if(!ok) return;
-  }
-  const date = document.getElementById('f-date').value;
-  const morning = Number(document.getElementById('f-morning').value)||0;
-  const evening = Number(document.getElementById('f-evening').value)||0;
-  const total = morning + evening;
-  const contractLiters = contractLitersForDate(date);
-  const remaining = Math.max(0, total - contractLiters);
-  const contractIncome = contractIncomeForDate(date);
-  const retailIncome = Number(document.getElementById('f-retail-income').value)||0;
-  const totalIncome = contractIncome + retailIncome;
-  const expenses = getExpenseData();
-  const totalExpense = expenses.reduce((s,e)=> s + e.amount, 0);
-  const profit = totalIncome - totalExpense;
-
-  const entry = {
-    workerPhone: currentUser.phone, workerName: currentUser.name,
-    date, day: document.getElementById('f-day').value,
-    morning, evening, totalMilk: total, contractLiters, remainingMilk: remaining,
-    contractIncome, retailIncome, totalIncome, expenses, totalExpense, profit,
-    text, createdAt: Date.now()
-  };
-  const btn = document.getElementById('btn-save');
-  isSaving = true; btn.disabled = true; btn.textContent = 'በመላክ ላይ...';
-  try{
-    await addDoc(collection(db,'milk_entries'), entry);
-    await sendTelegramText(text);
-    lastSavedText = text;
-    const saveMsg = document.getElementById('save-msg');
-    saveMsg.style.display='block'; setTimeout(()=>{saveMsg.style.display='none';}, 3000);
-  }catch(e){
-    console.error(e);
-    alert('ሪፖርት ማስቀመጥ አልተቻለም፣ ግንኙነትዎን ያረጋግጡ።');
-  }
-  isSaving = false; btn.disabled = false; btn.textContent = 'ሪፖርት ላክ እና አስቀምጥ';
-});
-
-// ---- Contracts ----
-document.getElementById('btn-add-contract').addEventListener('click', async ()=>{
-  const name = document.getElementById('c-name').value.trim();
-  const liters = Number(document.getElementById('c-liters').value)||0;
-  const price = Number(document.getElementById('c-price').value)||DEFAULT_PRICE;
-  const startDate = document.getElementById('c-start-date').value || todayISO();
-  if(!name || liters <= 0){ alert('የደንበኛ ስም እና ዕለታዊ ሊትር በትክክል ያስገቡ።'); return; }
-  try{
-    await addDoc(collection(db,'milk_contracts'), {
-      customerName: name, dailyLiters: liters, pricePerLiter: price,
-      startDate, active: true, createdBy: currentUser.name, createdAt: Date.now()
-    });
-    document.getElementById('c-name').value = '';
-    document.getElementById('c-liters').value = '';
-    document.getElementById('c-price').value = DEFAULT_PRICE;
-    document.getElementById('c-start-date').value = todayISO();
-  }catch(e){ console.error(e); alert('ማስቀመጥ አልተቻለም።'); }
-});
-
-function renderContracts(){
-  const box = document.getElementById('contracts-list');
-  if(allContracts.length === 0){ box.innerHTML = '<div class="empty">ገና ምንም ኮንትራት ደንበኛ አልተመዘገበም።</div>'; return; }
-  const today = todayISO();
-  box.innerHTML = allContracts.map(c=>{
-    const days = daysBetweenInclusive(c.startDate, today);
-    const accruedLiters = (Number(c.dailyLiters)||0) * days;
-    const accruedBirr = accruedLiters * (Number(c.pricePerLiter)||DEFAULT_PRICE);
-    const paid = allPayments.filter(p=>p.contractId===c.id).reduce((s,p)=> s + (Number(p.amount)||0), 0);
-    const balance = accruedBirr - paid;
-    const statusHtml = balance > 0
-      ? `<span class="balance-pill owe">ይቀራል ${money(balance)} ብር</span>`
-      : `<span class="balance-pill clear">ተከፍሏል</span>`;
-    return `
-      <div class="contract-card">
-        <div class="contract-top">
-          <div>
-            <h4>${escapeAttr(c.customerName)}${c.active===false ? ' <span style="color:var(--text-3);font-size:11px;">(ቆሟል)</span>' : ''}</h4>
-            <div class="contract-meta">${c.dailyLiters} ሊ/ቀን × ${c.pricePerLiter||DEFAULT_PRICE} ብር · ከ ${c.startDate} ጀምሮ (${days} ቀናት)</div>
-          </div>
-          ${statusHtml}
-        </div>
-        <div class="contract-grid">
-          <div class="item"><div class="k">የተጠራቀመ ሊትር</div><div class="v">${round(accruedLiters)}</div></div>
-          <div class="item"><div class="k">የሚገባ ብር</div><div class="v">${money(accruedBirr)}</div></div>
-          <div class="item"><div class="k">የተከፈለ ብር</div><div class="v">${money(paid)}</div></div>
-        </div>
-        <div class="contract-actions">
-          <button type="button" class="ghost small" data-pay="${c.id}" data-name="${escapeAttr(c.customerName)}">💳 ክፍያ መዝግብ</button>
-          ${c.active !== false
-            ? `<button type="button" class="ghost small" data-stop="${c.id}">አቁም</button>`
-            : `<button type="button" class="ghost small" data-resume="${c.id}">ቀጥል</button>`}
-          <button type="button" class="ghost small" data-delcontract="${c.id}" data-cname="${escapeAttr(c.customerName)}">ሰርዝ</button>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-document.getElementById('contracts-list').addEventListener('click', async (e)=>{
-  const payBtn = e.target.closest('[data-pay]');
-  const stopBtn = e.target.closest('[data-stop]');
-  const resumeBtn = e.target.closest('[data-resume]');
-  const delBtn = e.target.closest('[data-delcontract]');
-
-  if(payBtn){
-    const amount = prompt(`${payBtn.dataset.name} ምን ያህል ብር ከፈሉ?`);
-    if(amount === null) return;
-    const amt = Number(amount);
-    if(!amt || amt <= 0){ alert('ትክክለኛ የብር መጠን ያስገቡ።'); return; }
-    try{
-      await addDoc(collection(db,'milk_payments'), {
-        contractId: payBtn.dataset.pay, customerName: payBtn.dataset.name,
-        amount: amt, datePaid: todayISO(), ethDatePaid: toEthiopianDate(todayISO()),
-        recordedBy: currentUser.name, createdAt: Date.now()
-      });
-      await sendTelegramText(`💳 ክፍያ ተመዝግቧል\n👤 ${payBtn.dataset.name}\n💰 ${money(amt)} ብር\n📅 ${todayISO()}\n(መዝጋቢ: ${currentUser.name})`);
-    }catch(err){ console.error(err); alert('ማስቀመጥ አልተቻለም።'); }
-  }
-  if(stopBtn){
-    if(!confirm('ይህን ኮንትራት ማቆም ይፈልጋሉ? (ወደፊት ወተት አይቆጠርለትም)')) return;
-    try{ await setDoc(doc(db,'milk_contracts',stopBtn.dataset.stop), {active:false}, {merge:true}); }catch(err){ console.error(err); }
-  }
-  if(resumeBtn){
-    try{ await setDoc(doc(db,'milk_contracts',resumeBtn.dataset.resume), {active:true}, {merge:true}); }catch(err){ console.error(err); }
-  }
-  if(delBtn){
-    if(!confirm(`"${delBtn.dataset.cname}" የተባለውን ኮንትራት ሙሉ በሙሉ መሰረዝ ይፈልጋሉ? ይህ ተመልሶ አይመጣም።`)) return;
-    try{ await deleteDoc(doc(db,'milk_contracts',delBtn.dataset.delcontract)); }catch(err){ console.error(err); }
-  }
-});
-
-// ---- Monthly grid (admin only): 1-30 Ethiopian days, editable ----
-function gridDocId(ethYear, ethMonth){ return `${ethYear}-${ethMonth}`; }
-
-function loadGridMonth(ethYear, ethMonth){
-  if(gridUnsub){ gridUnsub(); gridUnsub = null; }
-  gridEthYear = ethYear; gridEthMonth = ethMonth;
-  const ref = doc(db,'milk_monthly', gridDocId(ethYear, ethMonth));
-  gridUnsub = onSnapshot(ref, (snap)=>{
-    gridData = snap.exists() ? (snap.data().days || {}) : {};
-    renderGrid();
-  });
-}
-
-function daysInEthMonth(ethMonth, ethYear){
-  if(ethMonth < 13) return 30;
-  // Pagumen: 6 days in a leap year, else 5. Ethiopian leap year: (year+1) % 4 === 0
-  return ((ethYear + 1) % 4 === 0) ? 6 : 5;
-}
-
-function renderGrid(){
-  if(!gridEthYear) return;
-  const monthName = ETH_MONTHS[gridEthMonth-1] || '';
-  document.getElementById('grid-month-label').textContent = `${monthName} ${gridEthYear} ዓ.ም`;
-  const totalDays = daysInEthMonth(gridEthMonth, gridEthYear);
-  const todayEth = getEthParts(todayISO());
-  const isCurrentMonth = (todayEth.year===gridEthYear && todayEth.month===gridEthMonth);
-
-  let sumMorning=0,sumEvening=0,sumTotal=0,sumContract=0,sumRetail=0,sumExpense=0,sumProfit=0;
-  const rows = [];
-  for(let d=1; d<=totalDays; d++){
-    const gregISO = ethiopianToGregorianISO(gridEthYear, gridEthMonth, d);
-    const row = gridData[String(d)] || {};
-    const morning = Number(row.morning)||0;
-    const evening = Number(row.evening)||0;
-    const total = morning + evening;
-    const contractLiters = contractLitersForDate(gregISO);
-    const contractIncome = contractIncomeForDate(gregISO);
-    const retailIncome = Number(row.retailIncome)||0;
-    const expense = Number(row.expense)||0;
-    const profit = contractIncome + retailIncome - expense;
-    sumMorning+=morning; sumEvening+=evening; sumTotal+=total; sumContract+=contractLiters;
-    sumRetail+=retailIncome; sumExpense+=expense; sumProfit+=profit;
-    const dayLabel = isCurrentMonth && d===todayEth.day ? `<span class="grid-day-today">${d}</span>` : d;
-    rows.push(`
-      <tr data-day="${d}">
-        <td class="mono">${dayLabel}</td>
-        <td><input type="number" class="grid-in gin-morning" min="0" step="0.5" value="${morning||''}" placeholder="0"></td>
-        <td><input type="number" class="grid-in gin-evening" min="0" step="0.5" value="${evening||''}" placeholder="0"></td>
-        <td class="mono">${round(total)}</td>
-        <td class="mono">${round(contractLiters)}</td>
-        <td><input type="number" class="grid-in gin-retail" min="0" value="${retailIncome||''}" placeholder="0"></td>
-        <td><input type="number" class="grid-in gin-expense" min="0" value="${expense||''}" placeholder="0"></td>
-        <td class="mono" style="color:${profit>=0?'var(--green)':'var(--red)'};">${money(profit)}</td>
-      </tr>
-    `);
-  }
-  document.getElementById('grid-body').innerHTML = rows.join('');
-  document.getElementById('gt-morning').textContent = round(sumMorning);
-  document.getElementById('gt-evening').textContent = round(sumEvening);
-  document.getElementById('gt-total').textContent = round(sumTotal);
-  document.getElementById('gt-contract').textContent = round(sumContract);
-  document.getElementById('gt-retail').textContent = money(sumRetail);
-  document.getElementById('gt-expense').textContent = money(sumExpense);
-  document.getElementById('gt-profit').textContent = money(sumProfit);
-}
-
-async function saveGridRow(dayEl){
-  const day = dayEl.dataset.day;
-  const rowData = {
-    morning: Number(dayEl.querySelector('.gin-morning').value)||0,
-    evening: Number(dayEl.querySelector('.gin-evening').value)||0,
-    retailIncome: Number(dayEl.querySelector('.gin-retail').value)||0,
-    expense: Number(dayEl.querySelector('.gin-expense').value)||0
-  };
-  try{
-    await setDoc(doc(db,'milk_monthly', gridDocId(gridEthYear, gridEthMonth)),
-      { [`days.${day}`]: rowData, ethYear: gridEthYear, ethMonth: gridEthMonth, updatedAt: Date.now() },
-      { merge: true });
-  }catch(e){ console.error('Grid save error', e); }
-}
-document.getElementById('grid-body').addEventListener('focusout', (e)=>{
-  if(e.target.matches('.grid-in')){
-    saveGridRow(e.target.closest('tr'));
-  }
-});
-
-document.getElementById('btn-grid-prev').addEventListener('click', ()=>{
-  let m = gridEthMonth - 1, y = gridEthYear;
-  if(m < 1){ m = 13; y -= 1; }
-  loadGridMonth(y, m);
-});
-document.getElementById('btn-grid-next').addEventListener('click', ()=>{
-  let m = gridEthMonth + 1, y = gridEthYear;
-  if(m > 13){ m = 1; y += 1; }
-  loadGridMonth(y, m);
-});
-
-// ---- Admin dashboard ----
-function renderDashboard(){
-  const items = currentUser.isAdmin ? allReports : allReports.filter(r=>r.workerPhone===currentUser.phone);
-  const milk = items.reduce((s,r)=> s + (Number(r.totalMilk)||0), 0);
-  const income = items.reduce((s,r)=> s + (Number(r.totalIncome)||0), 0);
-  const expense = items.reduce((s,r)=> s + (Number(r.totalExpense)||0), 0);
-  document.getElementById('d-count').textContent = items.length;
-  document.getElementById('d-milk').textContent = round(milk);
-  document.getElementById('d-income').textContent = money(income);
-  document.getElementById('d-expense').textContent = money(expense);
-}
-
-function renderHistory(){
-  const box = document.getElementById('history');
-  const items = (currentUser.isAdmin ? allReports.slice() : allReports.filter(r=>r.workerPhone===currentUser.phone))
-    .sort((a,b)=> b.date.localeCompare(a.date) || (b.createdAt||0)-(a.createdAt||0));
-  if(items.length === 0){ box.innerHTML = '<div class="empty">ገና ምንም ሪፖርት አልተመዘገበም።</div>'; return; }
-  const today = todayISO();
-  const yesterday = new Date(Date.now()-86400000).toISOString().slice(0,10);
-  const groups = {}; const order = [];
-  items.forEach(r=>{ if(!groups[r.date]){groups[r.date]=[]; order.push(r.date);} groups[r.date].push(r); });
-  box.innerHTML = order.map(date=>{
-    const group = groups[date];
-    const ethLabel = toEthiopianDate(date);
-    let tag = '';
-    if(date===today) tag = '<span class="today-tag">ዛሬ</span>';
-    else if(date===yesterday) tag = '<span class="today-tag" style="background:#232f34;color:var(--text-2);">ትላንት</span>';
-    const itemsHtml = group.map(r=> `
-      <div class="hist-item">
-        <div class="meta"><span class="d">${r.date}</span> · ${r.day}${currentUser.isAdmin ? ' · '+escapeAttr(r.workerName) : ''} · 🥛 ${r.totalMilk} ሊ · ትርፍ ${money(r.profit)} ብር</div>
-        <div class="hist-actions">
-          <button type="button" class="ghost small" data-view="${r.id}">ተመልከት</button>
-          <button type="button" class="ghost small" data-del="${r.id}">ሰርዝ</button>
-        </div>
-      </div>
-    `).join('');
-    return `<div class="day-group"><div class="day-header"><span>📅 ${date} (${group[0].day}) · 🇪🇹 ${ethLabel}</span>${tag}<span class="line"></span><span>${group.length} ሪፖርት</span></div>${itemsHtml}</div>`;
-  }).join('');
-}
-document.getElementById('history').addEventListener('click', async (e)=>{
-  const viewBtn = e.target.closest('[data-view]');
-  const delBtn = e.target.closest('[data-del]');
-  if(viewBtn){
-    const r = allReports.find(x=>x.id===viewBtn.dataset.view);
-    if(!r) return;
-    if(!currentUser.isAdmin && r.workerPhone !== currentUser.phone) return;
-    document.getElementById('output').textContent = r.text;
-    document.getElementById('output').scrollIntoView({behavior:'smooth'});
-  }
-  if(delBtn){
-    const r = allReports.find(x=>x.id===delBtn.dataset.del);
-    if(!r) return;
-    if(!currentUser.isAdmin && r.workerPhone !== currentUser.phone) return;
-    if(!confirm('ይህን ሪፖርት መሰረዝ ይፈልጋሉ?')) return;
-    try{ await deleteDoc(doc(db,'milk_entries',r.id)); }catch(err){ console.error(err); }
-  }
-});
-
-// ---- User management ----
-function renderUsersList(){
-  const box = document.getElementById('users-list');
-  if(allUsers.length === 0){ box.innerHTML = '<div class="empty">ምንም የተመዘገበ ተጠቃሚ የለም።</div>'; return; }
-  box.innerHTML = allUsers.map(u=>{
-    const reportCount = allReports.filter(r=>r.workerPhone===u.id).length;
-    return `
-    <div class="hist-item">
-      <div class="meta">${escapeAttr(u.name)} — ${escapeAttr(u.id)} ${u.isAdmin?'<span class="badge-admin">አድሚን</span>':'<span class="badge-worker">ሠራተኛ</span>'} · ${reportCount} ሪፖርት</div>
-      <div class="hist-actions">
-        ${u.id===currentUser.phone ? '<span style="font-size:11.5px;color:var(--text-3);">(እርስዎ)</span>' : `<button type="button" class="ghost small" data-rmuser="${u.id}" data-uname="${escapeAttr(u.name)}">አጥፋ</button>`}
-      </div>
-    </div>`;
-  }).join('');
-}
-document.getElementById('users-list').addEventListener('click', async (e)=>{
-  const btn = e.target.closest('[data-rmuser]');
-  if(!btn) return;
-  if(!confirm(`"${btn.dataset.uname}" የተባለውን ተጠቃሚ ማጥፋት ይፈልጋሉ?`)) return;
-  try{ await deleteDoc(doc(db,'milk_users',btn.dataset.rmuser)); }catch(err){ console.error(err); }
-});
-</script>
-</body>
-</html>  .copy-msg{font-size:12px;color:var(--green);margin-top:8px;display:none;}
-
-  .history{display:flex;flex-direction:column;gap:8px;}
-  .hist-item{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
-  .hist-item .meta{font-size:12.5px;color:var(--text-2);}
-  .hist-item .meta .d{color:var(--text);font-weight:600;font-family:'JetBrains Mono',monospace;}
-  .hist-actions{display:flex;gap:8px;}
-  .hist-actions button{padding:6px 12px;font-size:12px;}
-  .empty{text-align:center;padding:30px 20px;color:var(--text-3);border:1px dashed var(--line-strong);border-radius:6px;font-size:13px;}
-  .day-group{margin-top:18px;}
-  .day-group:first-child{margin-top:0;}
-  .day-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--blue);}
-  .day-header .line{flex:1;height:1px;background:var(--line-strong);}
-  .day-header .today-tag{background:var(--blue-dim);color:var(--blue);padding:2px 8px;border-radius:20px;font-size:10px;}
-
-  .month-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:12px;}
-  .month-cell{display:flex;flex-direction:column;gap:3px;}
-  .month-cell label{font-size:9.5px;color:var(--text-3);text-align:center;}
-  .month-cell input{padding:5px 4px;font-size:11.5px;text-align:center;}
-  .past-months-toggle{font-size:11.5px;color:var(--blue);cursor:pointer;margin-top:10px;display:inline-block;}
-  .past-month-row{display:flex;justify-content:space-between;font-size:12px;color:var(--text-2);padding:6px 0;border-bottom:1px solid var(--line);}
-
-  .auth-tabs{display:flex;gap:8px;margin-bottom:16px;}
-  .auth-tab{flex:1;text-align:center;padding:10px;border-radius:5px;border:1px solid var(--line-strong);cursor:pointer;font-size:13px;color:var(--text-2);}
-  .auth-tab.active{background:var(--blue-dim);color:var(--blue);border-color:var(--blue);}
-  .error-msg{color:var(--red);font-size:12.5px;margin-top:10px;display:none;}
-  .hint{font-size:11.5px;color:var(--text-3);margin-top:4px;}
-  .notice{background:var(--card);border:1px solid var(--line-strong);border-radius:5px;padding:12px 14px;font-size:12px;color:var(--text-2);}
-
-  .grid-in{width:64px;padding:5px 6px;font-size:12px;background:var(--card);border:1px solid var(--line-strong);border-radius:4px;color:var(--text);font-family:'JetBrains Mono',monospace;}
-  #grid-table td{padding:4px;white-space:nowrap;}
-  #grid-table tr:nth-child(even){background:rgba(255,255,255,0.02);}
-  .grid-day-today{color:var(--blue);font-weight:700;}
-
-  @media(max-width:640px){
-    .grid2, .grid3, .contract-grid{grid-template-columns:1fr;}
-    .readout{flex-direction:column;}
-  }
-</style>
-</head>
-<body>
-<div class="wrap">
-
-  <div class="plate">
-    <h1>🥛 የወተት ሽያጭ ዕለታዊ መዝገብ</h1>
-    <p>የታለበ ወተት፣ ኮንትራት ደንበኞች፣ ገቢ እና ወጪ መከታተያ</p>
-  </div>
-
-  <!-- AUTH SCREEN -->
-  <div id="auth-screen">
-    <div class="section-title"><span class="num">01</span> መግቢያ</div>
-    <div class="card">
-      <div class="auth-tabs">
-        <div class="auth-tab active" data-tab="login">ግባ (Login)</div>
-        <div class="auth-tab" data-tab="register">አዲስ ተመዝገብ</div>
-      </div>
-
-      <div id="tab-login">
-        <div class="field">
-          <label>📱 ስልክ ቁጥር (10 ዲጂት)</label>
-          <input type="tel" id="login-phone" class="mono" maxlength="10" placeholder="0912345678">
-        </div>
-        <div class="field">
-          <label>የይለፍ ቃል</label>
-          <input type="password" id="login-pass" placeholder="የይለፍ ቃል">
-        </div>
-        <div class="form-actions">
-          <button type="button" class="primary" id="btn-login">ግባ</button>
-        </div>
-      </div>
-
-      <div id="tab-register" class="hidden">
-        <div id="reg-step1">
-          <div class="field">
-            <label>👷 ሙሉ ስም</label>
-            <input type="text" id="reg-name" placeholder="ሙሉ ስም">
-          </div>
-          <div class="field">
-            <label>📱 ስልክ ቁጥር (በትክክል 10 ዲጂት)</label>
-            <input type="tel" id="reg-phone" class="mono" maxlength="10" placeholder="0912345678">
-          </div>
-          <div class="field">
-            <label>የይለፍ ቃል</label>
-            <input type="password" id="reg-pass" placeholder="ቢያንስ 4 ፊደል/ቁጥር">
-          </div>
-          <div class="field">
-            <label>የይለፍ ቃል ድገም</label>
-            <input type="password" id="reg-pass2" placeholder="ድገም">
-          </div>
-          <div class="field">
-            <label>የአድሚን ኮድ (ለአድሚን ብቻ — ካልሆነ ባዶ ይተውት)</label>
-            <input type="password" id="reg-admin-code" placeholder="ለመደበኛ ሠራተኛ ባዶ ይተውት">
-          </div>
-          <div class="form-actions">
-            <button type="button" class="primary" id="btn-reg-step1">ቀጣይ — ኮድ ላክ</button>
-          </div>
-        </div>
-
-        <div id="reg-step2" class="hidden">
-          <div class="notice" style="margin-bottom:14px;">📨 የማረጋገጫ ኮድ ወደ ድርጅቱ አድሚን Telegram ተልኳል። አድሚኑ የደረሰውን ባለ 6-ዲጂት ኮድ ይንገርዎት፣ ከታች ያስገቡ።</div>
-          <div class="field">
-            <label>🔑 ከአድሚን የደረሰዎት ኮድ</label>
-            <input type="text" id="reg-verify-code" class="mono" maxlength="6" placeholder="000000">
-          </div>
-          <div class="form-actions">
-            <button type="button" class="ghost" id="btn-reg-back">ተመለስ</button>
-            <button type="button" class="ghost" id="btn-reg-resend">ኮድ እንደገና ላክ</button>
-            <button type="button" class="primary" id="btn-reg-verify">አረጋግጥ እና ተመዝገብ</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="error-msg" id="auth-error"></div>
-    </div>
-  </div>
-
-  <!-- APP SCREEN -->
-  <div id="app-screen" class="hidden">
-
-    <div class="session-bar">
-      <div class="who">
-        <span class="name" id="who-name"></span>
-        <span id="who-badge"></span>
-      </div>
-      <button type="button" class="ghost small" id="btn-logout">ውጣ</button>
-    </div>
-
-    <div class="section-title"><span class="num">02</span> ቀን</div>
-    <div class="card">
-      <div class="grid2">
-        <div class="field">
-          <label>📅 ቀን (Gregorian)</label>
-          <input type="date" id="f-date" class="mono">
-        </div>
-        <div class="field">
-          <label>📆 ዕለት</label>
-          <input type="text" id="f-day" readonly>
-        </div>
-      </div>
-      <div class="field">
-        <label>🇪🇹 የኢትዮጵያ ቀን</label>
-        <input type="text" id="f-eth-date" class="mono" readonly>
-      </div>
-    </div>
-
-    <div class="section-title"><span class="num">03</span> 1️⃣ የታለበ ወተት (ሊትር)</div>
-    <div class="card">
-      <div class="grid2">
-        <div class="field">
-          <label>🌅 ጠዋት (ሊትር)</label>
-          <input type="number" id="f-morning" class="mono" min="0" step="0.5" value="0">
-        </div>
-        <div class="field">
-          <label>🌇 ማታ (ሊትር)</label>
-          <input type="number" id="f-evening" class="mono" min="0" step="0.5" value="0">
-        </div>
-      </div>
-      <div class="readout">
-        <div class="chip blue"><div class="k">ድምር የታለበ ወተት</div><div class="v" id="r-total-milk">0 ሊ</div></div>
-        <div class="chip red"><div class="k">ለኮንትራት የተሰጠ (በራስ-ሰር)</div><div class="v" id="r-contract-milk">0 ሊ</div></div>
-        <div class="chip green"><div class="k">የቀረው (ችርቻሮ)</div><div class="v" id="r-remaining-milk">0 ሊ</div></div>
-      </div>
-      <div class="field" style="margin-top:14px;">
-        <label>💵 ከችርቻሮ የተገኘ ገቢ (ብር) — ካለ</label>
-        <input type="number" id="f-retail-income" class="mono" min="0" value="0">
-      </div>
-    </div>
-
-    <div class="section-title"><span class="num">04</span> 2️⃣ ወጪ</div>
-    <div class="card">
-      <div id="expense-rows"></div>
-      <button type="button" class="ghost small" id="btn-add-expense">+ ወጪ ጨምር</button>
-      <div class="readout" style="margin-top:14px;">
-        <div class="chip red"><div class="k">ጠቅላላ ወጪ</div><div class="v" id="r-total-expense">0 ብር</div></div>
-      </div>
-    </div>
-
-    <div class="section-title"><span class="num">05</span> ማጠቃለያ</div>
-    <div class="card">
-      <div class="readout">
-        <div class="chip blue"><div class="k">ኮንትራት ገቢ (ዕለታዊ)</div><div class="v" id="r-contract-income">0 ብር</div></div>
-        <div class="chip green"><div class="k">ጠቅላላ ገቢ</div><div class="v" id="r-total-income">0 ብር</div></div>
-        <div class="chip" id="r-profit-chip"><div class="k">የተጣራ ትርፍ</div><div class="v" id="r-profit">0 ብር</div></div>
-      </div>
-      <div class="field" style="margin-top:14px;">
-        <label>🎤 ተጨማሪ ማብራሪያ</label>
-        <textarea id="f-notes" placeholder="ማንኛውም ተጨማሪ ማስታወሻ..."></textarea>
-      </div>
-    </div>
-
-    <div class="form-actions">
-      <button type="button" class="ghost" id="btn-clear">አጽዳ</button>
-      <button type="button" class="primary" id="btn-generate">ሪፖርት አመንጭ</button>
-    </div>
-
-    <div class="section-title"><span class="num">06</span> ለመላክ ዝግጁ ሪፖርት</div>
-    <div class="card">
-      <div class="output-box" id="output">ገና ምንም ሪፖርት አልተፈጠረም። ከላይ "ሪፖርት አመንጭ" የሚለውን ይጫኑ።</div>
-      <div class="copy-msg" id="copy-msg">✅ ጽሁፉ ተኮፒ ተደርጓል!</div>
-      <div class="copy-msg" id="save-msg">✅ ሪፖርት ተልኳል እና ተቀምጧል!</div>
-      <div class="form-actions">
-        <button type="button" class="ghost" id="btn-copy">ጽሁፉን ኮፒ አድርግ</button>
-        <button type="button" class="primary" id="btn-save">ሪፖርት ላክ እና አስቀምጥ</button>
-      </div>
-    </div>
-
-    <div id="contracts-section" class="hidden">
-      <div class="section-title"><span class="num">07</span> 3️⃣ ኮንትራት ደንበኞች (አድሚን ብቻ)</div>
-      <div class="card">
-        <div class="grid2">
-          <div class="field">
-            <label>ስም</label>
-            <input type="text" id="c-name" placeholder="የደንበኛ ስም">
-          </div>
-          <div class="field">
-            <label>ዋጋ በሊትር (ብር)</label>
-            <input type="number" id="c-price" class="mono" min="0" value="160">
-          </div>
-        </div>
-        <div class="form-actions">
-          <button type="button" class="primary" id="btn-add-contract">ኮንትራት ደንበኛ ጨምር</button>
-        </div>
-        <div class="hint">ከተመዘገበ በኋላ ከታች ባለው ሠንጠረዥ ውስጥ ከቀን 1 እስከ 30 (የኢትዮጵያ ወር) ዕለታዊ ሊትር በተናጠል ያስገቡ። ወሩ ሲሞላ (30 ቀን) ራሱ ተቀምጦ ይቀራል፣ አዲስ ወር በራሱ ይጀምራል።</div>
-      </div>
-      <div id="contracts-list" style="margin-top:14px;"></div>
-    </div>
-
-    <div id="admin-section" class="hidden">
-      <div class="section-title"><span class="num">08</span> 🗂️ የስራ አስኪያጅ ማጠቃለያ (እውነተኛ-ጊዜ)</div>
-      <div class="card">
-        <div class="readout">
-          <div class="chip"><div class="k">ጠቅላላ ሪፖርቶች</div><div class="v" id="d-count">0</div></div>
-          <div class="chip blue"><div class="k">ጠቅላላ ወተት (ሊ)</div><div class="v" id="d-milk">0</div></div>
-          <div class="chip green"><div class="k">ጠቅላላ ገቢ</div><div class="v" id="d-income">0</div></div>
-          <div class="chip red"><div class="k">ጠቅላላ ወጪ</div><div class="v" id="d-expense">0</div></div>
-        </div>
-      </div>
-
-      <div class="section-title"><span class="num">09</span> 📊 ወርሃዊ ሠንጠረዥ (1-30፣ ኢትዮጵያ አቆጣጠር) — አድሚን ብቻ</div>
-      <div class="card" style="overflow-x:auto;">
-        <div class="grid-nav" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
-          <button type="button" class="ghost small" id="btn-grid-prev">◀ ቀዳሚ ወር</button>
-          <div id="grid-month-label" style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--blue);"></div>
-          <button type="button" class="ghost small" id="btn-grid-next">ቀጣይ ወር ▶</button>
-        </div>
-        <table style="width:100%;border-collapse:collapse;font-size:12px;" id="grid-table">
-          <thead>
-            <tr style="color:var(--text-2);text-align:left;border-bottom:1px solid var(--line-strong);">
-              <th style="padding:6px 4px;">ቀን</th>
-              <th style="padding:6px 4px;">ጠዋት ሊ</th>
-              <th style="padding:6px 4px;">ማታ ሊ</th>
-              <th style="padding:6px 4px;">ድምር</th>
-              <th style="padding:6px 4px;">ኮንትራት ሊ</th>
-              <th style="padding:6px 4px;">ችርቻሮ ገቢ</th>
-              <th style="padding:6px 4px;">ወጪ</th>
-              <th style="padding:6px 4px;">ትርፍ</th>
-            </tr>
-          </thead>
-          <tbody id="grid-body"></tbody>
-          <tfoot>
-            <tr style="border-top:1px solid var(--line-strong);font-weight:700;color:var(--blue);">
-              <td style="padding:8px 4px;">ድምር</td>
-              <td style="padding:8px 4px;" id="gt-morning">0</td>
-              <td style="padding:8px 4px;" id="gt-evening">0</td>
-              <td style="padding:8px 4px;" id="gt-total">0</td>
-              <td style="padding:8px 4px;" id="gt-contract">0</td>
-              <td style="padding:8px 4px;" id="gt-retail">0</td>
-              <td style="padding:8px 4px;" id="gt-expense">0</td>
-              <td style="padding:8px 4px;" id="gt-profit">0</td>
-            </tr>
-          </tfoot>
-        </table>
-        <div class="hint" style="margin-top:10px;">ወር ሲያልቅ (ኢትዮጵያ አቆጣጠር 30) ራሱ ይቀመጣል፣ ሲቀጥለው ወር ላይ አዲስ ባዶ ሠንጠረዥ በራሱ ይጀምራል። ቀዳሚ ወራትን ለማየት "ቀዳሚ ወር" ይጫኑ።</div>
-      </div>
-
-      <div class="section-title"><span class="num">10</span> 👥 የተጠቃሚዎች አስተዳደር</div>
-      <div class="card">
-        <div class="history" id="users-list"></div>
-      </div>
-    </div>
-
-    <div class="section-title"><span class="num">11</span> <span id="history-title">የኔ ያለፉ ሪፖርቶች</span></div>
-    <div class="history" id="history"></div>
-
-  </div>
-
-</div>
+<div class="toast" id="toast"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
 import {
-  getFirestore, collection, doc, setDoc, getDoc, addDoc,
-  deleteDoc, onSnapshot, query
+  getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query
 } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAZ7MU2B58bWcu-8jH9Pvv5Ob9XGQyx4NU",
-  authDomain: "halal-report-2.firebaseapp.com",
-  projectId: "halal-report-2",
-  storageBucket: "halal-report-2.firebasestorage.app",
-  messagingSenderId: "242965792260",
-  appId: "1:242965792260:web:8dd83989172924f8c5d751"
+  apiKey: "AIzaSyB6SKNGi2XMT7-4n48ahrGhtllBygJydss",
+  authDomain: "statistics-846f9.firebaseapp.com",
+  projectId: "statistics-846f9",
+  storageBucket: "statistics-846f9.firebasestorage.app",
+  messagingSenderId: "552062240940",
+  appId: "1:552062240940:web:862f2f7b47913c00a63709"
 };
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const ADMIN_SECRET = 'MILK-ADMIN-2026';
+const ADMIN_CODE = 'STAT-ADMIN-2026';
 const TELEGRAM_BOT_TOKEN = '8816155815:AAGaxgc9bhIGjqLAxNTMvvFZq7StXRZ6Pus';
 const TELEGRAM_CHAT_ID = '6853753240';
-const DEFAULT_PRICE = 160;
+const JOB_TYPES = ['ግንባታ','ንግድ','አገልግሎት','ኢንዱስትሪ','ግብርና','ትራንስፖርት','ሌላ'];
 const DAYS_AM = ['እሁድ','ሰኞ','ማክሰኞ','ረቡዕ','ሐሙስ','አርብ','ቅዳሜ'];
 const ETH_MONTHS = ['መስከረም','ጥቅምት','ኅዳር','ታኅሳስ','ጥር','የካቲት','መጋቢት','ሚያዝያ','ግንቦት','ሰኔ','ሐምሌ','ነሐሴ','ጳጉሜን'];
 
-let currentUser = null; // {name, phone, isAdmin}
-let allReports = [];
-let allUsers = [];
-let allContracts = [];
-let allContractMonths = [];
-let allPayments = [];
-let pendingReg = null;
-let lastSavedText = null;
-let isSaving = false;
-let reportsUnsub=null, usersUnsub=null, contractsUnsub=null, contractMonthsUnsub=null, paymentsUnsub=null, gridUnsub=null;
-let gridEthYear=null, gridEthMonth=null, gridData={};
+let records = [];
+let adminUnlocked = false;
+let filters = { search:'', job:'', gender:'' };
 
-// ---- helpers ----
-async function sha256(text){
-  const enc = new TextEncoder().encode(text);
-  const buf = await crypto.subtle.digest('SHA-256', enc);
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-function escapeAttr(str){
-  const div = document.createElement('div');
-  div.textContent = str || '';
-  return div.innerHTML;
-}
 function todayISO(){ return new Date().toISOString().slice(0,10); }
-function round(n){ return Math.round((Number(n)||0)*100)/100; }
-function money(n){ return round(n).toLocaleString('en-US'); }
-function isValidPhone(p){ return /^\d{10}$/.test(p); }
-function genCode(){ return String(Math.floor(100000 + Math.random()*900000)); }
-function daysBetweenInclusive(startISO, endISO){
-  const s = new Date(startISO+'T00:00:00'), e = new Date(endISO+'T00:00:00');
-  const diff = Math.round((e-s)/86400000);
-  return Math.max(0, diff) + 1;
-}
+function escapeAttr(str){ const d=document.createElement('div'); d.textContent=str||''; return d.innerHTML; }
 
-// Gregorian -> Ethiopian calendar
-function gregorianToJDN(y, m, d){
-  return Math.floor((1461 * (y + 4800 + Math.floor((m - 14) / 12))) / 4) +
-    Math.floor((367 * (m - 2 - 12 * Math.floor((m - 14) / 12))) / 12) -
-    Math.floor((3 * Math.floor((y + 4900 + Math.floor((m - 14) / 12)) / 100)) / 4) +
-    d - 32075;
+function gregorianToJDN(y,m,d){
+  return Math.floor((1461*(y+4800+Math.floor((m-14)/12)))/4)+Math.floor((367*(m-2-12*Math.floor((m-14)/12)))/12)-Math.floor((3*Math.floor((y+4900+Math.floor((m-14)/12))/100))/4)+d-32075;
 }
 function jdnToEthiopian(jdn){
-  const r = (jdn - 1723856) % 1461;
-  const n = (r % 365) + 365 * Math.floor(r / 1460);
-  const year = 4 * Math.floor((jdn - 1723856) / 1461) + Math.floor(r / 365) - Math.floor(r / 1460);
-  const month = Math.floor(n / 30) + 1;
-  const day = (n % 30) + 1;
-  return { year, month, day };
+  const r=(jdn-1723856)%1461;
+  const n=(r%365)+365*Math.floor(r/1460);
+  const year=4*Math.floor((jdn-1723856)/1461)+Math.floor(r/365)-Math.floor(r/1460);
+  const month=Math.floor(n/30)+1; const day=(n%30)+1;
+  return {year,month,day};
 }
-function getEthParts(isoDateStr){
-  const [y,m,d] = isoDateStr.split('-').map(Number);
-  const jdn = gregorianToJDN(y, m, d);
-  return jdnToEthiopian(jdn);
-}
-function toEthiopianDate(isoDateStr){
-  if(!isoDateStr) return '';
-  const eth = getEthParts(isoDateStr);
-  const monthName = ETH_MONTHS[eth.month - 1] || '';
-  return `${eth.day} ${monthName} ${eth.year} ዓ.ም`;
-}
-function currentEthYearMonth(){
-  const eth = getEthParts(todayISO());
-  return { year: eth.year, month: eth.month };
-}
-// Ethiopian -> JDN -> Gregorian (reverse conversion, for the monthly grid)
-function ethiopianToJDN(ethYear, ethMonth, ethDay){
-  return 1723856 + 365 * (ethYear - 1) + Math.floor(ethYear / 4) + 30 * (ethMonth - 1) + (ethDay - 1);
-}
-function jdnToGregorian(jdn){
-  const a = jdn + 32044;
-  const b = Math.floor((4 * a + 3) / 146097);
-  const c = a - Math.floor((146097 * b) / 4);
-  const d = Math.floor((4 * c + 3) / 1461);
-  const e = c - Math.floor((1461 * d) / 4);
-  const m = Math.floor((5 * e + 2) / 153);
-  const day = e - Math.floor((153 * m + 2) / 5) + 1;
-  const month = m + 3 - 12 * Math.floor(m / 10);
-  const year = 100 * b + d - 4800 + Math.floor(m / 10);
-  return { year, month, day };
-}
-function ethiopianToGregorianISO(ethYear, ethMonth, ethDay){
-  const jdn = ethiopianToJDN(ethYear, ethMonth, ethDay);
-  const g = jdnToGregorian(jdn);
-  return `${g.year}-${String(g.month).padStart(2,'0')}-${String(g.day).padStart(2,'0')}`;
-}
-function monthKey(contractId, ethYear, ethMonth){
-  return `${contractId}_${ethYear}_${ethMonth}`;
-}
-function toEthiopianTime(date){
-  let h = date.getHours();
-  const min = String(date.getMinutes()).padStart(2,'0');
-  let ethHour = (h - 6 + 24) % 12;
-  if(ethHour === 0) ethHour = 12;
-  let period;
-  if(h >= 0 && h < 6) period = 'ለሊት';
-  else if(h >= 6 && h < 12) period = 'ጠዋት';
-  else if(h >= 12 && h < 18) period = 'ቀን';
-  else period = 'ማታ';
-  return `${ethHour}:${min} ${period}`;
+function toEthiopianDate(iso){
+  if(!iso) return '';
+  const [y,m,d]=iso.split('-').map(Number);
+  const eth=jdnToEthiopian(gregorianToJDN(y,m,d));
+  return `${eth.day} ${ETH_MONTHS[eth.month-1]||''} ${eth.year} ዓ.ም`;
 }
 
-// ---- Telegram ----
-async function sendTelegramText(text){
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display='block';
+  setTimeout(()=>{ t.style.display='none'; }, 2500);
+}
+
+async function sendTelegram(text){
   try{
     await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text })
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({chat_id: TELEGRAM_CHAT_ID, text})
     });
   }catch(e){ console.error('Telegram error', e); }
 }
 
-// ---- Auth tabs ----
-document.querySelectorAll('.auth-tab').forEach(tab=>{
-  tab.addEventListener('click', ()=>{
-    document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
-    tab.classList.add('active');
-    document.getElementById('tab-login').classList.toggle('hidden', tab.dataset.tab!=='login');
-    document.getElementById('tab-register').classList.toggle('hidden', tab.dataset.tab!=='register');
-    document.getElementById('reg-step1').classList.remove('hidden');
-    document.getElementById('reg-step2').classList.add('hidden');
-    hideAuthError();
-  });
-});
-function showAuthError(msg){ const el=document.getElementById('auth-error'); el.textContent=msg; el.style.display='block'; }
-function hideAuthError(){ document.getElementById('auth-error').style.display='none'; }
+// ---- Job type dropdowns ----
+function populateJobDropdowns(){
+  const f = document.getElementById('f-jobtype');
+  f.innerHTML = JOB_TYPES.map(j=>`<option value="${j}">${j}</option>`).join('');
+  const filt = document.getElementById('filter-job');
+  filt.innerHTML = '<option value="">ሁሉም</option>' + JOB_TYPES.map(j=>`<option value="${j}">${j}</option>`).join('');
+}
+populateJobDropdowns();
+document.getElementById('f-date').value = todayISO();
 
-document.getElementById('btn-login').addEventListener('click', async ()=>{
-  hideAuthError();
-  const phone = document.getElementById('login-phone').value.trim();
-  const pass = document.getElementById('login-pass').value;
-  if(!isValidPhone(phone)){ showAuthError('ስልክ ቁጥር በትክክል 10 ዲጂት መሆን አለበት።'); return; }
-  if(!pass){ showAuthError('የይለፍ ቃል ያስገቡ።'); return; }
-  try{
-    const snap = await getDoc(doc(db,'milk_users',phone));
-    if(!snap.exists()){ showAuthError('ተጠቃሚ አልተገኘም። መጀመሪያ ይመዝገቡ።'); return; }
-    const user = snap.data();
-    const hash = await sha256(pass);
-    if(hash !== user.passwordHash){ showAuthError('የይለፍ ቃል ትክክል አይደለም።'); return; }
-    currentUser = { name: user.name, phone, isAdmin: !!user.isAdmin };
-    enterApp();
-  }catch(e){
-    console.error(e);
-    showAuthError('ግንኙነት ላይ ችግር ተፈጥሯል፣ Firestore መንቃቱን ያረጋግጡ።');
+// ---- Admin unlock ----
+document.getElementById('btn-unlock').addEventListener('click', ()=>{
+  const val = document.getElementById('admin-pass').value;
+  const err = document.getElementById('lock-error');
+  if(val === ADMIN_CODE){
+    adminUnlocked = true;
+    document.getElementById('lock-screen').classList.add('hidden');
+    document.getElementById('admin-area').classList.remove('hidden');
+    err.style.display='none';
+  }else{
+    err.textContent = 'የተሳሳተ ኮድ';
+    err.style.display='block';
   }
 });
-
-document.getElementById('btn-reg-step1').addEventListener('click', async ()=>{
-  hideAuthError();
-  const name = document.getElementById('reg-name').value.trim();
-  const phone = document.getElementById('reg-phone').value.trim();
-  const pass = document.getElementById('reg-pass').value;
-  const pass2 = document.getElementById('reg-pass2').value;
-  const adminCode = document.getElementById('reg-admin-code').value;
-  if(!name){ showAuthError('ስም ያስገቡ።'); return; }
-  if(!isValidPhone(phone)){ showAuthError('ስልክ ቁጥር በትክክል 10 ዲጂት መሆን አለበት።'); return; }
-  if(pass.length < 4){ showAuthError('የይለፍ ቃል ቢያንስ 4 ፊደል/ቁጥር ይያዝ።'); return; }
-  if(pass !== pass2){ showAuthError('የይለፍ ቃል ግጥሚያ የለውም።'); return; }
-  const btn = document.getElementById('btn-reg-step1');
-  btn.disabled = true; btn.textContent = 'በማረጋገጥ ላይ...';
-  try{
-    const snap = await getDoc(doc(db,'milk_users',phone));
-    if(snap.exists()){
-      showAuthError('ይህ ስልክ ቁጥር ቀድሞ ተመዝግቧል። "ግባ" የሚለውን ይጠቀሙ።');
-      btn.disabled = false; btn.textContent = 'ቀጣይ — ኮድ ላክ';
-      return;
-    }
-    const passwordHash = await sha256(pass);
-    const isAdmin = adminCode.trim() === ADMIN_SECRET;
-    const code = genCode();
-    pendingReg = { name, phone, passwordHash, isAdmin, code };
-    await sendTelegramText(`🥛 አዲስ የመዳረሻ ጥያቄ (ወተት ስርዓት)\n👤 ስም: ${name}\n📱 ስልክ: ${phone}\n🔑 ኮድ: ${code}${isAdmin ? '\n⚠️ አድሚን ለመሆን ጠይቋል' : ''}`);
-    document.getElementById('reg-step1').classList.add('hidden');
-    document.getElementById('reg-step2').classList.remove('hidden');
-  }catch(e){
-    console.error(e);
-    showAuthError('ግንኙነት ላይ ችግር ተፈጥሯል፣ Firestore መንቃቱን ያረጋግጡ።');
-  }
-  btn.disabled = false; btn.textContent = 'ቀጣይ — ኮድ ላክ';
-});
-document.getElementById('btn-reg-back').addEventListener('click', ()=>{
-  document.getElementById('reg-step1').classList.remove('hidden');
-  document.getElementById('reg-step2').classList.add('hidden');
-  pendingReg = null; hideAuthError();
-});
-document.getElementById('btn-reg-resend').addEventListener('click', async ()=>{
-  if(!pendingReg) return;
-  pendingReg.code = genCode();
-  await sendTelegramText(`🔁 ድጋሚ ኮድ (ወተት ስርዓት)\n👤 ስም: ${pendingReg.name}\n📱 ስልክ: ${pendingReg.phone}\n🔑 ኮድ: ${pendingReg.code}`);
-  showAuthError('አዲስ ኮድ ተልኳል።');
-});
-document.getElementById('btn-reg-verify').addEventListener('click', async ()=>{
-  hideAuthError();
-  if(!pendingReg){ showAuthError('እባክዎ ከመጀመሪያው ይጀምሩ።'); return; }
-  const entered = document.getElementById('reg-verify-code').value.trim();
-  if(entered !== pendingReg.code){ showAuthError('ኮዱ ትክክል አይደለም።'); return; }
-  try{
-    await setDoc(doc(db,'milk_users',pendingReg.phone), {
-      name: pendingReg.name, phone: pendingReg.phone,
-      passwordHash: pendingReg.passwordHash, isAdmin: pendingReg.isAdmin, createdAt: Date.now()
-    });
-    currentUser = { name: pendingReg.name, phone: pendingReg.phone, isAdmin: pendingReg.isAdmin };
-    pendingReg = null;
-    enterApp();
-  }catch(e){
-    console.error(e);
-    showAuthError('ምዝገባ አልተሳካም፣ እንደገና ይሞክሩ።');
-  }
+document.getElementById('admin-pass').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter') document.getElementById('btn-unlock').click();
 });
 
-document.getElementById('btn-logout').addEventListener('click', ()=>{
-  currentUser = null;
-  [reportsUnsub,usersUnsub,contractsUnsub,contractMonthsUnsub,paymentsUnsub,gridUnsub].forEach(u=>{ if(u) u(); });
-  reportsUnsub=usersUnsub=contractsUnsub=contractMonthsUnsub=paymentsUnsub=gridUnsub=null;
-  document.getElementById('app-screen').classList.add('hidden');
-  document.getElementById('auth-screen').classList.remove('hidden');
-  document.getElementById('login-phone').value=''; document.getElementById('login-pass').value='';
-});
+// ---- Firestore live listener (public: powers stats; admin area also uses it) ----
+onSnapshot(query(collection(db,'stat_records')), (snap)=>{
+  records = [];
+  snap.forEach(d=> records.push({id:d.id, ...d.data()}));
+  renderStats();
+  if(adminUnlocked) renderRecordsTable();
+}, (err)=>{ console.error('Firestore listener error', err); });
 
-function enterApp(){
-  document.getElementById('auth-screen').classList.add('hidden');
-  document.getElementById('app-screen').classList.remove('hidden');
-  document.getElementById('who-name').textContent = currentUser.name;
-  document.getElementById('who-badge').innerHTML = currentUser.isAdmin
-    ? '<span class="badge-admin">አድሚን</span>' : '<span class="badge-worker">ሠራተኛ</span>';
-  document.getElementById('admin-section').classList.toggle('hidden', !currentUser.isAdmin);
-  document.getElementById('contracts-section').classList.toggle('hidden', !currentUser.isAdmin);
-  document.getElementById('history-title').textContent = currentUser.isAdmin ? 'ሁሉም ሪፖርቶች' : 'የኔ ያለፉ ሪፖርቶች';
+// ---- Stats (public) ----
+function renderStats(){
+  document.getElementById('s-total').textContent = records.length;
 
-  document.getElementById('f-date').value = todayISO();
-  updateDayName();
-  renderExpenseRows();
-  updateAll();
+  const unemp = records.filter(r=>r.empStatus==='ስራ አጥ');
+  document.getElementById('s-unemp-m').textContent = unemp.filter(r=>r.gender==='ወንድ').length;
+  document.getElementById('s-unemp-f').textContent = unemp.filter(r=>r.gender==='ሴት').length;
+  document.getElementById('s-unemp-t').textContent = unemp.length;
 
-  reportsUnsub = onSnapshot(query(collection(db,'milk_entries')), (snap)=>{
-    allReports = []; snap.forEach(d=> allReports.push({id:d.id, ...d.data()}));
-    if(currentUser.isAdmin) renderDashboard();
-    renderHistory();
-  });
-  // Everyone needs contracts + current-month data to compute the daily auto-deduction,
-  // even though only admin can edit/see the management UI.
-  contractsUnsub = onSnapshot(query(collection(db,'milk_contracts')), (snap)=>{
-    allContracts = []; snap.forEach(d=> allContracts.push({id:d.id, ...d.data()}));
-    if(currentUser.isAdmin) renderContracts();
-    updateAll();
-  });
-  contractMonthsUnsub = onSnapshot(query(collection(db,'milk_contract_months')), (snap)=>{
-    allContractMonths = []; snap.forEach(d=> allContractMonths.push({id:d.id, ...d.data()}));
-    if(currentUser.isAdmin) renderContracts();
-    updateAll();
-  });
-  paymentsUnsub = onSnapshot(query(collection(db,'milk_payments')), (snap)=>{
-    allPayments = []; snap.forEach(d=> allPayments.push({id:d.id, ...d.data()}));
-    if(currentUser.isAdmin) renderContracts();
-  });
-  if(currentUser.isAdmin){
-    usersUnsub = onSnapshot(query(collection(db,'milk_users')), (snap)=>{
-      allUsers = []; snap.forEach(d=> allUsers.push({id:d.id, ...d.data()}));
-      renderUsersList();
-    });
-    const nowEth = currentEthYearMonth();
-    loadGridMonth(nowEth.year, nowEth.month);
-  }
+  const insNew = records.filter(r=>r.insStatus==='አዲስ ያወጣ');
+  document.getElementById('s-insnew-m').textContent = insNew.filter(r=>r.gender==='ወንድ').length;
+  document.getElementById('s-insnew-f').textContent = insNew.filter(r=>r.gender==='ሴት').length;
+  document.getElementById('s-insnew-t').textContent = insNew.length;
+
+  const insRenew = records.filter(r=>r.insStatus==='ያደሰ');
+  document.getElementById('s-insrenew-m').textContent = insRenew.filter(r=>r.gender==='ወንድ').length;
+  document.getElementById('s-insrenew-f').textContent = insRenew.filter(r=>r.gender==='ሴት').length;
+  document.getElementById('s-insrenew-t').textContent = insRenew.length;
+
+  const jobBox = document.getElementById('s-by-job');
+  jobBox.innerHTML = JOB_TYPES.map(j=>{
+    const count = records.filter(r=>r.jobType===j).length;
+    return `<div class="chip"><div class="k">${j}</div><div class="v">${count}</div></div>`;
+  }).join('');
 }
 
-function updateDayName(){
-  const val = document.getElementById('f-date').value;
-  if(!val){ document.getElementById('f-day').value=''; document.getElementById('f-eth-date').value=''; return; }
-  const d = new Date(val + 'T00:00:00');
-  document.getElementById('f-day').value = DAYS_AM[d.getDay()];
-  document.getElementById('f-eth-date').value = toEthiopianDate(val);
-  updateAll();
-}
-document.getElementById('f-date').addEventListener('change', updateDayName);
-
-// ---- Expense rows ----
-function renderExpenseRows(rows){
-  const container = document.getElementById('expense-rows');
-  const data = rows || [{reason:'', amount:''}];
-  container.innerHTML = '';
-  data.forEach((row, i)=>{
-    const div = document.createElement('div');
-    div.className = 'expense-row';
-    div.innerHTML = `
-      <input type="text" class="exp-reason" placeholder="የወጪ ምክንያት" value="${escapeAttr(row.reason)}">
-      <input type="number" class="exp-amount amt mono" placeholder="ብር" min="0" value="${row.amount}">
-      <button type="button" class="ghost rm-row">✕</button>
-    `;
-    container.appendChild(div);
-  });
-}
-document.getElementById('btn-add-expense').addEventListener('click', ()=>{
-  const container = document.getElementById('expense-rows');
-  const div = document.createElement('div');
-  div.className = 'expense-row';
-  div.innerHTML = `
-    <input type="text" class="exp-reason" placeholder="የወጪ ምክንያት">
-    <input type="number" class="exp-amount amt mono" placeholder="ብር" min="0" value="0">
-    <button type="button" class="ghost rm-row">✕</button>
-  `;
-  container.appendChild(div);
-});
-document.getElementById('expense-rows').addEventListener('click', (e)=>{
-  if(e.target.closest('.rm-row')){
-    const rows = document.querySelectorAll('.expense-row');
-    if(rows.length > 1){ e.target.closest('.expense-row').remove(); } else { e.target.closest('.expense-row').querySelector('.exp-reason').value=''; e.target.closest('.expense-row').querySelector('.exp-amount').value='0'; }
-    updateAll();
-  }
-});
-document.getElementById('expense-rows').addEventListener('input', updateAll);
-
-function getExpenseData(){
-  return Array.from(document.querySelectorAll('.expense-row')).map(row=>({
-    reason: row.querySelector('.exp-reason').value.trim(),
-    amount: Number(row.querySelector('.exp-amount').value)||0
-  })).filter(r=> r.reason || r.amount);
-}
-
-// ---- Contract auto-calc for a given date ----
-function activeContractsForDate(dateISO){
-  return allContracts.filter(c=> c.active !== false && c.startDate <= dateISO);
-}
-function contractLitersForDate(dateISO){
-  return activeContractsForDate(dateISO).reduce((s,c)=> s + (Number(c.dailyLiters)||0), 0);
-}
-function contractIncomeForDate(dateISO){
-  return activeContractsForDate(dateISO).reduce((s,c)=> s + (Number(c.dailyLiters)||0) * (Number(c.pricePerLiter)||DEFAULT_PRICE), 0);
-}
-
-// ---- Master calculation ----
-function updateAll(){
+// ---- Submit new record ----
+document.getElementById('btn-submit').addEventListener('click', async ()=>{
+  const name = document.getElementById('f-name').value.trim();
+  if(!name){ showToast('እባክዎ ሙሉ ስም ያስገቡ'); return; }
   const date = document.getElementById('f-date').value || todayISO();
-  const morning = Number(document.getElementById('f-morning').value)||0;
-  const evening = Number(document.getElementById('f-evening').value)||0;
-  const total = morning + evening;
-  const contractLiters = contractLitersForDate(date);
-  const remaining = Math.max(0, total - contractLiters);
-  const contractIncome = contractIncomeForDate(date);
-  const retailIncome = Number(document.getElementById('f-retail-income').value)||0;
-  const totalIncome = contractIncome + retailIncome;
-  const expenses = getExpenseData();
-  const totalExpense = expenses.reduce((s,e)=> s + e.amount, 0);
-  const profit = totalIncome - totalExpense;
-
-  document.getElementById('r-total-milk').textContent = round(total) + ' ሊ';
-  document.getElementById('r-contract-milk').textContent = round(contractLiters) + ' ሊ';
-  document.getElementById('r-remaining-milk').textContent = round(remaining) + ' ሊ';
-  document.getElementById('r-contract-income').textContent = money(contractIncome) + ' ብር';
-  document.getElementById('r-total-income').textContent = money(totalIncome) + ' ብር';
-  document.getElementById('r-total-expense').textContent = money(totalExpense) + ' ብር';
-  document.getElementById('r-profit').textContent = money(profit) + ' ብር';
-  const chip = document.getElementById('r-profit-chip');
-  chip.className = 'chip ' + (profit >= 0 ? 'green' : 'red');
-}
-['f-morning','f-evening','f-retail-income'].forEach(id=>{
-  document.getElementById(id).addEventListener('input', updateAll);
-});
-
-// ---- Number inputs: auto-clear 0 ----
-document.addEventListener('focusin', (e)=>{
-  if(e.target.matches('input[type="number"]') && e.target.value === '0') e.target.value = '';
-});
-document.addEventListener('focusout', (e)=>{
-  if(e.target.matches('input[type="number"]') && e.target.value === '') e.target.value = '0';
-});
-
-// ---- Report text ----
-function buildReportText(){
-  const worker = currentUser ? currentUser.name : '—';
-  const date = document.getElementById('f-date').value;
-  const day = document.getElementById('f-day').value;
-  const ethDate = document.getElementById('f-eth-date').value;
-  const ethTime = toEthiopianTime(new Date());
-  const morning = Number(document.getElementById('f-morning').value)||0;
-  const evening = Number(document.getElementById('f-evening').value)||0;
-  const total = morning + evening;
-  const contractLiters = contractLitersForDate(date);
-  const remaining = Math.max(0, total - contractLiters);
-  const contractIncome = contractIncomeForDate(date);
-  const retailIncome = Number(document.getElementById('f-retail-income').value)||0;
-  const totalIncome = contractIncome + retailIncome;
-  const expenses = getExpenseData();
-  const totalExpense = expenses.reduce((s,e)=> s + e.amount, 0);
-  const profit = totalIncome - totalExpense;
-  const notes = document.getElementById('f-notes').value.trim();
-
-  let expenseText = expenses.length
-    ? expenses.map((e,i)=> `${i+1}. ${e.reason || '—'} — ${money(e.amount)} ብር`).join('\n')
-    : '—';
-
-  const activeContracts = activeContractsForDate(date);
-  let contractText = activeContracts.length
-    ? activeContracts.map(c=> `• ${c.customerName} — ${c.dailyLiters} ሊ × ${c.pricePerLiter||DEFAULT_PRICE} ብር`).join('\n')
-    : '—';
-
-  return `🥛 የወተት ሽያጭ ዕለታዊ ሪፖርት
-
-👷 የባለሙያ ስም: ${worker}
-📅 ቀን: ${ethDate} (${date})
-📆 ዕለት: ${day}
-🕐 ሰዓት: ${ethTime}
-
-1️⃣ የታለበ ወተት
-🌅 ጠዋት: ${morning} ሊትር
-🌇 ማታ: ${evening} ሊትር
-ድምር: ${total} ሊትር
-
-ለኮንትራት የተሰጠ: ${contractLiters} ሊትር
-${contractText}
-
-የቀረው (ችርቻሮ): ${remaining} ሊትር
-ችርቻሮ ገቢ: ${money(retailIncome)} ብር
-
-2️⃣ ወጪ
-${expenseText}
-ጠቅላላ ወጪ: ${money(totalExpense)} ብር
-
-💰 ኮንትራት ገቢ (ዕለታዊ): ${money(contractIncome)} ብር
-💰 ጠቅላላ ገቢ: ${money(totalIncome)} ብር
-💵 የተጣራ ትርፍ: ${money(profit)} ብር
-
-🎤 ማብራሪያ: ${notes || '—'}`;
-}
-
-document.getElementById('btn-generate').addEventListener('click', ()=>{
-  document.getElementById('output').textContent = buildReportText();
-});
-function copyText(text){
-  navigator.clipboard.writeText(text).then(()=>{
-    const msg = document.getElementById('copy-msg');
-    msg.style.display='block'; setTimeout(()=>{msg.style.display='none';}, 2000);
-  }).catch(()=>{});
-}
-document.getElementById('btn-copy').addEventListener('click', ()=> copyText(document.getElementById('output').textContent));
-
-function resetFormDraft(){
-  document.getElementById('f-date').value = todayISO();
-  updateDayName();
-  document.getElementById('f-morning').value = 0;
-  document.getElementById('f-evening').value = 0;
-  document.getElementById('f-retail-income').value = 0;
-  renderExpenseRows();
-  document.getElementById('f-notes').value = '';
-  updateAll();
-  document.getElementById('output').textContent = 'ገና ምንም ሪፖርት አልተፈጠረም። ከላይ "ሪፖርት አመንጭ" የሚለውን ይጫኑ።';
-}
-document.getElementById('btn-clear').addEventListener('click', resetFormDraft);
-
-let currentFormDay = new Date().toDateString();
-setInterval(()=>{
-  const nowDay = new Date().toDateString();
-  if(nowDay !== currentFormDay){
-    currentFormDay = nowDay;
-    if(currentUser) resetFormDraft();
-  }
-}, 60000);
-
-// ---- Save daily entry ----
-document.getElementById('btn-save').addEventListener('click', async ()=>{
-  if(isSaving) return;
-  const text = buildReportText();
-  if(text === lastSavedText){
-    const ok = confirm('ይህ ሪፖርት ልክ አሁን ተልኳል (ምንም ለውጥ የለውም)። ደግመው መላክ ይፈልጋሉ?');
-    if(!ok) return;
-  }
-  const date = document.getElementById('f-date').value;
-  const morning = Number(document.getElementById('f-morning').value)||0;
-  const evening = Number(document.getElementById('f-evening').value)||0;
-  const total = morning + evening;
-  const contractLiters = contractLitersForDate(date);
-  const remaining = Math.max(0, total - contractLiters);
-  const contractIncome = contractIncomeForDate(date);
-  const retailIncome = Number(document.getElementById('f-retail-income').value)||0;
-  const totalIncome = contractIncome + retailIncome;
-  const expenses = getExpenseData();
-  const totalExpense = expenses.reduce((s,e)=> s + e.amount, 0);
-  const profit = totalIncome - totalExpense;
-
-  const entry = {
-    workerPhone: currentUser.phone, workerName: currentUser.name,
-    date, day: document.getElementById('f-day').value,
-    morning, evening, totalMilk: total, contractLiters, remainingMilk: remaining,
-    contractIncome, retailIncome, totalIncome, expenses, totalExpense, profit,
-    text, createdAt: Date.now()
+  const rec = {
+    fullName: name,
+    gender: document.getElementById('f-gender').value,
+    jobType: document.getElementById('f-jobtype').value,
+    empStatus: document.getElementById('f-empstatus').value,
+    insStatus: document.getElementById('f-insstatus').value,
+    date,
+    ethDate: toEthiopianDate(date),
+    createdAt: Date.now()
   };
-  const btn = document.getElementById('btn-save');
-  isSaving = true; btn.disabled = true; btn.textContent = 'በመላክ ላይ...';
+  const btn = document.getElementById('btn-submit');
+  btn.disabled = true; btn.textContent = 'በመመዝገብ ላይ...';
   try{
-    await addDoc(collection(db,'milk_entries'), entry);
-    await sendTelegramText(text);
-    lastSavedText = text;
-    const saveMsg = document.getElementById('save-msg');
-    saveMsg.style.display='block'; setTimeout(()=>{saveMsg.style.display='none';}, 3000);
+    await addDoc(collection(db,'stat_records'), rec);
+    await sendTelegram(`📊 አዲስ ምዝገባ\n👤 ${rec.fullName} (${rec.gender})\n💼 ${rec.jobType} · ${rec.empStatus}\n🛡️ ${rec.insStatus}\n📅 ${rec.ethDate} (${rec.date})`);
+    showToast('በተሳካ ሁኔታ ተመዝግቧል');
+    document.getElementById('f-name').value = '';
+    document.getElementById('f-gender').value = 'ወንድ';
+    document.getElementById('f-jobtype').value = JOB_TYPES[0];
+    document.getElementById('f-empstatus').value = 'ስራ አጥ';
+    document.getElementById('f-insstatus').value = 'የለውም';
+    document.getElementById('f-date').value = todayISO();
   }catch(e){
     console.error(e);
-    alert('ሪፖርት ማስቀመጥ አልተቻለም፣ ግንኙነትዎን ያረጋግጡ።');
+    showToast('ስህተት ተፈጥሯል፣ Firestore መንቃቱን ያረጋግጡ');
   }
-  isSaving = false; btn.disabled = false; btn.textContent = 'ሪፖርት ላክ እና አስቀምጥ';
+  btn.disabled = false; btn.textContent = 'መዝግብ';
 });
 
-// ---- Contracts ----
-document.getElementById('btn-add-contract').addEventListener('click', async ()=>{
-  const name = document.getElementById('c-name').value.trim();
-  const liters = Number(document.getElementById('c-liters').value)||0;
-  const price = Number(document.getElementById('c-price').value)||DEFAULT_PRICE;
-  const startDate = document.getElementById('c-start-date').value || todayISO();
-  if(!name || liters <= 0){ alert('የደንበኛ ስም እና ዕለታዊ ሊትር በትክክል ያስገቡ።'); return; }
-  try{
-    await addDoc(collection(db,'milk_contracts'), {
-      customerName: name, dailyLiters: liters, pricePerLiter: price,
-      startDate, active: true, createdBy: currentUser.name, createdAt: Date.now()
-    });
-    document.getElementById('c-name').value = '';
-    document.getElementById('c-liters').value = '';
-    document.getElementById('c-price').value = DEFAULT_PRICE;
-    document.getElementById('c-start-date').value = todayISO();
-  }catch(e){ console.error(e); alert('ማስቀመጥ አልተቻለም።'); }
-});
-
-function renderContracts(){
-  const box = document.getElementById('contracts-list');
-  if(allContracts.length === 0){ box.innerHTML = '<div class="empty">ገና ምንም ኮንትራት ደንበኛ አልተመዘገበም።</div>'; return; }
-  const today = todayISO();
-  box.innerHTML = allContracts.map(c=>{
-    const days = daysBetweenInclusive(c.startDate, today);
-    const accruedLiters = (Number(c.dailyLiters)||0) * days;
-    const accruedBirr = accruedLiters * (Number(c.pricePerLiter)||DEFAULT_PRICE);
-    const paid = allPayments.filter(p=>p.contractId===c.id).reduce((s,p)=> s + (Number(p.amount)||0), 0);
-    const balance = accruedBirr - paid;
-    const statusHtml = balance > 0
-      ? `<span class="balance-pill owe">ይቀራል ${money(balance)} ብር</span>`
-      : `<span class="balance-pill clear">ተከፍሏል</span>`;
-    return `
-      <div class="contract-card">
-        <div class="contract-top">
-          <div>
-            <h4>${escapeAttr(c.customerName)}${c.active===false ? ' <span style="color:var(--text-3);font-size:11px;">(ቆሟል)</span>' : ''}</h4>
-            <div class="contract-meta">${c.dailyLiters} ሊ/ቀን × ${c.pricePerLiter||DEFAULT_PRICE} ብር · ከ ${c.startDate} ጀምሮ (${days} ቀናት)</div>
-          </div>
-          ${statusHtml}
-        </div>
-        <div class="contract-grid">
-          <div class="item"><div class="k">የተጠራቀመ ሊትር</div><div class="v">${round(accruedLiters)}</div></div>
-          <div class="item"><div class="k">የሚገባ ብር</div><div class="v">${money(accruedBirr)}</div></div>
-          <div class="item"><div class="k">የተከፈለ ብር</div><div class="v">${money(paid)}</div></div>
-        </div>
-        <div class="contract-actions">
-          <button type="button" class="ghost small" data-pay="${c.id}" data-name="${escapeAttr(c.customerName)}">💳 ክፍያ መዝግብ</button>
-          ${c.active !== false
-            ? `<button type="button" class="ghost small" data-stop="${c.id}">አቁም</button>`
-            : `<button type="button" class="ghost small" data-resume="${c.id}">ቀጥል</button>`}
-          <button type="button" class="ghost small" data-delcontract="${c.id}" data-cname="${escapeAttr(c.customerName)}">ሰርዝ</button>
-        </div>
-      </div>
-    `;
-  }).join('');
+// ---- Records table (admin only) ----
+function empPill(status){
+  return status==='ስራ አጥ' ? `<span class="pill unemployed">${status}</span>` : `<span class="pill employed">${status}</span>`;
 }
-document.getElementById('contracts-list').addEventListener('click', async (e)=>{
-  const payBtn = e.target.closest('[data-pay]');
-  const stopBtn = e.target.closest('[data-stop]');
-  const resumeBtn = e.target.closest('[data-resume]');
-  const delBtn = e.target.closest('[data-delcontract]');
-
-  if(payBtn){
-    const amount = prompt(`${payBtn.dataset.name} ምን ያህል ብር ከፈሉ?`);
-    if(amount === null) return;
-    const amt = Number(amount);
-    if(!amt || amt <= 0){ alert('ትክክለኛ የብር መጠን ያስገቡ።'); return; }
-    try{
-      await addDoc(collection(db,'milk_payments'), {
-        contractId: payBtn.dataset.pay, customerName: payBtn.dataset.name,
-        amount: amt, datePaid: todayISO(), ethDatePaid: toEthiopianDate(todayISO()),
-        recordedBy: currentUser.name, createdAt: Date.now()
-      });
-      await sendTelegramText(`💳 ክፍያ ተመዝግቧል\n👤 ${payBtn.dataset.name}\n💰 ${money(amt)} ብር\n📅 ${todayISO()}\n(መዝጋቢ: ${currentUser.name})`);
-    }catch(err){ console.error(err); alert('ማስቀመጥ አልተቻለም።'); }
-  }
-  if(stopBtn){
-    if(!confirm('ይህን ኮንትራት ማቆም ይፈልጋሉ? (ወደፊት ወተት አይቆጠርለትም)')) return;
-    try{ await setDoc(doc(db,'milk_contracts',stopBtn.dataset.stop), {active:false}, {merge:true}); }catch(err){ console.error(err); }
-  }
-  if(resumeBtn){
-    try{ await setDoc(doc(db,'milk_contracts',resumeBtn.dataset.resume), {active:true}, {merge:true}); }catch(err){ console.error(err); }
-  }
-  if(delBtn){
-    if(!confirm(`"${delBtn.dataset.cname}" የተባለውን ኮንትራት ሙሉ በሙሉ መሰረዝ ይፈልጋሉ? ይህ ተመልሶ አይመጣም።`)) return;
-    try{ await deleteDoc(doc(db,'milk_contracts',delBtn.dataset.delcontract)); }catch(err){ console.error(err); }
-  }
-});
-
-// ---- Monthly grid (admin only): 1-30 Ethiopian days, editable ----
-function gridDocId(ethYear, ethMonth){ return `${ethYear}-${ethMonth}`; }
-
-function loadGridMonth(ethYear, ethMonth){
-  if(gridUnsub){ gridUnsub(); gridUnsub = null; }
-  gridEthYear = ethYear; gridEthMonth = ethMonth;
-  const ref = doc(db,'milk_monthly', gridDocId(ethYear, ethMonth));
-  gridUnsub = onSnapshot(ref, (snap)=>{
-    gridData = snap.exists() ? (snap.data().days || {}) : {};
-    renderGrid();
-  });
+function insPill(status){
+  if(status==='አዲስ ያወጣ') return `<span class="pill ins-new">${status}</span>`;
+  if(status==='ያደሰ') return `<span class="pill ins-renew">${status}</span>`;
+  return `<span class="pill ins-none">${status}</span>`;
 }
+function renderRecordsTable(){
+  let list = records.slice().sort((a,b)=> (b.createdAt||0)-(a.createdAt||0));
+  if(filters.search) list = list.filter(r=> r.fullName.toLowerCase().includes(filters.search.toLowerCase()));
+  if(filters.job) list = list.filter(r=> r.jobType === filters.job);
+  if(filters.gender) list = list.filter(r=> r.gender === filters.gender);
 
-function daysInEthMonth(ethMonth, ethYear){
-  if(ethMonth < 13) return 30;
-  // Pagumen: 6 days in a leap year, else 5. Ethiopian leap year: (year+1) % 4 === 0
-  return ((ethYear + 1) % 4 === 0) ? 6 : 5;
-}
-
-function renderGrid(){
-  if(!gridEthYear) return;
-  const monthName = ETH_MONTHS[gridEthMonth-1] || '';
-  document.getElementById('grid-month-label').textContent = `${monthName} ${gridEthYear} ዓ.ም`;
-  const totalDays = daysInEthMonth(gridEthMonth, gridEthYear);
-  const todayEth = getEthParts(todayISO());
-  const isCurrentMonth = (todayEth.year===gridEthYear && todayEth.month===gridEthMonth);
-
-  let sumMorning=0,sumEvening=0,sumTotal=0,sumContract=0,sumRetail=0,sumExpense=0,sumProfit=0;
-  const rows = [];
-  for(let d=1; d<=totalDays; d++){
-    const gregISO = ethiopianToGregorianISO(gridEthYear, gridEthMonth, d);
-    const row = gridData[String(d)] || {};
-    const morning = Number(row.morning)||0;
-    const evening = Number(row.evening)||0;
-    const total = morning + evening;
-    const contractLiters = contractLitersForDate(gregISO);
-    const contractIncome = contractIncomeForDate(gregISO);
-    const retailIncome = Number(row.retailIncome)||0;
-    const expense = Number(row.expense)||0;
-    const profit = contractIncome + retailIncome - expense;
-    sumMorning+=morning; sumEvening+=evening; sumTotal+=total; sumContract+=contractLiters;
-    sumRetail+=retailIncome; sumExpense+=expense; sumProfit+=profit;
-    const dayLabel = isCurrentMonth && d===todayEth.day ? `<span class="grid-day-today">${d}</span>` : d;
-    rows.push(`
-      <tr data-day="${d}">
-        <td class="mono">${dayLabel}</td>
-        <td><input type="number" class="grid-in gin-morning" min="0" step="0.5" value="${morning||''}" placeholder="0"></td>
-        <td><input type="number" class="grid-in gin-evening" min="0" step="0.5" value="${evening||''}" placeholder="0"></td>
-        <td class="mono">${round(total)}</td>
-        <td class="mono">${round(contractLiters)}</td>
-        <td><input type="number" class="grid-in gin-retail" min="0" value="${retailIncome||''}" placeholder="0"></td>
-        <td><input type="number" class="grid-in gin-expense" min="0" value="${expense||''}" placeholder="0"></td>
-        <td class="mono" style="color:${profit>=0?'var(--green)':'var(--red)'};">${money(profit)}</td>
-      </tr>
-    `);
+  const body = document.getElementById('records-body');
+  const emptyEl = document.getElementById('records-empty');
+  if(list.length === 0){
+    body.innerHTML = '';
+    emptyEl.classList.remove('hidden');
+    return;
   }
-  document.getElementById('grid-body').innerHTML = rows.join('');
-  document.getElementById('gt-morning').textContent = round(sumMorning);
-  document.getElementById('gt-evening').textContent = round(sumEvening);
-  document.getElementById('gt-total').textContent = round(sumTotal);
-  document.getElementById('gt-contract').textContent = round(sumContract);
-  document.getElementById('gt-retail').textContent = money(sumRetail);
-  document.getElementById('gt-expense').textContent = money(sumExpense);
-  document.getElementById('gt-profit').textContent = money(sumProfit);
+  emptyEl.classList.add('hidden');
+  body.innerHTML = list.map(r=> `
+    <tr>
+      <td>${escapeAttr(r.fullName)}</td>
+      <td>${r.gender}</td>
+      <td>${escapeAttr(r.jobType)}</td>
+      <td>${empPill(r.empStatus)}</td>
+      <td>${insPill(r.insStatus)}</td>
+      <td class="mono">${r.date}</td>
+      <td><button type="button" class="ghost small" data-del="${r.id}">ሰርዝ</button></td>
+    </tr>
+  `).join('');
 }
-
-async function saveGridRow(dayEl){
-  const day = dayEl.dataset.day;
-  const rowData = {
-    morning: Number(dayEl.querySelector('.gin-morning').value)||0,
-    evening: Number(dayEl.querySelector('.gin-evening').value)||0,
-    retailIncome: Number(dayEl.querySelector('.gin-retail').value)||0,
-    expense: Number(dayEl.querySelector('.gin-expense').value)||0
-  };
-  try{
-    await setDoc(doc(db,'milk_monthly', gridDocId(gridEthYear, gridEthMonth)),
-      { [`days.${day}`]: rowData, ethYear: gridEthYear, ethMonth: gridEthMonth, updatedAt: Date.now() },
-      { merge: true });
-  }catch(e){ console.error('Grid save error', e); }
-}
-document.getElementById('grid-body').addEventListener('focusout', (e)=>{
-  if(e.target.matches('.grid-in')){
-    saveGridRow(e.target.closest('tr'));
-  }
-});
-
-document.getElementById('btn-grid-prev').addEventListener('click', ()=>{
-  let m = gridEthMonth - 1, y = gridEthYear;
-  if(m < 1){ m = 13; y -= 1; }
-  loadGridMonth(y, m);
-});
-document.getElementById('btn-grid-next').addEventListener('click', ()=>{
-  let m = gridEthMonth + 1, y = gridEthYear;
-  if(m > 13){ m = 1; y += 1; }
-  loadGridMonth(y, m);
-});
-
-// ---- Admin dashboard ----
-function renderDashboard(){
-  const items = currentUser.isAdmin ? allReports : allReports.filter(r=>r.workerPhone===currentUser.phone);
-  const milk = items.reduce((s,r)=> s + (Number(r.totalMilk)||0), 0);
-  const income = items.reduce((s,r)=> s + (Number(r.totalIncome)||0), 0);
-  const expense = items.reduce((s,r)=> s + (Number(r.totalExpense)||0), 0);
-  document.getElementById('d-count').textContent = items.length;
-  document.getElementById('d-milk').textContent = round(milk);
-  document.getElementById('d-income').textContent = money(income);
-  document.getElementById('d-expense').textContent = money(expense);
-}
-
-function renderHistory(){
-  const box = document.getElementById('history');
-  const items = (currentUser.isAdmin ? allReports.slice() : allReports.filter(r=>r.workerPhone===currentUser.phone))
-    .sort((a,b)=> b.date.localeCompare(a.date) || (b.createdAt||0)-(a.createdAt||0));
-  if(items.length === 0){ box.innerHTML = '<div class="empty">ገና ምንም ሪፖርት አልተመዘገበም።</div>'; return; }
-  const today = todayISO();
-  const yesterday = new Date(Date.now()-86400000).toISOString().slice(0,10);
-  const groups = {}; const order = [];
-  items.forEach(r=>{ if(!groups[r.date]){groups[r.date]=[]; order.push(r.date);} groups[r.date].push(r); });
-  box.innerHTML = order.map(date=>{
-    const group = groups[date];
-    const ethLabel = toEthiopianDate(date);
-    let tag = '';
-    if(date===today) tag = '<span class="today-tag">ዛሬ</span>';
-    else if(date===yesterday) tag = '<span class="today-tag" style="background:#232f34;color:var(--text-2);">ትላንት</span>';
-    const itemsHtml = group.map(r=> `
-      <div class="hist-item">
-        <div class="meta"><span class="d">${r.date}</span> · ${r.day}${currentUser.isAdmin ? ' · '+escapeAttr(r.workerName) : ''} · 🥛 ${r.totalMilk} ሊ · ትርፍ ${money(r.profit)} ብር</div>
-        <div class="hist-actions">
-          <button type="button" class="ghost small" data-view="${r.id}">ተመልከት</button>
-          <button type="button" class="ghost small" data-del="${r.id}">ሰርዝ</button>
-        </div>
-      </div>
-    `).join('');
-    return `<div class="day-group"><div class="day-header"><span>📅 ${date} (${group[0].day}) · 🇪🇹 ${ethLabel}</span>${tag}<span class="line"></span><span>${group.length} ሪፖርት</span></div>${itemsHtml}</div>`;
-  }).join('');
-}
-document.getElementById('history').addEventListener('click', async (e)=>{
-  const viewBtn = e.target.closest('[data-view]');
-  const delBtn = e.target.closest('[data-del]');
-  if(viewBtn){
-    const r = allReports.find(x=>x.id===viewBtn.dataset.view);
-    if(!r) return;
-    if(!currentUser.isAdmin && r.workerPhone !== currentUser.phone) return;
-    document.getElementById('output').textContent = r.text;
-    document.getElementById('output').scrollIntoView({behavior:'smooth'});
-  }
-  if(delBtn){
-    const r = allReports.find(x=>x.id===delBtn.dataset.del);
-    if(!r) return;
-    if(!currentUser.isAdmin && r.workerPhone !== currentUser.phone) return;
-    if(!confirm('ይህን ሪፖርት መሰረዝ ይፈልጋሉ?')) return;
-    try{ await deleteDoc(doc(db,'milk_entries',r.id)); }catch(err){ console.error(err); }
-  }
-});
-
-// ---- User management ----
-function renderUsersList(){
-  const box = document.getElementById('users-list');
-  if(allUsers.length === 0){ box.innerHTML = '<div class="empty">ምንም የተመዘገበ ተጠቃሚ የለም።</div>'; return; }
-  box.innerHTML = allUsers.map(u=>{
-    const reportCount = allReports.filter(r=>r.workerPhone===u.id).length;
-    return `
-    <div class="hist-item">
-      <div class="meta">${escapeAttr(u.name)} — ${escapeAttr(u.id)} ${u.isAdmin?'<span class="badge-admin">አድሚን</span>':'<span class="badge-worker">ሠራተኛ</span>'} · ${reportCount} ሪፖርት</div>
-      <div class="hist-actions">
-        ${u.id===currentUser.phone ? '<span style="font-size:11.5px;color:var(--text-3);">(እርስዎ)</span>' : `<button type="button" class="ghost small" data-rmuser="${u.id}" data-uname="${escapeAttr(u.name)}">አጥፋ</button>`}
-      </div>
-    </div>`;
-  }).join('');
-}
-document.getElementById('users-list').addEventListener('click', async (e)=>{
-  const btn = e.target.closest('[data-rmuser]');
+document.getElementById('search-box').addEventListener('input', (e)=>{ filters.search = e.target.value; renderRecordsTable(); });
+document.getElementById('filter-job').addEventListener('change', (e)=>{ filters.job = e.target.value; renderRecordsTable(); });
+document.getElementById('filter-gender').addEventListener('change', (e)=>{ filters.gender = e.target.value; renderRecordsTable(); });
+document.getElementById('records-body').addEventListener('click', async (e)=>{
+  const btn = e.target.closest('[data-del]');
   if(!btn) return;
-  if(!confirm(`"${btn.dataset.uname}" የተባለውን ተጠቃሚ ማጥፋት ይፈልጋሉ?`)) return;
-  try{ await deleteDoc(doc(db,'milk_users',btn.dataset.rmuser)); }catch(err){ console.error(err); }
+  if(!confirm('ይህን ምዝገባ መሰረዝ ይፈልጋሉ?')) return;
+  try{ await deleteDoc(doc(db,'stat_records', btn.dataset.del)); showToast('ተሰርዟል'); }
+  catch(err){ console.error(err); showToast('መሰረዝ አልተቻለም'); }
+});
+
+// ---- CSV export ----
+document.getElementById('export-csv').addEventListener('click', ()=>{
+  const headers = ['ሙሉ ስም','ጾታ','የስራ አይነት','የስራ ሁኔታ','ኢንሹራንስ ሁኔታ','ቀን'];
+  const lines = [headers.join(',')];
+  records.forEach(r=>{
+    const row = [r.fullName, r.gender, r.jobType, r.empStatus, r.insStatus, r.date||''];
+    lines.push(row.map(v => `"${String(v).replace(/"/g,'""')}"`).join(','));
+  });
+  const csv = '\uFEFF' + lines.join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'field-statistics.csv';
+  a.click();
+  URL.revokeObjectURL(url);
 });
 </script>
 </body>
-  </html>
+</html>
