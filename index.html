@@ -24,8 +24,35 @@
   .wrap{max-width:880px;margin:0 auto;padding:0 0 80px;}
   .hidden{display:none !important;}
 
+  /* Lang Selector CSS */
+  .lang-selector {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 20px 0;
+    background: var(--hero-bg);
+  }
+  .lang-btn {
+    background: var(--card);
+    border: 1px solid var(--line-strong);
+    color: var(--text-2);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11.5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.15s ease;
+  }
+  .lang-btn:hover, .lang-btn.active {
+    border-color: var(--teal);
+    color: var(--text);
+    background: var(--teal-dim);
+  }
+
   /* ---- Hero / landing (light theme, per reference design) ---- */
-  .hero{background:var(--hero-bg);padding:32px 20px 26px;border-radius:0 0 18px 18px;}
+  .hero{background:var(--hero-bg);padding:10px 20px 26px;border-radius:0 0 18px 18px;}
   .hero h1{margin:0;font-size:24px;font-weight:700;color:var(--hero-blue);text-align:center;}
   .hero p{margin:10px 0 0;font-size:13.5px;color:var(--hero-text-2);text-align:center;max-width:480px;margin-left:auto;margin-right:auto;}
   .dept-cards{display:flex;gap:14px;margin-top:26px;flex-wrap:wrap;justify-content:center;}
@@ -118,21 +145,27 @@
 </head>
 <body>
 
+<div class="lang-selector">
+  <button class="lang-btn active" data-lang="am">🇪🇹 አማርኛ</button>
+  <button class="lang-btn" data-lang="om">🇪🇹 Oromoo</button>
+  <button class="lang-btn" data-lang="en">🇬🇧 English</button>
+</div>
+
 <div class="hero">
-  <h1>ዕለታዊ መረጃዎች መመዝገቢያ</h1>
-  <p>የስራ ሂደቶችን መረጃ በጥራትና በፍጥነት መመዝገቢያ ማዕከል</p>
+  <h1 id="t-hero-title">ዕለታዊ መረጃዎች መመዝገቢያ</h1>
+  <p id="t-hero-desc">የስራ ሂደቶችን መረጃ በጥራትና በፍጥነት መመዝገቢያ ማዕከል</p>
   <div class="dept-cards">
     <div class="dept-card" data-panel="labor-panel">
       <div class="ic">💼</div>
-      <div class="lbl">ስራና ክህሎት</div>
+      <div class="lbl" id="t-lbl-labor">ስራና ክህሎት</div>
     </div>
     <div class="dept-card" data-panel="insurance-panel">
       <div class="ic">🏥</div>
-      <div class="lbl">ጤና መድን</div>
+      <div class="lbl" id="t-lbl-ins">ጤና መድን</div>
     </div>
     <div class="dept-card" data-panel="social-panel">
       <div class="ic">👥</div>
-      <div class="lbl">ማህበራዊ ጉዳይ</div>
+      <div class="lbl" id="t-lbl-soc">ማህበራዊ ጉዳይ</div>
     </div>
   </div>
   <div class="hero-underline"></div>
@@ -141,103 +174,97 @@
 <div class="wrap">
   <div class="inner">
 
-    <!-- LABOR PANEL -->
     <div id="labor-panel" class="stat-panel hidden">
-      <div class="section-title"><span class="num">💼</span> ስራና ክህሎት — የስራ አጥ ብዛት</div>
+      <div class="section-title"><span class="num">💼</span> <span id="t-pnl-labor-title">ስራና ክህሎት — የስራ አጥ ብዛት</span></div>
       <div class="card">
         <div class="readout">
-          <div class="chip red"><div class="k">ወንድ</div><div class="v" id="s-unemp-m">0</div></div>
-          <div class="chip red"><div class="k">ሴት</div><div class="v" id="s-unemp-f">0</div></div>
-          <div class="chip red"><div class="k">ድምር</div><div class="v" id="s-unemp-t">0</div></div>
+          <div class="chip red"><div class="k" id="t-chip-male-1">ወንድ</div><div class="v" id="s-unemp-m">0</div></div>
+          <div class="chip red"><div class="k" id="t-chip-female-1">ሴት</div><div class="v" id="s-unemp-f">0</div></div>
+          <div class="chip red"><div class="k" id="t-chip-total-1">ድምር</div><div class="v" id="s-unemp-t">0</div></div>
         </div>
       </div>
     </div>
 
-    <!-- INSURANCE PANEL -->
     <div id="insurance-panel" class="stat-panel hidden">
-      <div class="section-title"><span class="num">🏥</span> ጤና መድን</div>
+      <div class="section-title"><span class="num">🏥</span> <span id="t-pnl-ins-title">ጤና መድን</span></div>
       <div class="card">
-        <div class="hint" style="color:var(--text-2);font-size:11.5px;margin-bottom:8px;">አዲስ ያወጡ</div>
+        <div class="hint" id="t-ins-new-lbl" style="color:var(--text-2);font-size:11.5px;margin-bottom:8px;">አዲስ ያወጡ</div>
         <div class="readout">
-          <div class="chip blue"><div class="k">ወንድ</div><div class="v" id="s-insnew-m">0</div></div>
-          <div class="chip blue"><div class="k">ሴት</div><div class="v" id="s-insnew-f">0</div></div>
-          <div class="chip blue"><div class="k">ድምር</div><div class="v" id="s-insnew-t">0</div></div>
+          <div class="chip blue"><div class="k" id="t-chip-male-2">ወንድ</div><div class="v" id="s-insnew-m">0</div></div>
+          <div class="chip blue"><div class="k" id="t-chip-female-2">ሴት</div><div class="v" id="s-insnew-f">0</div></div>
+          <div class="chip blue"><div class="k" id="t-chip-total-2">ድምር</div><div class="v" id="s-insnew-t">0</div></div>
         </div>
-        <div class="hint" style="color:var(--text-2);font-size:11.5px;margin:12px 0 8px;">ያደሱ</div>
+        <div class="hint" id="t-ins-renew-lbl" style="color:var(--text-2);font-size:11.5px;margin:12px 0 8px;">ያደሱ</div>
         <div class="readout">
-          <div class="chip teal"><div class="k">ወንድ</div><div class="v" id="s-insrenew-m">0</div></div>
-          <div class="chip teal"><div class="k">ሴት</div><div class="v" id="s-insrenew-f">0</div></div>
-          <div class="chip teal"><div class="k">ድምር</div><div class="v" id="s-insrenew-t">0</div></div>
+          <div class="chip teal"><div class="k" id="t-chip-male-3">ወንድ</div><div class="v" id="s-insrenew-m">0</div></div>
+          <div class="chip teal"><div class="k" id="t-chip-female-3">ሴት</div><div class="v" id="s-insrenew-f">0</div></div>
+          <div class="chip teal"><div class="k" id="t-chip-total-3">ድምር</div><div class="v" id="s-insrenew-t">0</div></div>
         </div>
       </div>
     </div>
 
-    <!-- SOCIAL PANEL -->
     <div id="social-panel" class="stat-panel hidden">
-      <div class="section-title"><span class="num">👥</span> ሴቶችና ማህበራዊ ጉዳይ — ተጋላጭ ቡድኖች</div>
+      <div class="section-title"><span class="num">👥</span> <span id="t-pnl-soc-title">ሴቶችና ማህበራዊ ጉዳይ — ተጋላጭ ቡድኖች</span></div>
       <div class="card">
         <div class="readout" id="s-vuln-row"></div>
       </div>
-      <div class="section-title"><span class="num">--</span> በስራ አይነት ብዛት</div>
+      <div class="section-title"><span class="num">--</span> <span id="t-pnl-soc-jobs">በስራ አይነት ብዛት</span></div>
       <div class="card"><div class="grid4" id="s-by-job"></div></div>
-      <div class="section-title"><span class="num">--</span> የገቢ ደረጃ</div>
+      <div class="section-title"><span class="num">--</span> <span id="t-pnl-soc-income">የገቢ ደረጃ</span></div>
       <div class="card"><div class="readout" id="s-income-row"></div></div>
     </div>
 
-    <!-- ADMIN LOCK -->
     <div id="lock-screen">
-      <div class="section-title"><span class="num">🔒</span> የአድሚን መዳረሻ</div>
+      <div class="section-title"><span class="num">🔒</span> <span id="t-admin-access">የአድሚን መዳረሻ</span></div>
       <div class="card lock-box">
         <div class="icon">🔒</div>
-        <div style="font-size:13px;color:var(--text-2);margin-bottom:14px;">ዳታ ለማስገባት/ለማየት/ለማጥፋት የአድሚን ኮድ ያስፈልጋል</div>
+        <div id="t-admin-desc" style="font-size:13px;color:var(--text-2);margin-bottom:14px;">ዳታ ለማስገባት/ለማየት/ለማጥፋት የአድሚን ኮድ ያስፈልጋል</div>
         <input type="password" id="admin-pass" placeholder="የአድሚን ኮድ">
         <div class="form-actions" style="justify-content:center;">
           <button type="button" class="primary" id="btn-unlock">ክፈት</button>
         </div>
-        <div class="error-msg" id="lock-error"></div>
+        <div class="error-msg" id="lock-error">የተሳሳተ ኮድ</div>
       </div>
     </div>
 
-    <!-- ADMIN AREA -->
     <div id="admin-area" class="hidden">
 
       <div class="session-bar" style="display:flex;justify-content:space-between;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 16px;margin-bottom:6px;">
-        <span style="font-size:12.5px;color:var(--teal);">🔓 አድሚን ገብተዋል</span>
+        <span style="font-size:12.5px;color:var(--teal);" id="t-admin-status">🔓 አድሚን ገብተዋል</span>
         <button type="button" class="ghost small" id="btn-admin-logout">ውጣ</button>
       </div>
 
-      <div class="section-title"><span class="num">01</span> ዕለታዊ ቁጥር ማስገቢያ (አድሚን ብቻ)</div>
+      <div class="section-title"><span class="num">01</span> <span id="t-title-input">ዕለታዊ ቁጥር ማስገቢያ (አድሚን ብቻ)</span></div>
       <div class="card">
         <div class="dept-tabs">
-          <div class="dept-tab active" data-dept="labor">💼 ስራና ክህሎት</div>
-          <div class="dept-tab" data-dept="insurance">🏥 ጤና መድን</div>
-          <div class="dept-tab" data-dept="social">👥 ሴቶችና ማህበራዊ ጉዳይ</div>
+          <div class="dept-tab active" data-dept="labor" id="t-tab-labor">💼 ስራና ክህሎት</div>
+          <div class="dept-tab" data-dept="insurance" id="t-tab-ins">🏥 ጤና መድን</div>
+          <div class="dept-tab" data-dept="social" id="t-tab-soc">👥 ሴቶችና ማህበራዊ ጉዳይ</div>
         </div>
 
-        <!-- LABOR FORM -->
         <div id="dept-labor">
           <div class="grid2">
             <div class="field">
-              <label>👤 የዳታ ሰብሳቢ ስም</label>
+              <label id="t-lbl-collector-l">👤 የዳታ ሰብሳቢ ስም</label>
               <input type="text" id="l-collector" placeholder="የባለሙያ ስም">
             </div>
             <div class="field">
-              <label>📅 ቀን</label>
+              <label id="t-lbl-date-l">📅 ቀን</label>
               <input type="date" id="l-date" class="mono">
             </div>
           </div>
           <div class="grid2">
             <div class="field">
-              <label>ስራ አጥ — ወንድ ብዛት</label>
+              <label id="t-lbl-unemp-m">ስራ አጥ — ወንድ ብዛት</label>
               <input type="number" id="l-unemp-m" class="mono" min="0" placeholder="0">
             </div>
             <div class="field">
-              <label>ስራ አጥ — ሴት ብዛት</label>
+              <label id="t-lbl-unemp-f">ስራ አጥ — ሴት ብዛት</label>
               <input type="number" id="l-unemp-f" class="mono" min="0" placeholder="0">
             </div>
           </div>
           <div class="field">
-            <label>📝 ማስታወሻ</label>
+            <label id="t-lbl-notes-l">📝 ማስታወሻ</label>
             <textarea id="l-notes" placeholder="ማንኛውም ማስታወሻ..."></textarea>
           </div>
           <div class="form-actions">
@@ -245,40 +272,39 @@
           </div>
         </div>
 
-        <!-- INSURANCE FORM -->
         <div id="dept-insurance" class="hidden">
           <div class="grid2">
             <div class="field">
-              <label>👤 የዳታ ሰብሳቢ ስም</label>
+              <label id="t-lbl-collector-i">👤 የዳታ ሰብሳቢ ስም</label>
               <input type="text" id="i-collector" placeholder="የባለሙያ ስም">
             </div>
             <div class="field">
-              <label>📅 ቀን</label>
+              <label id="t-lbl-date-i">📅 ቀን</label>
               <input type="date" id="i-date" class="mono">
             </div>
           </div>
           <div class="grid2">
             <div class="field">
-              <label>አዲስ ያወጡ — ወንድ</label>
+              <label id="t-lbl-new-m">አዲስ ያወጡ — ወንድ</label>
               <input type="number" id="i-new-m" class="mono" min="0" placeholder="0">
             </div>
             <div class="field">
-              <label>አዲስ ያወጡ — ሴት</label>
+              <label id="t-lbl-new-f">አዲስ ያወጡ — ሴት</label>
               <input type="number" id="i-new-f" class="mono" min="0" placeholder="0">
             </div>
           </div>
           <div class="grid2">
             <div class="field">
-              <label>ያደሱ — ወንድ</label>
+              <label id="t-lbl-renew-m">ያደሱ — ወንድ</label>
               <input type="number" id="i-renew-m" class="mono" min="0" placeholder="0">
             </div>
             <div class="field">
-              <label>ያደሱ — ሴት</label>
+              <label id="t-lbl-renew-f">ያደሱ — ሴት</label>
               <input type="number" id="i-renew-f" class="mono" min="0" placeholder="0">
             </div>
           </div>
           <div class="field">
-            <label>📝 ማስታወሻ</label>
+            <label id="t-lbl-notes-i">📝 ማስታወሻ</label>
             <textarea id="i-notes" placeholder="ማንኛውም ማስታወሻ..."></textarea>
           </div>
           <div class="form-actions">
@@ -286,71 +312,70 @@
           </div>
         </div>
 
-        <!-- SOCIAL AFFAIRS FORM -->
         <div id="dept-social" class="hidden">
           <div class="grid2">
             <div class="field">
-              <label>👤 የዳታ ሰብሳቢ ስም</label>
+              <label id="t-lbl-collector-s">👤 የዳታ ሰብሳቢ ስም</label>
               <input type="text" id="so-collector" placeholder="የባለሙያ ስም">
             </div>
             <div class="field">
-              <label>📅 ቀን</label>
+              <label id="t-lbl-date-s">📅 ቀን</label>
               <input type="date" id="so-date" class="mono">
             </div>
           </div>
           <div class="grid2">
             <div class="field">
-              <label>አረጋውያን ብዛት</label>
+              <label id="t-lbl-elderly">አረጋውያን ብዛት</label>
               <input type="number" id="so-elderly" class="mono" min="0" placeholder="0">
             </div>
             <div class="field">
-              <label>አካል ጉዳተኞች ብዛት</label>
+              <label id="t-lbl-disabled">አካል ጉዳተኞች ብዛት</label>
               <input type="number" id="so-disabled" class="mono" min="0" placeholder="0">
             </div>
           </div>
           <div class="grid2">
             <div class="field">
-              <label>ሴቶች ብዛት</label>
+              <label id="t-lbl-women">ሴቶች ብዛት</label>
               <input type="number" id="so-women" class="mono" min="0" placeholder="0">
             </div>
             <div class="field">
-              <label>ህጻናት ብዛት (ከ18 በታች)</label>
+              <label id="t-lbl-children">ህጻናት ብዛት (ከ18 በታች)</label>
               <input type="number" id="so-children" class="mono" min="0" placeholder="0">
             </div>
           </div>
 
-          <div class="section-title" style="margin:16px 0 8px;"><span class="num">--</span> በስራ አይነት ብዛት</div>
+          <div class="section-title" style="margin:16px 0 8px;"><span class="num">--</span> <span id="t-lbl-sub-jobs">በስራ አይነት ብዛት</span></div>
           <div class="job-add-row">
             <div class="field">
-              <label>የስራ አይነት</label>
+              <label id="t-lbl-job-type">የስራ አይነት</label>
               <select id="so-job-select"></select>
             </div>
             <div class="field" style="max-width:110px;">
-              <label>ብዛት</label>
+              <label id="t-lbl-job-count">ብዛት</label>
               <input type="number" id="so-job-count" class="mono" min="0" placeholder="0">
             </div>
             <button type="button" class="ghost small" id="btn-add-job">+ ጨምር</button>
           </div>
           <div class="job-tally-list" id="so-job-list"></div>
 
-          <div class="section-title" style="margin:16px 0 8px;"><span class="num">--</span> የገቢ ደረጃ ብዛት</div>
+          <div class="section-title" style="margin:16px 0 8px;"><span class="num">--</span> <span id="t-lbl-sub-income">የገቢ ደረጃ ብዛት</span></div>
           <div class="grid3">
             <div class="field">
-              <label>ዝቅተኛ ገቢ</label>
+              <label id="t-lbl-income-low">ዝቅተኛ ገቢ</label>
               <input type="number" id="so-income-low" class="mono" min="0" placeholder="0">
             </div>
             <div class="field">
-              <label>መካከለኛ ገቢ</label>
+              <label id="t-lbl-income-mid">መካከለኛ ገቢ</label>
               <input type="number" id="so-income-mid" class="mono" min="0" placeholder="0">
             </div>
             <div class="field">
-              <label>ከፍተኛ ገቢ</label>
+              <label id="t-lbl-income-high">ከፍተኛ ገቢ</label>
               <input type="number" id="so-income-high" class="mono" min="0" placeholder="0">
             </div>
           </div>
 
           <div class="field">
-            <label>📝 ማስታወሻ</label>
+            <label id="t-lbl-notes-s">📝 ማስታወሻ</label>
             <textarea id="so-notes" placeholder="ማንኛውም ማስታወሻ..."></textarea>
           </div>
           <div class="form-actions">
@@ -359,12 +384,29 @@
         </div>
       </div>
 
-      <div class="section-title"><span class="num">02</span> ያለፉ ምዝገባዎች (አድሚን ብቻ)</div>
+      <div class="section-title"><span class="num">02</span> <span id="t-title-change-pass">የአድሚን ይለፍ ቃል ቀይር</span></div>
+      <div class="card">
+        <div class="grid2">
+          <div class="field">
+            <label id="t-lbl-new-pass">አዲስ የአድሚን ኮድ (ይለፍ ቃል)</label>
+            <input type="password" id="new-admin-pass" placeholder="አዲስ ኮድ ያስገቡ">
+          </div>
+          <div class="field">
+            <label id="t-lbl-confirm-pass">አዲስ ኮድ ድገሙ</label>
+            <input type="password" id="confirm-admin-pass" placeholder="አዲሱን ኮድ ይድገሙ">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="primary" id="btn-change-password">ቀይር</button>
+        </div>
+      </div>
+
+      <div class="section-title"><span class="num">03</span> <span id="t-title-history">ያለፉ ምዝገባዎች (አድሚን ብቻ)</span></div>
       <div class="card">
         <div class="dept-tabs">
-          <div class="hist-tab active" data-hist="labor">💼 ስራና ክህሎት</div>
-          <div class="hist-tab" data-hist="insurance">🏥 ጤና መድን</div>
-          <div class="hist-tab" data-hist="social">👥 ማህበራዊ ጉዳይ</div>
+          <div class="hist-tab active" data-hist="labor" id="t-hist-labor">💼 ስራና ክህሎት</div>
+          <div class="hist-tab" data-hist="insurance" id="t-hist-ins">🏥 ጤና መድን</div>
+          <div class="hist-tab" data-hist="social" id="t-hist-soc">👥 ማህበራዊ ጉዳይ</div>
         </div>
         <div style="overflow-x:auto;">
           <table>
@@ -398,12 +440,14 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const ADMIN_CODE = 'STAT-ADMIN-2026';
+// Get password from localStorage or fallback to default
+let admin_code = localStorage.getItem('CUSTOM_ADMIN_CODE') || 'STAT-ADMIN-2026';
+
 const TELEGRAM_BOT_TOKEN = '8816155815:AAGaxgc9bhIGjqLAxNTMvvFZq7StXRZ6Pus';
 const TELEGRAM_CHAT_ID = '6853753240';
-const JOB_TYPES = ['ግንባታ','ንግድ','አገልግሎት','ኢንዱስትሪ','ግብርና','ትራንስፖርት','ሌላ'];
 const ETH_MONTHS = ['መስከረም','ጥቅምት','ኅዳር','ታኅሳስ','ጥር','የካቲት','መጋቢት','ሚያዝያ','ግንቦት','ሰኔ','ሐምሌ','ነሐሴ','ጳጉሜን'];
 
+let currentLang = 'am';
 let laborEntries = [];
 let insuranceEntries = [];
 let socialEntries = [];
@@ -412,9 +456,389 @@ let activeHistTab = 'labor';
 let jobTallyDraft = {}; // {jobType: count} for the social form draft
 let editState = { dept: null, id: null };
 
+// Multi-language definitions
+const translations = {
+  am: {
+    heroTitle: "ዕለታዊ መረጃዎች መመዝገቢያ",
+    heroDesc: "የስራ ሂደቶችን መረጃ በጥራትና በፍጥነት መመዝገቢያ ማዕከል",
+    lblLabor: "ስራና ክህሎት",
+    lblIns: "ጤና መድን",
+    lblSoc: "ማህበራዊ ጉዳይ",
+    pnlLaborTitle: "ስራና ክህሎት — የስራ አጥ ብዛት",
+    pnlInsTitle: "ጤና መድን",
+    insNewLbl: "አዲስ ያወጡ",
+    insRenewLbl: "ያደሱ",
+    pnlSocTitle: "ሴቶችና ማህበራዊ ጉዳይ — ተጋላጭ ቡድኖች",
+    pnlSocJobs: "በስራ አይነት ብዛት",
+    pnlSocIncome: "የገቢ ደረጃ",
+    adminAccess: "የአድሚን መዳረሻ",
+    adminDesc: "ዳታ ለማስገባት/ለማየት/ለማጥፋት የአድሚን ኮድ ያስፈልጋል",
+    adminStatus: "🔓 አድሚን ገብተዋል",
+    titleInput: "ዕለታዊ ቁጥር ማስገቢያ (አድሚን ብቻ)",
+    lblCollector: "👤 የዳታ ሰብሳቢ ስም",
+    lblDate: "📅 ቀን",
+    lblUnempM: "ስራ አጥ — ወንድ ብዛት",
+    lblUnempF: "ስራ አጥ — ሴት ብዛት",
+    lblNotes: "📝 ማስታወሻ",
+    lblNewM: "አዲስ ያወጡ — ወንድ",
+    lblNewF: "አዲስ ያወጡ — ሴት",
+    lblRenewM: "ያደሱ — ወንድ",
+    lblRenewF: "ያደሱ — ሴት",
+    lblElderly: "አረጋውያን ብዛት",
+    lblDisabled: "አካል ጉዳተኞች ብዛት",
+    lblWomen: "ሴቶች ብዛት",
+    lblChildren: "ህጻናት ብዛት (ከ18 በታች)",
+    lblSubJobs: "በስራ አይነት ብዛት",
+    lblJobType: "የስራ አይነት",
+    lblJobCount: "ብዛት",
+    lblSubIncome: "የገቢ ደረጃ ብዛት",
+    lblIncomeLow: "ዝቅተኛ ገቢ",
+    lblIncomeMid: "መካከለኛ ገቢ",
+    lblIncomeHigh: "ከፍተኛ ገቢ",
+    titleChangePass: "የአድሚን ይለፍ ቃል ቀይር",
+    lblNewPass: "አዲስ የአድሚን ኮድ (ይለፍ ቃል)",
+    lblConfirmPass: "አዲስ ኮድ ድገሙ",
+    titleHistory: "ያለፉ ምዝገባዎች (አድሚን ብቻ)",
+    btnUnlock: "ክፈት",
+    btnSave: "አስቀምጥ",
+    btnUpdate: "አዘምን",
+    btnChange: "ቀይር",
+    btnAdd: "+ ጨምር",
+    btnLogout: "ውጣ",
+    btnEdit: "አርትዕ",
+    btnDelete: "ሰርዝ",
+    btnRemove: "✕ አጥፋ",
+    toastNoVal: "እባክዎ ቢያንስ አንድ ቁጥር ያስገቡ",
+    toastSaved: "ተመዝግቧል",
+    toastUpdated: "ተዘምኗል",
+    toastDeleted: "ተሰርዟል",
+    toastErr: "ስህተት ተፈጥሯል፣ Firestore ያረጋግጡ",
+    toastPassSuccess: "የአድሚን ይለፍ ቃል በተሳካ ሁኔታ ተቀይሯል",
+    toastPassMismatch: "የይለፍ ቃላቱ አይዛመዱም!",
+    toastPassEmpty: "እባክዎ ትክክለኛ የይለፍ ቃል ያስገቡ",
+    invalidCode: "የተሳሳተ ኮድ",
+    emptyHist: "ገና ምንም ውሂብ አልተመዘገበም።",
+    confirmDel: "ይህን ምዝገባ መሰረዝ ይፈልጋሉ?",
+    male: "ወንድ",
+    female: "ሴት",
+    total: "ድምር",
+    collectorPlaceholder: "የባለሙያ ስም",
+    notesPlaceholder: "ማንኛውም ማስታወሻ...",
+    passPlaceholder: "አዲስ ኮድ ያስገቡ",
+    passConfirmPlaceholder: "አዲሱን ኮድ ይድገሙ",
+    elderly: "አረጋውያን",
+    disabled: "አካል ጉዳተኞች",
+    women: "ሴቶች",
+    children: "ህጻናት",
+    colDate: "ቀን",
+    colColl: "ሰብሳቢ",
+    colUnempM: "ስራ አጥ ወ",
+    colUnempF: "ስራ አጥ ሴ",
+    colNewM: "አዲስ ወ",
+    colNewF: "አዲስ ሴ",
+    colRenM: "ያደሱ ወ",
+    colRenF: "ያደሱ ሴ",
+    colElderly: "አረጋውያን",
+    colDisabled: "አካል ጉዳ.",
+    colWomen: "ሴቶች",
+    colChildren: "ህጻናት",
+    colIncome: "ገቢ (ዝ/መ/ከ)",
+    colNotes: "ማስታወሻ",
+    jobs: ['ግንባታ','ንግድ','አገልግሎት','ኢንዱስትሪ','ግብርና','ትራንስፖርት','ሌላ']
+  },
+  om: {
+    heroTitle: "Galmee Ragaalee Guyyaa",
+    heroDesc: "Giddugala galmeessa ragaalee adeemsa hojii qulqullinaafi ariitiin",
+    lblLabor: "Hojii fi Ogummaa",
+    lblIns: "Inshuraansii Fayyaa",
+    lblSoc: "Dhimma Hawaasummaa",
+    pnlLaborTitle: "Hojii fi Ogummaa — Baay'ina Hojii Dhabeeyyii",
+    pnlInsTitle: "Inshuraansii Fayyaa",
+    insNewLbl: "Haaraa Kan Baasan",
+    insRenewLbl: "Kan Haaromsan",
+    pnlSocTitle: "Dubartoota fi Dhimma Hawaasummaa — Gareewwan Haxaraman",
+    pnlSocJobs: "Baay'ina Gosa Hojiitiin",
+    pnlSocIncome: "Sadarkaa Galii",
+    adminAccess: "Seensa Admin",
+    adminDesc: "Ragaa galchuuf/ilaaluuf/haquuf koodiin admin ni barbaachisa",
+    adminStatus: "🔓 Admin Seeneera",
+    titleInput: "Galmeessa Lakkoofsa Guyyaa (Admin Qofa)",
+    lblCollector: "👤 Maqaa Ragaa Sassaabaa",
+    lblDate: "📅 Guyyaa",
+    lblUnempM: "Hojii Dhabeeyyii — Dhiira",
+    lblUnempF: "Hojii Dhabeeyyii — Dubartii",
+    lblNotes: "📝 Yaada",
+    lblNewM: "Haaraa Kan Baasan — Dhiira",
+    lblNewF: "Haaraa Kan Baasan — Dubartii",
+    lblRenewM: "Kan Haaromsan — Dhiira",
+    lblRenewF: "Kan Haaromsan — Dubartii",
+    lblElderly: "Baay'ina Maanguddootaa",
+    lblDisabled: "Baay'ina Qaama Midhamtootaa",
+    lblWomen: "Baay'ina Dubartootaa",
+    lblChildren: "Baay'ina Daaimmanii (<18)",
+    lblSubJobs: "Baay'ina Gosa Hojiitiin",
+    lblJobType: "Gosa Hojii",
+    lblJobCount: "Baay'ina",
+    lblSubIncome: "Baay'ina Sadarkaa Galiitiin",
+    lblIncomeLow: "Galii Gadiaanaa",
+    lblIncomeMid: "Galii Giddugaleessaa",
+    lblIncomeHigh: "Galii Olaanaa",
+    titleChangePass: "Jecha Darbi Admin Jijjiiri",
+    lblNewPass: "Koodii Admin Haaraa (Jecha Darbi)",
+    lblConfirmPass: "Koodii Haaraa Irra Deebi'i",
+    titleHistory: "Galmeewwan Darban (Admin Qofa)",
+    btnUnlock: "Bani",
+    btnSave: "Galmeessi",
+    btnUpdate: "Haaromsi",
+    btnChange: "Jijjiiri",
+    btnAdd: "+ Dabali",
+    btnLogout: "Ba'i",
+    btnEdit: "Gulaali",
+    btnDelete: "Haqi",
+    btnRemove: "✕ Haqi",
+    toastNoVal: "Maaloo yoo xiqqaate lakkoofsa tokko galchaa",
+    toastSaved: "Galmeeffameera",
+    toastUpdated: "Haaromfameera",
+    toastDeleted: "Haqameera",
+    toastErr: "Dogoggorri uumameera, Firestore mirkaneeffadhaa",
+    toastPassSuccess: "Jechi darbi admin milkiin jijjiirameera",
+    toastPassMismatch: "Jechi darbi wal hin simu!",
+    toastPassEmpty: "Maaloo jecha darbi sirrii galchaa",
+    invalidCode: "Koodii Sobaafi",
+    emptyHist: "Ragaan galmeeffame hin jiru.",
+    confirmDel: "Galmee kana haquu barbaadduu?",
+    male: "Dhiira",
+    female: "Dubartii",
+    total: "Ida'ama",
+    collectorPlaceholder: "Maqaa Ogessa",
+    notesPlaceholder: "Yaada kamiyyuu...",
+    passPlaceholder: "Koodii haaraa galchi",
+    passConfirmPlaceholder: "Koodii haaraa irra deebi'i",
+    elderly: "Maanguddoota",
+    disabled: "Qaama Midhamtoota",
+    women: "Dubartoota",
+    children: "Daa'imman",
+    colDate: "Guyyaa",
+    colColl: "Sassaabaa",
+    colUnempM: "Hojii Dhab Dhi",
+    colUnempF: "Hojii Dhab Dub",
+    colNewM: "Haaraa Dhi",
+    colNewF: "Haaraa Dub",
+    colRenM: "Haaroms Dhi",
+    colRenF: "Haaroms Dub",
+    colElderly: "Maanguddo",
+    colDisabled: "Q/Midhamtoota",
+    colWomen: "Dubartoota",
+    colChildren: "Daa'imman",
+    colIncome: "Galii (Gad/Gid/Ol)",
+    colNotes: "Yaada",
+    jobs: ['Ijaarama','Daldala','Tajaajila','Industrii','Qonna','Traanspoortii','Kan biraa']
+  },
+  en: {
+    heroTitle: "Daily Statistics Registry",
+    heroDesc: "Rapid and High-Quality Workflow Data Management Center",
+    lblLabor: "Labor & Skills",
+    lblIns: "Health Insurance",
+    lblSoc: "Social Affairs",
+    pnlLaborTitle: "Labor & Skills — Unemployment Statistics",
+    pnlInsTitle: "Health Insurance",
+    insNewLbl: "Newly Registered",
+    insRenewLbl: "Renewed",
+    pnlSocTitle: "Women & Social Affairs — Vulnerable Groups",
+    pnlSocJobs: "Distribution by Job Type",
+    pnlSocIncome: "Income Levels",
+    adminAccess: "Administrator Access",
+    adminDesc: "Enter Admin credentials to record, update, or clear datasets",
+    adminStatus: "🔓 Admin Authorized",
+    titleInput: "Daily Record Entry (Admin Only)",
+    lblCollector: "👤 Collector Name",
+    lblDate: "📅 Date",
+    lblUnempM: "Unemployed — Male Count",
+    lblUnempF: "Unemployed — Female Count",
+    lblNotes: "📝 Remarks / Notes",
+    lblNewM: "Newly Registered — Male",
+    lblNewF: "Newly Registered — Female",
+    lblRenewM: "Renewed — Male",
+    lblRenewF: "Renewed — Female",
+    lblElderly: "Elderly Population",
+    lblDisabled: "Persons with Disabilities",
+    lblWomen: "Women Count",
+    lblChildren: "Children Count (<18)",
+    lblSubJobs: "Counts by Profession / Job",
+    lblJobType: "Job Sector",
+    lblJobCount: "Quantity",
+    lblSubIncome: "Income Level Demographics",
+    lblIncomeLow: "Low Income",
+    lblIncomeMid: "Middle Income",
+    lblIncomeHigh: "High Income",
+    titleChangePass: "Modify Administrator Password",
+    lblNewPass: "New Administrator Password / Code",
+    lblConfirmPass: "Confirm New Code",
+    titleHistory: "Archived Logs & Records (Admin Only)",
+    btnUnlock: "Authorize",
+    btnSave: "Save Entry",
+    btnUpdate: "Apply Updates",
+    btnChange: "Update Password",
+    btnAdd: "+ Add Row",
+    btnLogout: "Exit Session",
+    btnEdit: "Edit",
+    btnDelete: "Delete",
+    btnRemove: "✕ Remove",
+    toastNoVal: "Please populate at least one metric field",
+    toastSaved: "Record logged successfully",
+    toastUpdated: "Record modified successfully",
+    toastDeleted: "Record deleted",
+    toastErr: "Process error. Please verify Firestore connectivity",
+    toastPassSuccess: "Administrator password updated successfully",
+    toastPassMismatch: "Passwords do not match!",
+    toastPassEmpty: "Please provide a valid administrative passcode",
+    invalidCode: "Invalid Passcode Provided",
+    emptyHist: "No archived data is currently available in this scope.",
+    confirmDel: "Are you certain you wish to delete this entry permanently?",
+    male: "Male",
+    female: "Female",
+    total: "Total",
+    collectorPlaceholder: "Officer / Collector Name",
+    notesPlaceholder: "Add context or remarks here...",
+    passPlaceholder: "Enter new passcode",
+    passConfirmPlaceholder: "Re-type new passcode",
+    elderly: "Elderly",
+    disabled: "PWDs",
+    women: "Women",
+    children: "Children",
+    colDate: "Date",
+    colColl: "Collector",
+    colUnempM: "Unemp M",
+    colUnempF: "Unemp F",
+    colNewM: "New M",
+    colNewF: "New F",
+    colRenM: "Renew M",
+    colRenF: "Renew F",
+    colElderly: "Elderly",
+    colDisabled: "PWD",
+    colWomen: "Women",
+    colChildren: "Children",
+    colIncome: "Income (L/M/H)",
+    colNotes: "Remarks",
+    jobs: ['Construction','Commerce','Service','Industry','Agriculture','Transport','Other']
+  }
+};
+
+function changeLanguage(lang){
+  currentLang = lang;
+  const t = translations[lang];
+
+  // Title & Hero
+  document.getElementById('t-hero-title').textContent = t.heroTitle;
+  document.getElementById('t-hero-desc').textContent = t.heroDesc;
+  document.getElementById('t-lbl-labor').textContent = t.lblLabor;
+  document.getElementById('t-lbl-ins').textContent = t.lblIns;
+  document.getElementById('t-lbl-soc').textContent = t.lblSoc;
+
+  // Stats Dashboard Titles
+  document.getElementById('t-pnl-labor-title').textContent = t.pnlLaborTitle;
+  document.getElementById('t-pnl-ins-title').textContent = t.pnlInsTitle;
+  document.getElementById('t-ins-new-lbl').textContent = t.insNewLbl;
+  document.getElementById('t-ins-renew-lbl').textContent = t.insRenewLbl;
+  document.getElementById('t-pnl-soc-title').textContent = t.pnlSocTitle;
+  document.getElementById('t-pnl-soc-jobs').textContent = t.pnlSocJobs;
+  document.getElementById('t-pnl-soc-income').textContent = t.pnlSocIncome;
+
+  // Static Chips Label
+  ['t-chip-male-1','t-chip-male-2','t-chip-male-3'].forEach(id=> document.getElementById(id).textContent = t.male);
+  ['t-chip-female-1','t-chip-female-2','t-chip-female-3'].forEach(id=> document.getElementById(id).textContent = t.female);
+  ['t-chip-total-1','t-chip-total-2','t-chip-total-3'].forEach(id=> document.getElementById(id).textContent = t.total);
+
+  // Lock Screen
+  document.getElementById('t-admin-access').textContent = t.adminAccess;
+  document.getElementById('t-admin-desc').textContent = t.adminDesc;
+  document.getElementById('btn-unlock').textContent = t.btnUnlock;
+  document.getElementById('lock-error').textContent = t.invalidCode;
+
+  // Admin Header
+  document.getElementById('t-admin-status').textContent = t.adminStatus;
+  document.getElementById('btn-admin-logout').textContent = t.btnLogout;
+  document.getElementById('t-title-input').textContent = t.titleInput;
+
+  // Admin Tabs
+  document.getElementById('t-tab-labor').textContent = '💼 ' + t.lblLabor;
+  document.getElementById('t-tab-ins').textContent = '🏥 ' + t.lblIns;
+  document.getElementById('t-tab-soc').textContent = '👥 ' + t.lblSoc;
+
+  // Labor Inputs Labels
+  document.getElementById('t-lbl-collector-l').textContent = t.lblCollector;
+  document.getElementById('t-lbl-date-l').textContent = t.lblDate;
+  document.getElementById('t-lbl-unemp-m').textContent = t.lblUnempM;
+  document.getElementById('t-lbl-unemp-f').textContent = t.lblUnempF;
+  document.getElementById('t-lbl-notes-l').textContent = t.lblNotes;
+  document.getElementById('l-collector').placeholder = t.collectorPlaceholder;
+  document.getElementById('l-notes').placeholder = t.notesPlaceholder;
+  document.getElementById('btn-save-labor').textContent = editState.dept === 'labor' ? t.btnUpdate : t.btnSave;
+
+  // Insurance Inputs Labels
+  document.getElementById('t-lbl-collector-i').textContent = t.lblCollector;
+  document.getElementById('t-lbl-date-i').textContent = t.lblDate;
+  document.getElementById('t-lbl-new-m').textContent = t.lblNewM;
+  document.getElementById('t-lbl-new-f').textContent = t.lblNewF;
+  document.getElementById('t-lbl-renew-m').textContent = t.lblRenewM;
+  document.getElementById('t-lbl-renew-f').textContent = t.lblRenewF;
+  document.getElementById('t-lbl-notes-i').textContent = t.lblNotes;
+  document.getElementById('i-collector').placeholder = t.collectorPlaceholder;
+  document.getElementById('i-notes').placeholder = t.notesPlaceholder;
+  document.getElementById('btn-save-insurance').textContent = editState.dept === 'insurance' ? t.btnUpdate : t.btnSave;
+
+  // Social Affairs Inputs Labels
+  document.getElementById('t-lbl-collector-s').textContent = t.lblCollector;
+  document.getElementById('t-lbl-date-s').textContent = t.lblDate;
+  document.getElementById('t-lbl-elderly').textContent = t.lblElderly;
+  document.getElementById('t-lbl-disabled').textContent = t.lblDisabled;
+  document.getElementById('t-lbl-women').textContent = t.lblWomen;
+  document.getElementById('t-lbl-children').textContent = t.lblChildren;
+  document.getElementById('t-lbl-sub-jobs').textContent = t.lblSubJobs;
+  document.getElementById('t-lbl-job-type').textContent = t.lblJobType;
+  document.getElementById('t-lbl-job-count').textContent = t.lblJobCount;
+  document.getElementById('btn-add-job').textContent = t.btnAdd;
+  document.getElementById('t-lbl-sub-income').textContent = t.lblSubIncome;
+  document.getElementById('t-lbl-income-low').textContent = t.lblIncomeLow;
+  document.getElementById('t-lbl-income-mid').textContent = t.lblIncomeMid;
+  document.getElementById('t-lbl-income-high').textContent = t.lblIncomeHigh;
+  document.getElementById('t-lbl-notes-s').textContent = t.lblNotes;
+  document.getElementById('so-collector').placeholder = t.collectorPlaceholder;
+  document.getElementById('so-notes').placeholder = t.notesPlaceholder;
+  document.getElementById('btn-save-social').textContent = editState.dept === 'social' ? t.btnUpdate : t.btnSave;
+
+  // Password Change Area
+  document.getElementById('t-title-change-pass').textContent = t.titleChangePass;
+  document.getElementById('t-lbl-new-pass').textContent = t.lblNewPass;
+  document.getElementById('t-lbl-confirm-pass').textContent = t.lblConfirmPass;
+  document.getElementById('new-admin-pass').placeholder = t.passPlaceholder;
+  document.getElementById('confirm-admin-pass').placeholder = t.passConfirmPlaceholder;
+  document.getElementById('btn-change-password').textContent = t.btnChange;
+
+  // History Section
+  document.getElementById('t-title-history').textContent = t.titleHistory;
+  document.getElementById('t-hist-labor').textContent = '💼 ' + t.lblLabor;
+  document.getElementById('t-hist-ins').textContent = '🏥 ' + t.lblIns;
+  document.getElementById('t-hist-soc').textContent = '👥 ' + t.lblSoc;
+
+  populateJobSelect();
+  renderStats();
+  if(adminUnlocked){
+    renderHistTable();
+  }
+}
+
+// Attach lang switcher events
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    changeLanguage(btn.dataset.lang);
+  });
+});
+
 function todayISO(){ return new Date().toISOString().slice(0,10); }
 function escapeAttr(str){ const d=document.createElement('div'); d.textContent=str||''; return d.innerHTML; }
-function money(n){ return Math.round(Number(n)||0).toLocaleString('en-US'); }
 
 function gregorianToJDN(y,m,d){
   return Math.floor((1461*(y+4800+Math.floor((m-14)/12)))/4)+Math.floor((367*(m-2-12*Math.floor((m-14)/12)))/12)-Math.floor((3*Math.floor((y+4900+Math.floor((m-14)/12))/100))/4)+d-32075;
@@ -451,7 +875,8 @@ document.getElementById('i-date').value = todayISO();
 document.getElementById('so-date').value = todayISO();
 
 function populateJobSelect(){
-  document.getElementById('so-job-select').innerHTML = JOB_TYPES.map(j=>`<option value="${j}">${j}</option>`).join('');
+  const t = translations[currentLang];
+  document.getElementById('so-job-select').innerHTML = t.jobs.map(j=>`<option value="${j}">${j}</option>`).join('');
 }
 populateJobSelect();
 
@@ -475,14 +900,14 @@ document.querySelectorAll('.dept-card').forEach(card=>{
 document.getElementById('btn-unlock').addEventListener('click', ()=>{
   const val = document.getElementById('admin-pass').value;
   const err = document.getElementById('lock-error');
-  if(val === ADMIN_CODE){
+  if(val === admin_code){
     adminUnlocked = true;
     document.getElementById('lock-screen').classList.add('hidden');
     document.getElementById('admin-area').classList.remove('hidden');
     err.style.display='none';
     renderHistTable();
   }else{
-    err.textContent = 'የተሳሳተ ኮድ'; err.style.display='block';
+    err.textContent = translations[currentLang].invalidCode; err.style.display='block';
   }
 });
 document.getElementById('btn-admin-logout').addEventListener('click', ()=>{
@@ -535,6 +960,7 @@ onSnapshot(query(collection(db,'social_tally')), (snap)=>{
 function sumField(arr, field){ return arr.reduce((s,r)=> s + (Number(r[field])||0), 0); }
 
 function renderStats(){
+  const t = translations[currentLang];
   const unempM = sumField(laborEntries,'unempMale');
   const unempF = sumField(laborEntries,'unempFemale');
   document.getElementById('s-unemp-m').textContent = unempM;
@@ -555,26 +981,33 @@ function renderStats(){
 
   const vulnRow = document.getElementById('s-vuln-row');
   const vulnDefs = [
-    {k:'አረጋውያን', f:'elderly'}, {k:'አካል ጉዳተኞች', f:'disabled'},
-    {k:'ሴቶች', f:'women'}, {k:'ህጻናት', f:'children'}
+    {k: t.elderly, f:'elderly'}, {k: t.disabled, f:'disabled'},
+    {k: t.women, f:'women'}, {k: t.children, f:'children'}
   ];
   vulnRow.innerHTML = vulnDefs.map(v=> `<div class="chip purple"><div class="k">${v.k}</div><div class="v">${sumField(socialEntries,v.f)}</div></div>`).join('');
 
   const jobBox = document.getElementById('s-by-job');
-  jobBox.innerHTML = JOB_TYPES.map(j=>{
-    const count = socialEntries.reduce((s,r)=> s + (Number((r.jobTypeCounts||{})[j])||0), 0);
+  jobBox.innerHTML = t.jobs.map((j, index)=>{
+    // Find count by checking database job lists mapped by indices or strings
+    const count = socialEntries.reduce((s,r)=> {
+      // Map back to amharic string to match firebase database keys, or use indices
+      const amharicJobKey = translations['am'].jobs[index];
+      const countValue = r.jobTypeCounts ? (r.jobTypeCounts[j] || r.jobTypeCounts[amharicJobKey] || 0) : 0;
+      return s + (Number(countValue)||0);
+    }, 0);
     return `<div class="chip"><div class="k">${j}</div><div class="v">${count}</div></div>`;
   }).join('');
 
   const incomeRow = document.getElementById('s-income-row');
   const incomeDefs = [
-    {k:'ዝቅተኛ ገቢ', f:'incomeLow'}, {k:'መካከለኛ ገቢ', f:'incomeMid'}, {k:'ከፍተኛ ገቢ', f:'incomeHigh'}
+    {k: t.lblIncomeLow, f:'incomeLow'}, {k: t.lblIncomeMid, f:'incomeMid'}, {k: t.lblIncomeHigh, f:'incomeHigh'}
   ];
   incomeRow.innerHTML = incomeDefs.map(v=> `<div class="chip purple"><div class="k">${v.k}</div><div class="v">${sumField(socialEntries,v.f)}</div></div>`).join('');
 }
 
 // ---- Save: Labor ----
 document.getElementById('btn-save-labor').addEventListener('click', async ()=>{
+  const t = translations[currentLang];
   const date = document.getElementById('l-date').value || todayISO();
   const rec = {
     collectorName: document.getElementById('l-collector').value.trim(),
@@ -584,25 +1017,26 @@ document.getElementById('btn-save-labor').addEventListener('click', async ()=>{
     notes: document.getElementById('l-notes').value.trim(),
     createdAt: Date.now()
   };
-  if(rec.unempMale===0 && rec.unempFemale===0 && !rec.notes){ showToast('እባክዎ ቢያንስ አንድ ቁጥር ያስገቡ'); return; }
+  if(rec.unempMale===0 && rec.unempFemale===0 && !rec.notes){ showToast(t.toastNoVal); return; }
   const isEditing = editState.dept === 'labor' && editState.id;
   try{
     if(isEditing){
       await updateDoc(doc(db,'labor_tally', editState.id), rec);
-      showToast('ተዘምኗል');
+      showToast(t.toastUpdated);
     }else{
       await addDoc(collection(db,'labor_tally'), rec);
       await sendTelegram(`💼 ስራና ክህሎት — ዕለታዊ ቆጠራ\n👤 ሰብሳቢ: ${rec.collectorName||'—'}\n📅 ${rec.ethDate} (${rec.date})\nስራ አጥ ወንድ: ${rec.unempMale}\nስራ አጥ ሴት: ${rec.unempFemale}${rec.notes ? '\n📝 '+rec.notes : ''}`);
-      showToast('ተመዝግቧል');
+      showToast(t.toastSaved);
     }
     document.getElementById('l-unemp-m').value=''; document.getElementById('l-unemp-f').value=''; document.getElementById('l-notes').value=''; document.getElementById('l-collector').value='';
     document.getElementById('l-date').value = todayISO();
     if(isEditing) cancelEdit();
-  }catch(e){ console.error(e); showToast('ስህተት ተፈጥሯል፣ Firestore ያረጋግጡ'); }
+  }catch(e){ console.error(e); showToast(t.toastErr); }
 });
 
 // ---- Save: Insurance ----
 document.getElementById('btn-save-insurance').addEventListener('click', async ()=>{
+  const t = translations[currentLang];
   const date = document.getElementById('i-date').value || todayISO();
   const rec = {
     collectorName: document.getElementById('i-collector').value.trim(),
@@ -614,41 +1048,43 @@ document.getElementById('btn-save-insurance').addEventListener('click', async ()
     notes: document.getElementById('i-notes').value.trim(),
     createdAt: Date.now()
   };
-  if(!rec.newMale && !rec.newFemale && !rec.renewMale && !rec.renewFemale && !rec.notes){ showToast('እባክዎ ቢያንስ አንድ ቁጥር ያስገቡ'); return; }
+  if(!rec.newMale && !rec.newFemale && !rec.renewMale && !rec.renewFemale && !rec.notes){ showToast(t.toastNoVal); return; }
   const isEditing = editState.dept === 'insurance' && editState.id;
   try{
     if(isEditing){
       await updateDoc(doc(db,'insurance_tally', editState.id), rec);
-      showToast('ተዘምኗል');
+      showToast(t.toastUpdated);
     }else{
       await addDoc(collection(db,'insurance_tally'), rec);
       await sendTelegram(`🏥 ጤና መድን — ዕለታዊ ቆጠራ\n👤 ሰብሳቢ: ${rec.collectorName||'—'}\n📅 ${rec.ethDate} (${rec.date})\nአዲስ ያወጡ ወ: ${rec.newMale} ሴ: ${rec.newFemale}\nያደሱ ወ: ${rec.renewMale} ሴ: ${rec.renewFemale}${rec.notes ? '\n📝 '+rec.notes : ''}`);
-      showToast('ተመዝግቧል');
+      showToast(t.toastSaved);
     }
     ['i-new-m','i-new-f','i-renew-m','i-renew-f'].forEach(id=> document.getElementById(id).value='');
     document.getElementById('i-collector').value='';
     document.getElementById('i-notes').value='';
     document.getElementById('i-date').value = todayISO();
     if(isEditing) cancelEdit();
-  }catch(e){ console.error(e); showToast('ስህተት ተፈጥሯል፣ Firestore ያረጋግጡ'); }
+  }catch(e){ console.error(e); showToast(t.toastErr); }
 });
 
 // ---- Social form: job type tally add/remove ----
 function renderJobTallyList(){
+  const t = translations[currentLang];
   const box = document.getElementById('so-job-list');
   const keys = Object.keys(jobTallyDraft);
   if(keys.length === 0){ box.innerHTML = ''; return; }
   box.innerHTML = keys.map(j=> `
     <div class="job-tally-item">
       <span>${j}: <strong class="mono">${jobTallyDraft[j]}</strong></span>
-      <button type="button" class="rm" data-rmjob="${j}">✕ አጥፋ</button>
+      <button type="button" class="rm" data-rmjob="${j}">${t.btnRemove}</button>
     </div>
   `).join('');
 }
 document.getElementById('btn-add-job').addEventListener('click', ()=>{
+  const t = translations[currentLang];
   const job = document.getElementById('so-job-select').value;
   const count = Number(document.getElementById('so-job-count').value)||0;
-  if(count <= 0){ showToast('ትክክለኛ ቁጥር ያስገቡ'); return; }
+  if(count <= 0){ showToast(currentLang === 'am' ? 'ትክክለኛ ቁጥር ያስገቡ' : (currentLang === 'om' ? 'Lakkoofsa sirrii galchaa' : 'Please enter a valid number')); return; }
   jobTallyDraft[job] = (jobTallyDraft[job]||0) + count;
   document.getElementById('so-job-count').value = '';
   renderJobTallyList();
@@ -662,6 +1098,7 @@ document.getElementById('so-job-list').addEventListener('click', (e)=>{
 
 // ---- Save: Social Affairs ----
 document.getElementById('btn-save-social').addEventListener('click', async ()=>{
+  const t = translations[currentLang];
   const date = document.getElementById('so-date').value || todayISO();
   const rec = {
     collectorName: document.getElementById('so-collector').value.trim(),
@@ -678,17 +1115,17 @@ document.getElementById('btn-save-social').addEventListener('click', async ()=>{
     createdAt: Date.now()
   };
   const hasAny = rec.elderly||rec.disabled||rec.women||rec.children||Object.keys(jobTallyDraft).length||rec.incomeLow||rec.incomeMid||rec.incomeHigh;
-  if(!hasAny && !rec.notes){ showToast('እባክዎ ቢያንስ አንድ ቁጥር ያስገቡ'); return; }
+  if(!hasAny && !rec.notes){ showToast(t.toastNoVal); return; }
   const isEditing = editState.dept === 'social' && editState.id;
   try{
     if(isEditing){
       await updateDoc(doc(db,'social_tally', editState.id), rec);
-      showToast('ተዘምኗል');
+      showToast(t.toastUpdated);
     }else{
       await addDoc(collection(db,'social_tally'), rec);
       const jobText = Object.keys(jobTallyDraft).length ? '\n💼 ' + Object.entries(jobTallyDraft).map(([k,v])=>`${k}:${v}`).join(', ') : '';
       await sendTelegram(`👥 ሴቶችና ማህበራዊ ጉዳይ — ዕለታዊ ቆጠራ\n👤 ሰብሳቢ: ${rec.collectorName||'—'}\n📅 ${rec.ethDate} (${rec.date})\nአረጋውያን: ${rec.elderly} · አካል ጉዳተኞች: ${rec.disabled} · ሴቶች: ${rec.women} · ህጻናት: ${rec.children}\nገቢ — ዝቅተኛ:${rec.incomeLow} መካከለኛ:${rec.incomeMid} ከፍተኛ:${rec.incomeHigh}${jobText}${rec.notes ? '\n📝 '+rec.notes : ''}`);
-      showToast('ተመዝግቧል');
+      showToast(t.toastSaved);
     }
     ['so-elderly','so-disabled','so-women','so-children','so-income-low','so-income-mid','so-income-high'].forEach(id=> document.getElementById(id).value='');
     document.getElementById('so-collector').value='';
@@ -697,27 +1134,51 @@ document.getElementById('btn-save-social').addEventListener('click', async ()=>{
     jobTallyDraft = {};
     renderJobTallyList();
     if(isEditing) cancelEdit();
-  }catch(e){ console.error(e); showToast('ስህተት ተፈጥሯል፣ Firestore ያረጋግጡ'); }
+  }catch(e){ console.error(e); showToast(t.toastErr); }
+});
+
+// ---- Save: Change Admin Password ----
+document.getElementById('btn-change-password').addEventListener('click', ()=>{
+  const t = translations[currentLang];
+  const newPass = document.getElementById('new-admin-pass').value.trim();
+  const confirmPass = document.getElementById('confirm-admin-pass').value.trim();
+
+  if(!newPass){
+    showToast(t.toastPassEmpty);
+    return;
+  }
+  if(newPass !== confirmPass){
+    showToast(t.toastPassMismatch);
+    return;
+  }
+
+  admin_code = newPass;
+  localStorage.setItem('CUSTOM_ADMIN_CODE', newPass);
+  showToast(t.toastPassSuccess);
+
+  document.getElementById('new-admin-pass').value = '';
+  document.getElementById('confirm-admin-pass').value = '';
 });
 
 // ---- History table (admin only — shows collector name) ----
 function renderHistTable(){
+  const t = translations[currentLang];
   const thead = document.getElementById('hist-thead');
   const tbody = document.getElementById('hist-body');
   const emptyEl = document.getElementById('hist-empty');
   let list, cols;
 
   if(activeHistTab === 'labor'){
-    list = laborEntries; cols = ['ቀን','ሰብሳቢ','ስራ አጥ ወ','ስራ አጥ ሴ','ማስታወሻ',''];
+    list = laborEntries; cols = [t.colDate, t.colColl, t.colUnempM, t.colUnempF, t.colNotes, ''];
   }else if(activeHistTab === 'insurance'){
-    list = insuranceEntries; cols = ['ቀን','ሰብሳቢ','አዲስ ወ','አዲስ ሴ','ያደሱ ወ','ያደሱ ሴ','ማስታወሻ',''];
+    list = insuranceEntries; cols = [t.colDate, t.colColl, t.colNewM, t.colNewF, t.colRenM, t.colRenF, t.colNotes, ''];
   }else{
-    list = socialEntries; cols = ['ቀን','ሰብሳቢ','አረጋውያን','አካል ጉዳ.','ሴቶች','ህጻናት','ገቢ (ዝ/መ/ከ)','ማስታወሻ',''];
+    list = socialEntries; cols = [t.colDate, t.colColl, t.colElderly, t.colDisabled, t.colWomen, t.colChildren, t.colIncome, t.colNotes, ''];
   }
   thead.innerHTML = '<tr>' + cols.map(c=>`<th>${c}</th>`).join('') + '</tr>';
 
   const sorted = list.slice().sort((a,b)=> (b.createdAt||0)-(a.createdAt||0));
-  if(sorted.length===0){ tbody.innerHTML=''; emptyEl.classList.remove('hidden'); return; }
+  if(sorted.length===0){ tbody.innerHTML=''; emptyEl.textContent = t.emptyHist; emptyEl.classList.remove('hidden'); return; }
   emptyEl.classList.add('hidden');
 
   tbody.innerHTML = sorted.map(r=>{
@@ -730,17 +1191,18 @@ function renderHistTable(){
       cells = [r.date, escapeAttr(r.collectorName||'—'), r.elderly, r.disabled, r.women, r.children, `${r.incomeLow||0}/${r.incomeMid||0}/${r.incomeHigh||0}`, escapeAttr(r.notes||'—')];
     }
     return '<tr>' + cells.map(c=>`<td>${c}</td>`).join('') +
-      `<td style="white-space:nowrap;"><button type="button" class="ghost small" data-edit="${r.id}">አርትዕ</button> <button type="button" class="ghost small" data-del="${r.id}">ሰርዝ</button></td></tr>`;
+      `<td style="white-space:nowrap;"><button type="button" class="ghost small" data-edit="${r.id}">${t.btnEdit}</button> <button type="button" class="ghost small" data-del="${r.id}">${t.btnDelete}</button></td></tr>`;
   }).join('');
 }
 document.getElementById('hist-body').addEventListener('click', async (e)=>{
+  const t = translations[currentLang];
   const delBtn = e.target.closest('[data-del]');
   const editBtn = e.target.closest('[data-edit]');
   if(delBtn){
-    if(!confirm('ይህን ምዝገባ መሰረዝ ይፈልጋሉ?')) return;
+    if(!confirm(t.confirmDel)) return;
     const coll = activeHistTab==='labor' ? 'labor_tally' : activeHistTab==='insurance' ? 'insurance_tally' : 'social_tally';
-    try{ await deleteDoc(doc(db,coll,delBtn.dataset.del)); showToast('ተሰርዟል'); }
-    catch(err){ console.error(err); showToast('መሰረዝ አልተቻለም'); }
+    try{ await deleteDoc(doc(db,coll,delBtn.dataset.del)); showToast(t.toastDeleted); }
+    catch(err){ console.error(err); showToast(t.toastErr); }
   }
   if(editBtn){
     startEdit(activeHistTab, editBtn.dataset.edit);
@@ -748,6 +1210,7 @@ document.getElementById('hist-body').addEventListener('click', async (e)=>{
 });
 
 function startEdit(dept, id){
+  const t = translations[currentLang];
   const list = dept==='labor' ? laborEntries : dept==='insurance' ? insuranceEntries : socialEntries;
   const r = list.find(x=>x.id===id);
   if(!r) return;
@@ -764,7 +1227,7 @@ function startEdit(dept, id){
     document.getElementById('l-unemp-m').value = r.unempMale||'';
     document.getElementById('l-unemp-f').value = r.unempFemale||'';
     document.getElementById('l-notes').value = r.notes||'';
-    document.getElementById('btn-save-labor').textContent = 'አዘምን';
+    document.getElementById('btn-save-labor').textContent = t.btnUpdate;
   }else if(dept==='insurance'){
     document.getElementById('i-collector').value = r.collectorName||'';
     document.getElementById('i-date').value = r.date||todayISO();
@@ -773,7 +1236,7 @@ function startEdit(dept, id){
     document.getElementById('i-renew-m').value = r.renewMale||'';
     document.getElementById('i-renew-f').value = r.renewFemale||'';
     document.getElementById('i-notes').value = r.notes||'';
-    document.getElementById('btn-save-insurance').textContent = 'አዘምን';
+    document.getElementById('btn-save-insurance').textContent = t.btnUpdate;
   }else{
     document.getElementById('so-collector').value = r.collectorName||'';
     document.getElementById('so-date').value = r.date||todayISO();
@@ -787,19 +1250,19 @@ function startEdit(dept, id){
     document.getElementById('so-notes').value = r.notes||'';
     jobTallyDraft = {...(r.jobTypeCounts||{})};
     renderJobTallyList();
-    document.getElementById('btn-save-social').textContent = 'አዘምን';
+    document.getElementById('btn-save-social').textContent = t.btnUpdate;
   }
   document.getElementById('admin-area').scrollIntoView({behavior:'smooth', block:'start'});
-  showToast('ማስተካከያ ላይ — ቀይረው "አዘምን" ይጫኑ');
+  showToast(currentLang === 'am' ? 'ማስተካከያ ላይ — ቀይረው "አዘምን" ይጫኑ' : (currentLang === 'om' ? 'Gulaalaa jira — jijjiiraatii "Haaromsi" tuqaa' : 'Editing mode — change and click "Apply Updates"'));
 }
 
 function cancelEdit(){
+  const t = translations[currentLang];
   editState = { dept:null, id:null };
-  document.getElementById('btn-save-labor').textContent = 'አስቀምጥ';
-  document.getElementById('btn-save-insurance').textContent = 'አስቀምጥ';
-  document.getElementById('btn-save-social').textContent = 'አስቀምጥ';
+  document.getElementById('btn-save-labor').textContent = t.btnSave;
+  document.getElementById('btn-save-insurance').textContent = t.btnSave;
+  document.getElementById('btn-save-social').textContent = t.btnSave;
 }
 </script>
 </body>
-
 </html>
