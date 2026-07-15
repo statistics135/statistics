@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>የመስክ ስታትስቲክስ መዝገብ</title>
+<title>ዕለታዊ መረጃዎች መመዝገቢያ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -16,24 +16,31 @@
     --red:#E4572E; --red-dim:#3A2018;
     --text:#ECEFF1; --text-2:#93A5AD; --text-3:#5E6E75;
     --line:#243138; --line-strong:#324349;
+    --hero-bg:#F4F7FB; --hero-card:#FFFFFF; --hero-blue:#3B6FE0; --hero-text:#2A3342; --hero-text-2:#6B7684;
   }
   *{box-sizing:border-box;}
   body{margin:0;background:var(--bg);color:var(--text);font-family:'Noto Sans Ethiopic',sans-serif;line-height:1.6;}
   .mono{font-family:'JetBrains Mono',monospace;}
-  .wrap{max-width:880px;margin:0 auto;padding:26px 18px 80px;}
+  .wrap{max-width:880px;margin:0 auto;padding:0 0 80px;}
   .hidden{display:none !important;}
 
-  .plate{
-    background:linear-gradient(180deg,#1A2226,#141A1D);
-    border:1px solid var(--line-strong);border-radius:6px;
-    padding:20px 22px;position:relative;overflow:hidden;
+  /* ---- Hero / landing (light theme, per reference design) ---- */
+  .hero{background:var(--hero-bg);padding:32px 20px 26px;border-radius:0 0 18px 18px;}
+  .hero h1{margin:0;font-size:24px;font-weight:700;color:var(--hero-blue);text-align:center;}
+  .hero p{margin:10px 0 0;font-size:13.5px;color:var(--hero-text-2);text-align:center;max-width:480px;margin-left:auto;margin-right:auto;}
+  .dept-cards{display:flex;gap:14px;margin-top:26px;flex-wrap:wrap;justify-content:center;}
+  .dept-card{
+    flex:1;min-width:140px;max-width:200px;background:var(--hero-card);border:1px solid #E4E9F0;border-radius:12px;
+    padding:20px 14px;text-align:center;cursor:pointer;transition:transform .12s, box-shadow .12s;
+    box-shadow:0 2px 6px rgba(30,50,90,0.05);
   }
-  .plate::before{
-    content:"";position:absolute;top:0;left:0;right:0;height:3px;
-    background:repeating-linear-gradient(135deg,var(--teal) 0 10px,#0e1315 10px 20px);
-  }
-  .plate h1{margin:0;font-size:19px;font-weight:700;}
-  .plate p{margin:4px 0 0;font-size:12.5px;color:var(--text-2);}
+  .dept-card:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(30,50,90,0.1);}
+  .dept-card.active{border-color:var(--hero-blue);box-shadow:0 6px 16px rgba(59,111,224,0.18);}
+  .dept-card .ic{font-size:26px;margin-bottom:8px;}
+  .dept-card .lbl{font-size:13.5px;color:var(--hero-text);font-weight:600;line-height:1.3;}
+  .hero-underline{width:70px;height:3px;background:var(--hero-blue);border-radius:3px;margin:22px auto 0;}
+
+  .inner{padding:0 18px;}
 
   .section-title{display:flex;align-items:center;gap:10px;margin:28px 0 12px;font-size:13px;color:var(--text-2);}
   .section-title .num{font-family:'JetBrains Mono',monospace;color:var(--teal);font-size:12px;border:1px solid var(--line-strong);border-radius:4px;padding:1px 6px;}
@@ -83,6 +90,13 @@
   .dept-tab{flex:1;min-width:140px;text-align:center;padding:10px;border-radius:5px;border:1px solid var(--line-strong);cursor:pointer;font-size:12.5px;color:var(--text-2);}
   .dept-tab.active{background:var(--teal-dim);color:var(--teal);border-color:var(--teal);}
 
+  .job-add-row{display:flex;gap:8px;align-items:flex-end;}
+  .job-add-row .field{margin-bottom:0;flex:1;}
+  .job-add-row button{flex-shrink:0;height:38px;}
+  .job-tally-list{display:flex;flex-direction:column;gap:6px;margin-top:12px;}
+  .job-tally-item{display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--line-strong);border-radius:5px;padding:8px 12px;font-size:13px;}
+  .job-tally-item .rm{cursor:pointer;color:var(--red);font-size:12px;background:none;border:none;padding:2px 6px;}
+
   table{width:100%;border-collapse:collapse;font-size:12.5px;}
   th{text-align:left;padding:8px 6px;color:var(--text-2);border-bottom:1px solid var(--line-strong);font-weight:600;}
   td{padding:8px 6px;border-bottom:1px solid var(--line);}
@@ -98,213 +112,266 @@
     .grid2,.grid3,.grid4{grid-template-columns:1fr;}
     .readout{flex-direction:column;}
     table{font-size:11.5px;}
+    .dept-card{min-width:100px;}
   }
 </style>
 </head>
 <body>
+
+<div class="hero">
+  <h1>ዕለታዊ መረጃዎች መመዝገቢያ</h1>
+  <p>የስራ ሂደቶችን መረጃ በጥራትና በፍጥነት መመዝገቢያ ማዕከል</p>
+  <div class="dept-cards">
+    <div class="dept-card" data-panel="labor-panel">
+      <div class="ic">💼</div>
+      <div class="lbl">ስራና ክህሎት</div>
+    </div>
+    <div class="dept-card" data-panel="insurance-panel">
+      <div class="ic">🏥</div>
+      <div class="lbl">ጤና መድን</div>
+    </div>
+    <div class="dept-card" data-panel="social-panel">
+      <div class="ic">👥</div>
+      <div class="lbl">ማህበራዊ ጉዳይ</div>
+    </div>
+  </div>
+  <div class="hero-underline"></div>
+</div>
+
 <div class="wrap">
+  <div class="inner">
 
-  <div class="plate">
-    <h1>📊 የመስክ ስታትስቲክስ መዝገብ</h1>
-    <p>ስራና ክህሎት · ጤና መድን · ሴቶችና ማህበራዊ ጉዳይ — ዕለታዊ ቆጠራ</p>
+    <!-- LABOR PANEL -->
+    <div id="labor-panel" class="stat-panel hidden">
+      <div class="section-title"><span class="num">💼</span> ስራና ክህሎት — የስራ አጥ ብዛት</div>
+      <div class="card">
+        <div class="readout">
+          <div class="chip red"><div class="k">ወንድ</div><div class="v" id="s-unemp-m">0</div></div>
+          <div class="chip red"><div class="k">ሴት</div><div class="v" id="s-unemp-f">0</div></div>
+          <div class="chip red"><div class="k">ድምር</div><div class="v" id="s-unemp-t">0</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INSURANCE PANEL -->
+    <div id="insurance-panel" class="stat-panel hidden">
+      <div class="section-title"><span class="num">🏥</span> ጤና መድን</div>
+      <div class="card">
+        <div class="hint" style="color:var(--text-2);font-size:11.5px;margin-bottom:8px;">አዲስ ያወጡ</div>
+        <div class="readout">
+          <div class="chip blue"><div class="k">ወንድ</div><div class="v" id="s-insnew-m">0</div></div>
+          <div class="chip blue"><div class="k">ሴት</div><div class="v" id="s-insnew-f">0</div></div>
+          <div class="chip blue"><div class="k">ድምር</div><div class="v" id="s-insnew-t">0</div></div>
+        </div>
+        <div class="hint" style="color:var(--text-2);font-size:11.5px;margin:12px 0 8px;">ያደሱ</div>
+        <div class="readout">
+          <div class="chip teal"><div class="k">ወንድ</div><div class="v" id="s-insrenew-m">0</div></div>
+          <div class="chip teal"><div class="k">ሴት</div><div class="v" id="s-insrenew-f">0</div></div>
+          <div class="chip teal"><div class="k">ድምር</div><div class="v" id="s-insrenew-t">0</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SOCIAL PANEL -->
+    <div id="social-panel" class="stat-panel hidden">
+      <div class="section-title"><span class="num">👥</span> ሴቶችና ማህበራዊ ጉዳይ — ተጋላጭ ቡድኖች</div>
+      <div class="card">
+        <div class="readout" id="s-vuln-row"></div>
+      </div>
+      <div class="section-title"><span class="num">--</span> በስራ አይነት ብዛት</div>
+      <div class="card"><div class="grid4" id="s-by-job"></div></div>
+      <div class="section-title"><span class="num">--</span> የገቢ ደረጃ</div>
+      <div class="card"><div class="readout" id="s-income-row"></div></div>
+    </div>
+
+    <!-- ADMIN LOCK -->
+    <div id="lock-screen">
+      <div class="section-title"><span class="num">🔒</span> የአድሚን መዳረሻ</div>
+      <div class="card lock-box">
+        <div class="icon">🔒</div>
+        <div style="font-size:13px;color:var(--text-2);margin-bottom:14px;">ዳታ ለማስገባት/ለማየት/ለማጥፋት የአድሚን ኮድ ያስፈልጋል</div>
+        <input type="password" id="admin-pass" placeholder="የአድሚን ኮድ">
+        <div class="form-actions" style="justify-content:center;">
+          <button type="button" class="primary" id="btn-unlock">ክፈት</button>
+        </div>
+        <div class="error-msg" id="lock-error"></div>
+      </div>
+    </div>
+
+    <!-- ADMIN AREA -->
+    <div id="admin-area" class="hidden">
+
+      <div class="section-title"><span class="num">01</span> ዕለታዊ ቁጥር ማስገቢያ (አድሚን ብቻ)</div>
+      <div class="card">
+        <div class="dept-tabs">
+          <div class="dept-tab active" data-dept="labor">💼 ስራና ክህሎት</div>
+          <div class="dept-tab" data-dept="insurance">🏥 ጤና መድን</div>
+          <div class="dept-tab" data-dept="social">👥 ሴቶችና ማህበራዊ ጉዳይ</div>
+        </div>
+
+        <!-- LABOR FORM -->
+        <div id="dept-labor">
+          <div class="grid2">
+            <div class="field">
+              <label>👤 የዳታ ሰብሳቢ ስም</label>
+              <input type="text" id="l-collector" placeholder="የባለሙያ ስም">
+            </div>
+            <div class="field">
+              <label>📅 ቀን</label>
+              <input type="date" id="l-date" class="mono">
+            </div>
+          </div>
+          <div class="grid2">
+            <div class="field">
+              <label>ስራ አጥ — ወንድ ብዛት</label>
+              <input type="number" id="l-unemp-m" class="mono" min="0" placeholder="0">
+            </div>
+            <div class="field">
+              <label>ስራ አጥ — ሴት ብዛት</label>
+              <input type="number" id="l-unemp-f" class="mono" min="0" placeholder="0">
+            </div>
+          </div>
+          <div class="field">
+            <label>📝 ማስታወሻ</label>
+            <textarea id="l-notes" placeholder="ማንኛውም ማስታወሻ..."></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="primary" id="btn-save-labor">አስቀምጥ</button>
+          </div>
+        </div>
+
+        <!-- INSURANCE FORM -->
+        <div id="dept-insurance" class="hidden">
+          <div class="grid2">
+            <div class="field">
+              <label>👤 የዳታ ሰብሳቢ ስም</label>
+              <input type="text" id="i-collector" placeholder="የባለሙያ ስም">
+            </div>
+            <div class="field">
+              <label>📅 ቀን</label>
+              <input type="date" id="i-date" class="mono">
+            </div>
+          </div>
+          <div class="grid2">
+            <div class="field">
+              <label>አዲስ ያወጡ — ወንድ</label>
+              <input type="number" id="i-new-m" class="mono" min="0" placeholder="0">
+            </div>
+            <div class="field">
+              <label>አዲስ ያወጡ — ሴት</label>
+              <input type="number" id="i-new-f" class="mono" min="0" placeholder="0">
+            </div>
+          </div>
+          <div class="grid2">
+            <div class="field">
+              <label>ያደሱ — ወንድ</label>
+              <input type="number" id="i-renew-m" class="mono" min="0" placeholder="0">
+            </div>
+            <div class="field">
+              <label>ያደሱ — ሴት</label>
+              <input type="number" id="i-renew-f" class="mono" min="0" placeholder="0">
+            </div>
+          </div>
+          <div class="field">
+            <label>📝 ማስታወሻ</label>
+            <textarea id="i-notes" placeholder="ማንኛውም ማስታወሻ..."></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="primary" id="btn-save-insurance">አስቀምጥ</button>
+          </div>
+        </div>
+
+        <!-- SOCIAL AFFAIRS FORM -->
+        <div id="dept-social" class="hidden">
+          <div class="grid2">
+            <div class="field">
+              <label>👤 የዳታ ሰብሳቢ ስም</label>
+              <input type="text" id="so-collector" placeholder="የባለሙያ ስም">
+            </div>
+            <div class="field">
+              <label>📅 ቀን</label>
+              <input type="date" id="so-date" class="mono">
+            </div>
+          </div>
+          <div class="grid2">
+            <div class="field">
+              <label>አረጋውያን ብዛት</label>
+              <input type="number" id="so-elderly" class="mono" min="0" placeholder="0">
+            </div>
+            <div class="field">
+              <label>አካል ጉዳተኞች ብዛት</label>
+              <input type="number" id="so-disabled" class="mono" min="0" placeholder="0">
+            </div>
+          </div>
+          <div class="grid2">
+            <div class="field">
+              <label>ሴቶች ብዛት</label>
+              <input type="number" id="so-women" class="mono" min="0" placeholder="0">
+            </div>
+            <div class="field">
+              <label>ህጻናት ብዛት (ከ18 በታች)</label>
+              <input type="number" id="so-children" class="mono" min="0" placeholder="0">
+            </div>
+          </div>
+
+          <div class="section-title" style="margin:16px 0 8px;"><span class="num">--</span> በስራ አይነት ብዛት</div>
+          <div class="job-add-row">
+            <div class="field">
+              <label>የስራ አይነት</label>
+              <select id="so-job-select"></select>
+            </div>
+            <div class="field" style="max-width:110px;">
+              <label>ብዛት</label>
+              <input type="number" id="so-job-count" class="mono" min="0" placeholder="0">
+            </div>
+            <button type="button" class="ghost small" id="btn-add-job">+ ጨምር</button>
+          </div>
+          <div class="job-tally-list" id="so-job-list"></div>
+
+          <div class="section-title" style="margin:16px 0 8px;"><span class="num">--</span> የገቢ ደረጃ ብዛት</div>
+          <div class="grid3">
+            <div class="field">
+              <label>ዝቅተኛ ገቢ</label>
+              <input type="number" id="so-income-low" class="mono" min="0" placeholder="0">
+            </div>
+            <div class="field">
+              <label>መካከለኛ ገቢ</label>
+              <input type="number" id="so-income-mid" class="mono" min="0" placeholder="0">
+            </div>
+            <div class="field">
+              <label>ከፍተኛ ገቢ</label>
+              <input type="number" id="so-income-high" class="mono" min="0" placeholder="0">
+            </div>
+          </div>
+
+          <div class="field">
+            <label>📝 ማስታወሻ</label>
+            <textarea id="so-notes" placeholder="ማንኛውም ማስታወሻ..."></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="primary" id="btn-save-social">አስቀምጥ</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title"><span class="num">02</span> ያለፉ ምዝገባዎች (አድሚን ብቻ)</div>
+      <div class="card">
+        <div class="dept-tabs">
+          <div class="hist-tab active" data-hist="labor">💼 ስራና ክህሎት</div>
+          <div class="hist-tab" data-hist="insurance">🏥 ጤና መድን</div>
+          <div class="hist-tab" data-hist="social">👥 ማህበራዊ ጉዳይ</div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead id="hist-thead"></thead>
+            <tbody id="hist-body"></tbody>
+          </table>
+        </div>
+        <div id="hist-empty" class="empty hidden">ገና ምንም ውሂብ አልተመዘገበም።</div>
+      </div>
+    </div>
+
   </div>
-
-  <div class="section-title"><span class="num">01</span> ጠቅላላ ማጠቃለያ (ለሁሉም ይታያል)</div>
-
-  <div class="card">
-    <div class="section-title" style="margin:0 0 8px;"><span class="num">A</span> 💼 ስራና ክህሎት — የስራ አጥ ብዛት</div>
-    <div class="readout">
-      <div class="chip red"><div class="k">ወንድ</div><div class="v" id="s-unemp-m">0</div></div>
-      <div class="chip red"><div class="k">ሴት</div><div class="v" id="s-unemp-f">0</div></div>
-      <div class="chip red"><div class="k">ድምር</div><div class="v" id="s-unemp-t">0</div></div>
-    </div>
-  </div>
-
-  <div class="card" style="margin-top:12px;">
-    <div class="section-title" style="margin:0 0 8px;"><span class="num">B</span> 🛡️ ጤና መድን</div>
-    <div class="hint" style="color:var(--text-2);font-size:11.5px;margin-bottom:8px;">አዲስ ያወጡ</div>
-    <div class="readout">
-      <div class="chip blue"><div class="k">ወንድ</div><div class="v" id="s-insnew-m">0</div></div>
-      <div class="chip blue"><div class="k">ሴት</div><div class="v" id="s-insnew-f">0</div></div>
-      <div class="chip blue"><div class="k">ድምር</div><div class="v" id="s-insnew-t">0</div></div>
-    </div>
-    <div class="hint" style="color:var(--text-2);font-size:11.5px;margin:12px 0 8px;">ያደሱ</div>
-    <div class="readout">
-      <div class="chip teal"><div class="k">ወንድ</div><div class="v" id="s-insrenew-m">0</div></div>
-      <div class="chip teal"><div class="k">ሴት</div><div class="v" id="s-insrenew-f">0</div></div>
-      <div class="chip teal"><div class="k">ድምር</div><div class="v" id="s-insrenew-t">0</div></div>
-    </div>
-  </div>
-
-  <div class="card" style="margin-top:12px;">
-    <div class="section-title" style="margin:0 0 8px;"><span class="num">C</span> 👥 ሴቶችና ማህበራዊ ጉዳይ — ተጋላጭ ቡድኖች</div>
-    <div class="readout" id="s-vuln-row"></div>
-    <div class="section-title" style="margin:16px 0 8px;"><span class="num">--</span> በስራ አይነት</div>
-    <div class="grid4" id="s-by-job"></div>
-    <div class="section-title" style="margin:16px 0 8px;"><span class="num">--</span> ገቢ/ደመወዝ</div>
-    <div class="readout">
-      <div class="chip purple"><div class="k">አማካይ ወርሃዊ ገቢ (ብር)</div><div class="v" id="s-avg-income">0</div></div>
-      <div class="chip purple"><div class="k">ገቢ የገለጹ ብዛት</div><div class="v" id="s-income-count">0</div></div>
-    </div>
-  </div>
-
-  <!-- ADMIN LOCK -->
-  <div id="lock-screen">
-    <div class="section-title"><span class="num">02</span> የአድሚን መዳረሻ</div>
-    <div class="card lock-box">
-      <div class="icon">🔒</div>
-      <div style="font-size:13px;color:var(--text-2);margin-bottom:14px;">ዳታ ለማስገባት/ለማየት/ለማጥፋት የአድሚን ኮድ ያስፈልጋል</div>
-      <input type="password" id="admin-pass" placeholder="የአድሚን ኮድ">
-      <div class="form-actions" style="justify-content:center;">
-        <button type="button" class="primary" id="btn-unlock">ክፈት</button>
-      </div>
-      <div class="error-msg" id="lock-error"></div>
-    </div>
-  </div>
-
-  <!-- ADMIN AREA -->
-  <div id="admin-area" class="hidden">
-
-    <div class="section-title"><span class="num">03</span> ዕለታዊ ቁጥር ማስገቢያ (አድሚን ብቻ)</div>
-    <div class="card">
-      <div class="dept-tabs">
-        <div class="dept-tab active" data-dept="labor">💼 ስራና ክህሎት</div>
-        <div class="dept-tab" data-dept="insurance">🛡️ ጤና መድን</div>
-        <div class="dept-tab" data-dept="social">👥 ሴቶችና ማህበራዊ ጉዳይ</div>
-      </div>
-
-      <!-- LABOR FORM -->
-      <div id="dept-labor">
-        <div class="field">
-          <label>📅 ቀን</label>
-          <input type="date" id="l-date" class="mono">
-        </div>
-        <div class="grid2">
-          <div class="field">
-            <label>ስራ አጥ — ወንድ ብዛት</label>
-            <input type="number" id="l-unemp-m" class="mono" min="0" placeholder="0">
-          </div>
-          <div class="field">
-            <label>ስራ አጥ — ሴት ብዛት</label>
-            <input type="number" id="l-unemp-f" class="mono" min="0" placeholder="0">
-          </div>
-        </div>
-        <div class="field">
-          <label>📝 ማስታወሻ</label>
-          <textarea id="l-notes" placeholder="ማንኛውም ማስታወሻ..."></textarea>
-        </div>
-        <div class="form-actions">
-          <button type="button" class="primary" id="btn-save-labor">አስቀምጥ</button>
-        </div>
-      </div>
-
-      <!-- INSURANCE FORM -->
-      <div id="dept-insurance" class="hidden">
-        <div class="field">
-          <label>📅 ቀን</label>
-          <input type="date" id="i-date" class="mono">
-        </div>
-        <div class="grid2">
-          <div class="field">
-            <label>አዲስ ያወጡ — ወንድ</label>
-            <input type="number" id="i-new-m" class="mono" min="0" placeholder="0">
-          </div>
-          <div class="field">
-            <label>አዲስ ያወጡ — ሴት</label>
-            <input type="number" id="i-new-f" class="mono" min="0" placeholder="0">
-          </div>
-        </div>
-        <div class="grid2">
-          <div class="field">
-            <label>ያደሱ — ወንድ</label>
-            <input type="number" id="i-renew-m" class="mono" min="0" placeholder="0">
-          </div>
-          <div class="field">
-            <label>ያደሱ — ሴት</label>
-            <input type="number" id="i-renew-f" class="mono" min="0" placeholder="0">
-          </div>
-        </div>
-        <div class="field">
-          <label>📝 ማስታወሻ</label>
-          <textarea id="i-notes" placeholder="ማንኛውም ማስታወሻ..."></textarea>
-        </div>
-        <div class="form-actions">
-          <button type="button" class="primary" id="btn-save-insurance">አስቀምጥ</button>
-        </div>
-      </div>
-
-      <!-- SOCIAL AFFAIRS FORM -->
-      <div id="dept-social" class="hidden">
-        <div class="field">
-          <label>📅 ቀን</label>
-          <input type="date" id="so-date" class="mono">
-        </div>
-        <div class="grid3">
-          <div class="field">
-            <label>አረጋውያን ብዛት</label>
-            <input type="number" id="so-elderly" class="mono" min="0" placeholder="0">
-          </div>
-          <div class="field">
-            <label>አካል ጉዳተኞች ብዛት</label>
-            <input type="number" id="so-disabled" class="mono" min="0" placeholder="0">
-          </div>
-          <div class="field">
-            <label>ሴቶች ብዛት</label>
-            <input type="number" id="so-women" class="mono" min="0" placeholder="0">
-          </div>
-        </div>
-        <div class="grid2">
-          <div class="field">
-            <label>ህጻናት ብዛት (ከ18 በታች)</label>
-            <input type="number" id="so-children" class="mono" min="0" placeholder="0">
-          </div>
-          <div class="field">
-            <label>ዝቅተኛ ገቢ ያላቸው ብዛት</label>
-            <input type="number" id="so-lowincome" class="mono" min="0" placeholder="0">
-          </div>
-        </div>
-
-        <div class="section-title" style="margin:16px 0 8px;"><span class="num">--</span> በስራ አይነት ብዛት</div>
-        <div class="grid4" id="so-jobtype-inputs"></div>
-
-        <div class="section-title" style="margin:16px 0 8px;"><span class="num">--</span> ገቢ/ደመወዝ</div>
-        <div class="grid2">
-          <div class="field">
-            <label>ጠቅላላ ገቢ ድምር (ብር) — ዛሬ የተመዘገበ</label>
-            <input type="number" id="so-income-sum" class="mono" min="0" placeholder="0">
-          </div>
-          <div class="field">
-            <label>ገቢ የገለጹ ብዛት — ዛሬ</label>
-            <input type="number" id="so-income-count" class="mono" min="0" placeholder="0">
-          </div>
-        </div>
-        <div class="field">
-          <label>📝 ማስታወሻ</label>
-          <textarea id="so-notes" placeholder="ማንኛውም ማስታወሻ..."></textarea>
-        </div>
-        <div class="form-actions">
-          <button type="button" class="primary" id="btn-save-social">አስቀምጥ</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="section-title"><span class="num">04</span> ያለፉ ምዝገባዎች (አድሚን ብቻ)</div>
-    <div class="card">
-      <div class="dept-tabs">
-        <div class="hist-tab active" data-hist="labor">💼 ስራና ክህሎት</div>
-        <div class="hist-tab" data-hist="insurance">🛡️ ጤና መድን</div>
-        <div class="hist-tab" data-hist="social">👥 ማህበራዊ ጉዳይ</div>
-      </div>
-      <div style="overflow-x:auto;">
-        <table>
-          <thead id="hist-thead"></thead>
-          <tbody id="hist-body"></tbody>
-        </table>
-      </div>
-      <div id="hist-empty" class="empty hidden">ገና ምንም ውሂብ አልተመዘገበም።</div>
-    </div>
-  </div>
-
 </div>
 
 <div class="toast" id="toast"></div>
@@ -337,6 +404,7 @@ let insuranceEntries = [];
 let socialEntries = [];
 let adminUnlocked = false;
 let activeHistTab = 'labor';
+let jobTallyDraft = {}; // {jobType: count} for the social form draft
 
 function todayISO(){ return new Date().toISOString().slice(0,10); }
 function escapeAttr(str){ const d=document.createElement('div'); d.textContent=str||''; return d.innerHTML; }
@@ -376,16 +444,26 @@ document.getElementById('l-date').value = todayISO();
 document.getElementById('i-date').value = todayISO();
 document.getElementById('so-date').value = todayISO();
 
-function populateJobTypeInputs(){
-  const box = document.getElementById('so-jobtype-inputs');
-  box.innerHTML = JOB_TYPES.map(j=>`
-    <div class="field">
-      <label>${j}</label>
-      <input type="number" class="mono so-job-input" data-job="${j}" min="0" placeholder="0">
-    </div>
-  `).join('');
+function populateJobSelect(){
+  document.getElementById('so-job-select').innerHTML = JOB_TYPES.map(j=>`<option value="${j}">${j}</option>`).join('');
 }
-populateJobTypeInputs();
+populateJobSelect();
+
+// ---- Hero cards toggle stat panels ----
+document.querySelectorAll('.dept-card').forEach(card=>{
+  card.addEventListener('click', ()=>{
+    const panelId = card.dataset.panel;
+    const panel = document.getElementById(panelId);
+    const isOpening = panel.classList.contains('hidden');
+    document.querySelectorAll('.stat-panel').forEach(p=> p.classList.add('hidden'));
+    document.querySelectorAll('.dept-card').forEach(c=> c.classList.remove('active'));
+    if(isOpening){
+      panel.classList.remove('hidden');
+      card.classList.add('active');
+      panel.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+  });
+});
 
 // ---- Admin unlock ----
 document.getElementById('btn-unlock').addEventListener('click', ()=>{
@@ -440,7 +518,7 @@ onSnapshot(query(collection(db,'social_tally')), (snap)=>{
   renderStats(); if(adminUnlocked && activeHistTab==='social') renderHistTable();
 });
 
-// ---- Stats (public, cumulative sum across all daily entries) ----
+// ---- Stats (public, cumulative sum across all daily entries; no collector names shown) ----
 function sumField(arr, field){ return arr.reduce((s,r)=> s + (Number(r[field])||0), 0); }
 
 function renderStats(){
@@ -464,8 +542,8 @@ function renderStats(){
 
   const vulnRow = document.getElementById('s-vuln-row');
   const vulnDefs = [
-    {k:'አረጋውያን', f:'elderly'}, {k:'አካል ጉዳተኞች', f:'disabled'}, {k:'ሴቶች', f:'women'},
-    {k:'ህጻናት', f:'children'}, {k:'ዝቅተኛ ገቢ', f:'lowIncome'}
+    {k:'አረጋውያን', f:'elderly'}, {k:'አካል ጉዳተኞች', f:'disabled'},
+    {k:'ሴቶች', f:'women'}, {k:'ህጻናት', f:'children'}
   ];
   vulnRow.innerHTML = vulnDefs.map(v=> `<div class="chip purple"><div class="k">${v.k}</div><div class="v">${sumField(socialEntries,v.f)}</div></div>`).join('');
 
@@ -475,17 +553,18 @@ function renderStats(){
     return `<div class="chip"><div class="k">${j}</div><div class="v">${count}</div></div>`;
   }).join('');
 
-  const totalIncomeSum = sumField(socialEntries,'incomeSum');
-  const totalIncomeCount = sumField(socialEntries,'incomeCount');
-  const avg = totalIncomeCount > 0 ? Math.round(totalIncomeSum/totalIncomeCount) : 0;
-  document.getElementById('s-avg-income').textContent = money(avg);
-  document.getElementById('s-income-count').textContent = totalIncomeCount;
+  const incomeRow = document.getElementById('s-income-row');
+  const incomeDefs = [
+    {k:'ዝቅተኛ ገቢ', f:'incomeLow'}, {k:'መካከለኛ ገቢ', f:'incomeMid'}, {k:'ከፍተኛ ገቢ', f:'incomeHigh'}
+  ];
+  incomeRow.innerHTML = incomeDefs.map(v=> `<div class="chip purple"><div class="k">${v.k}</div><div class="v">${sumField(socialEntries,v.f)}</div></div>`).join('');
 }
 
 // ---- Save: Labor ----
 document.getElementById('btn-save-labor').addEventListener('click', async ()=>{
   const date = document.getElementById('l-date').value || todayISO();
   const rec = {
+    collectorName: document.getElementById('l-collector').value.trim(),
     date, ethDate: toEthiopianDate(date),
     unempMale: Number(document.getElementById('l-unemp-m').value)||0,
     unempFemale: Number(document.getElementById('l-unemp-f').value)||0,
@@ -495,7 +574,7 @@ document.getElementById('btn-save-labor').addEventListener('click', async ()=>{
   if(rec.unempMale===0 && rec.unempFemale===0 && !rec.notes){ showToast('እባክዎ ቢያንስ አንድ ቁጥር ያስገቡ'); return; }
   try{
     await addDoc(collection(db,'labor_tally'), rec);
-    await sendTelegram(`💼 ስራና ክህሎት — ዕለታዊ ቆጠራ\n📅 ${rec.ethDate} (${rec.date})\nስራ አጥ ወንድ: ${rec.unempMale}\nስራ አጥ ሴት: ${rec.unempFemale}${rec.notes ? '\n📝 '+rec.notes : ''}`);
+    await sendTelegram(`💼 ስራና ክህሎት — ዕለታዊ ቆጠራ\n👤 ሰብሳቢ: ${rec.collectorName||'—'}\n📅 ${rec.ethDate} (${rec.date})\nስራ አጥ ወንድ: ${rec.unempMale}\nስራ አጥ ሴት: ${rec.unempFemale}${rec.notes ? '\n📝 '+rec.notes : ''}`);
     showToast('ተመዝግቧል');
     document.getElementById('l-unemp-m').value=''; document.getElementById('l-unemp-f').value=''; document.getElementById('l-notes').value='';
     document.getElementById('l-date').value = todayISO();
@@ -506,6 +585,7 @@ document.getElementById('btn-save-labor').addEventListener('click', async ()=>{
 document.getElementById('btn-save-insurance').addEventListener('click', async ()=>{
   const date = document.getElementById('i-date').value || todayISO();
   const rec = {
+    collectorName: document.getElementById('i-collector').value.trim(),
     date, ethDate: toEthiopianDate(date),
     newMale: Number(document.getElementById('i-new-m').value)||0,
     newFemale: Number(document.getElementById('i-new-f').value)||0,
@@ -517,7 +597,7 @@ document.getElementById('btn-save-insurance').addEventListener('click', async ()
   if(!rec.newMale && !rec.newFemale && !rec.renewMale && !rec.renewFemale && !rec.notes){ showToast('እባክዎ ቢያንስ አንድ ቁጥር ያስገቡ'); return; }
   try{
     await addDoc(collection(db,'insurance_tally'), rec);
-    await sendTelegram(`🛡️ ጤና መድን — ዕለታዊ ቆጠራ\n📅 ${rec.ethDate} (${rec.date})\nአዲስ ያወጡ ወ: ${rec.newMale} ሴ: ${rec.newFemale}\nያደሱ ወ: ${rec.renewMale} ሴ: ${rec.renewFemale}${rec.notes ? '\n📝 '+rec.notes : ''}`);
+    await sendTelegram(`🏥 ጤና መድን — ዕለታዊ ቆጠራ\n👤 ሰብሳቢ: ${rec.collectorName||'—'}\n📅 ${rec.ethDate} (${rec.date})\nአዲስ ያወጡ ወ: ${rec.newMale} ሴ: ${rec.newFemale}\nያደሱ ወ: ${rec.renewMale} ሴ: ${rec.renewFemale}${rec.notes ? '\n📝 '+rec.notes : ''}`);
     showToast('ተመዝግቧል');
     ['i-new-m','i-new-f','i-renew-m','i-renew-f'].forEach(id=> document.getElementById(id).value='');
     document.getElementById('i-notes').value='';
@@ -525,41 +605,66 @@ document.getElementById('btn-save-insurance').addEventListener('click', async ()
   }catch(e){ console.error(e); showToast('ስህተት ተፈጥሯል፣ Firestore ያረጋግጡ'); }
 });
 
+// ---- Social form: job type tally add/remove ----
+function renderJobTallyList(){
+  const box = document.getElementById('so-job-list');
+  const keys = Object.keys(jobTallyDraft);
+  if(keys.length === 0){ box.innerHTML = ''; return; }
+  box.innerHTML = keys.map(j=> `
+    <div class="job-tally-item">
+      <span>${j}: <strong class="mono">${jobTallyDraft[j]}</strong></span>
+      <button type="button" class="rm" data-rmjob="${j}">✕ አጥፋ</button>
+    </div>
+  `).join('');
+}
+document.getElementById('btn-add-job').addEventListener('click', ()=>{
+  const job = document.getElementById('so-job-select').value;
+  const count = Number(document.getElementById('so-job-count').value)||0;
+  if(count <= 0){ showToast('ትክክለኛ ቁጥር ያስገቡ'); return; }
+  jobTallyDraft[job] = (jobTallyDraft[job]||0) + count;
+  document.getElementById('so-job-count').value = '';
+  renderJobTallyList();
+});
+document.getElementById('so-job-list').addEventListener('click', (e)=>{
+  const btn = e.target.closest('[data-rmjob]');
+  if(!btn) return;
+  delete jobTallyDraft[btn.dataset.rmjob];
+  renderJobTallyList();
+});
+
 // ---- Save: Social Affairs ----
 document.getElementById('btn-save-social').addEventListener('click', async ()=>{
   const date = document.getElementById('so-date').value || todayISO();
-  const jobTypeCounts = {};
-  document.querySelectorAll('.so-job-input').forEach(inp=>{
-    const v = Number(inp.value)||0;
-    if(v>0) jobTypeCounts[inp.dataset.job] = v;
-  });
   const rec = {
+    collectorName: document.getElementById('so-collector').value.trim(),
     date, ethDate: toEthiopianDate(date),
     elderly: Number(document.getElementById('so-elderly').value)||0,
     disabled: Number(document.getElementById('so-disabled').value)||0,
     women: Number(document.getElementById('so-women').value)||0,
     children: Number(document.getElementById('so-children').value)||0,
-    lowIncome: Number(document.getElementById('so-lowincome').value)||0,
-    jobTypeCounts,
-    incomeSum: Number(document.getElementById('so-income-sum').value)||0,
-    incomeCount: Number(document.getElementById('so-income-count').value)||0,
+    jobTypeCounts: {...jobTallyDraft},
+    incomeLow: Number(document.getElementById('so-income-low').value)||0,
+    incomeMid: Number(document.getElementById('so-income-mid').value)||0,
+    incomeHigh: Number(document.getElementById('so-income-high').value)||0,
     notes: document.getElementById('so-notes').value.trim(),
     createdAt: Date.now()
   };
-  const hasAny = rec.elderly||rec.disabled||rec.women||rec.children||rec.lowIncome||Object.keys(jobTypeCounts).length||rec.incomeSum||rec.incomeCount;
+  const hasAny = rec.elderly||rec.disabled||rec.women||rec.children||Object.keys(jobTallyDraft).length||rec.incomeLow||rec.incomeMid||rec.incomeHigh;
   if(!hasAny && !rec.notes){ showToast('እባክዎ ቢያንስ አንድ ቁጥር ያስገቡ'); return; }
   try{
     await addDoc(collection(db,'social_tally'), rec);
-    await sendTelegram(`👥 ሴቶችና ማህበራዊ ጉዳይ — ዕለታዊ ቆጠራ\n📅 ${rec.ethDate} (${rec.date})\nአረጋውያን: ${rec.elderly} · አካል ጉዳተኞች: ${rec.disabled} · ሴቶች: ${rec.women}\nህጻናት: ${rec.children} · ዝቅተኛ ገቢ: ${rec.lowIncome}${rec.notes ? '\n📝 '+rec.notes : ''}`);
+    const jobText = Object.keys(jobTallyDraft).length ? '\n💼 ' + Object.entries(jobTallyDraft).map(([k,v])=>`${k}:${v}`).join(', ') : '';
+    await sendTelegram(`👥 ሴቶችና ማህበራዊ ጉዳይ — ዕለታዊ ቆጠራ\n👤 ሰብሳቢ: ${rec.collectorName||'—'}\n📅 ${rec.ethDate} (${rec.date})\nአረጋውያን: ${rec.elderly} · አካል ጉዳተኞች: ${rec.disabled} · ሴቶች: ${rec.women} · ህጻናት: ${rec.children}\nገቢ — ዝቅተኛ:${rec.incomeLow} መካከለኛ:${rec.incomeMid} ከፍተኛ:${rec.incomeHigh}${jobText}${rec.notes ? '\n📝 '+rec.notes : ''}`);
     showToast('ተመዝግቧል');
-    ['so-elderly','so-disabled','so-women','so-children','so-lowincome','so-income-sum','so-income-count'].forEach(id=> document.getElementById(id).value='');
-    document.querySelectorAll('.so-job-input').forEach(inp=> inp.value='');
+    ['so-elderly','so-disabled','so-women','so-children','so-income-low','so-income-mid','so-income-high'].forEach(id=> document.getElementById(id).value='');
     document.getElementById('so-notes').value='';
     document.getElementById('so-date').value = todayISO();
+    jobTallyDraft = {};
+    renderJobTallyList();
   }catch(e){ console.error(e); showToast('ስህተት ተፈጥሯል፣ Firestore ያረጋግጡ'); }
 });
 
-// ---- History table (admin only) ----
+// ---- History table (admin only — shows collector name) ----
 function renderHistTable(){
   const thead = document.getElementById('hist-thead');
   const tbody = document.getElementById('hist-body');
@@ -567,11 +672,11 @@ function renderHistTable(){
   let list, cols;
 
   if(activeHistTab === 'labor'){
-    list = laborEntries; cols = ['ቀን','ስራ አጥ ወ','ስራ አጥ ሴ','ማስታወሻ',''];
+    list = laborEntries; cols = ['ቀን','ሰብሳቢ','ስራ አጥ ወ','ስራ አጥ ሴ','ማስታወሻ',''];
   }else if(activeHistTab === 'insurance'){
-    list = insuranceEntries; cols = ['ቀን','አዲስ ወ','አዲስ ሴ','ያደሱ ወ','ያደሱ ሴ','ማስታወሻ',''];
+    list = insuranceEntries; cols = ['ቀን','ሰብሳቢ','አዲስ ወ','አዲስ ሴ','ያደሱ ወ','ያደሱ ሴ','ማስታወሻ',''];
   }else{
-    list = socialEntries; cols = ['ቀን','አረጋውያን','አካል ጉዳ.','ሴቶች','ህጻናት','ዝቅ.ገቢ','ገቢ ድምር','ማስታወሻ',''];
+    list = socialEntries; cols = ['ቀን','ሰብሳቢ','አረጋውያን','አካል ጉዳ.','ሴቶች','ህጻናት','ገቢ (ዝ/መ/ከ)','ማስታወሻ',''];
   }
   thead.innerHTML = '<tr>' + cols.map(c=>`<th>${c}</th>`).join('') + '</tr>';
 
@@ -582,11 +687,11 @@ function renderHistTable(){
   tbody.innerHTML = sorted.map(r=>{
     let cells;
     if(activeHistTab==='labor'){
-      cells = [r.date, r.unempMale, r.unempFemale, escapeAttr(r.notes||'—')];
+      cells = [r.date, escapeAttr(r.collectorName||'—'), r.unempMale, r.unempFemale, escapeAttr(r.notes||'—')];
     }else if(activeHistTab==='insurance'){
-      cells = [r.date, r.newMale, r.newFemale, r.renewMale, r.renewFemale, escapeAttr(r.notes||'—')];
+      cells = [r.date, escapeAttr(r.collectorName||'—'), r.newMale, r.newFemale, r.renewMale, r.renewFemale, escapeAttr(r.notes||'—')];
     }else{
-      cells = [r.date, r.elderly, r.disabled, r.women, r.children, r.lowIncome, money(r.incomeSum), escapeAttr(r.notes||'—')];
+      cells = [r.date, escapeAttr(r.collectorName||'—'), r.elderly, r.disabled, r.women, r.children, `${r.incomeLow||0}/${r.incomeMid||0}/${r.incomeHigh||0}`, escapeAttr(r.notes||'—')];
     }
     return '<tr>' + cells.map(c=>`<td>${c}</td>`).join('') + `<td><button type="button" class="ghost small" data-del="${r.id}">ሰርዝ</button></td></tr>`;
   }).join('');
