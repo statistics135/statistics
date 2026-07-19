@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
   :root{
     --bg:#12171A; --panel:#181F23; --card:#1D2529;
@@ -60,6 +61,9 @@
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
   .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
   .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+  .collector-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:4px;padding:14px;background:var(--card);border:1px solid var(--line-strong);border-radius:6px;}
+  .collector-row .field{flex:1 1 130px;min-width:110px;margin-bottom:0;}
+  .collector-row .field.wide{flex:1 1 170px;}
   .field{margin-bottom:14px;}
   .field label{display:block;font-size:12px;color:var(--text-2);margin-bottom:5px;}
   input,select,textarea{
@@ -115,6 +119,24 @@
   .empty{text-align:center;padding:30px 20px;color:var(--text-3);border:1px dashed var(--line-strong);border-radius:6px;font-size:13px;}
   .rank-item{display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--line-strong);border-radius:5px;padding:10px 14px;margin-bottom:6px;font-size:13px;}
   .rank-item .pos{font-family:'JetBrains Mono',monospace;color:var(--gold);font-weight:700;width:26px;}
+  .rank-top{display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,var(--teal-dim),var(--card));border:1px solid var(--teal);border-radius:8px;padding:14px 16px;margin-bottom:14px;}
+  .rank-top .pos{font-size:22px;}
+  .rank-top .info{flex:1;}
+  .rank-top .name{font-weight:700;font-size:15px;}
+  .rank-top .sub{font-size:11.5px;color:var(--text-2);margin-top:2px;}
+  .rank-top .pct{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--teal);}
+  .rank-bar-track{width:100%;height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:6px;}
+  .rank-bar-fill{height:100%;background:var(--teal);border-radius:3px;}
+  .rank-table-wrap{overflow-x:auto;margin-top:8px;}
+  .rank-table-wrap table{font-size:12px;}
+
+  .filter-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:14px;padding:12px;background:var(--card);border:1px solid var(--line-strong);border-radius:6px;}
+  .filter-bar .field{flex:1 1 130px;min-width:110px;margin-bottom:0;}
+  .filter-bar button{flex-shrink:0;height:38px;}
+  .settings-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px;}
+  .settings-status{font-size:11.5px;color:var(--text-2);}
+  .settings-status.ok{color:var(--teal);}
+  .settings-status.err{color:var(--red);}
   .toast{
     position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
     background:var(--teal);color:#08201a;padding:10px 20px;border-radius:6px;font-size:13px;font-weight:600;
@@ -373,13 +395,66 @@
         </div>
       </div>
 
-      <div class="section-title"><span class="num">03</span> <span data-i18n="pastEntries">ያለፉ ምዝገባዎች (አድሚን ብቻ)</span></div>
+      <div class="section-title"><span class="num">03</span> <span data-i18n="settingsTitle">ሲቲንግ — ኢሜል ማገናኛ</span></div>
+      <div class="card">
+        <div style="font-size:12px;color:var(--text-2);margin-bottom:10px;" data-i18n="settingsDesc">አዲስ ምዝገባ ሲመዘገብ ማሳወቂያ ኢሜል እንዲላክ EmailJS መረጃ ያስገቡ (emailjs.com)</div>
+        <div class="grid3">
+          <div class="field">
+            <label data-i18n="settingsToEmail">የሚደርስበት ኢሜል</label>
+            <input type="email" id="set-to-email" placeholder="name@example.com">
+          </div>
+          <div class="field">
+            <label data-i18n="settingsServiceId">EmailJS Service ID</label>
+            <input type="text" id="set-service-id" class="mono" placeholder="service_xxxx">
+          </div>
+          <div class="field">
+            <label data-i18n="settingsTemplateId">EmailJS Template ID</label>
+            <input type="text" id="set-template-id" class="mono" placeholder="template_xxxx">
+          </div>
+        </div>
+        <div class="field">
+          <label data-i18n="settingsPublicKey">EmailJS Public Key</label>
+          <input type="text" id="set-public-key" class="mono" placeholder="public_xxxx">
+        </div>
+        <div class="settings-row">
+          <button type="button" class="primary small" id="btn-save-settings" data-i18n="settingsSave">ቅንብር አስቀምጥ</button>
+          <button type="button" class="ghost small" id="btn-test-email" data-i18n="settingsTest">✉️ ሙከራ ላክ</button>
+          <span class="settings-status" id="settings-status"></span>
+        </div>
+      </div>
+
+      <div class="section-title"><span class="num">04</span> <span data-i18n="pastEntries">ያለፉ ምዝገባዎች (አድሚን ብቻ)</span></div>
       <div class="card">
         <div class="dept-tabs">
           <div class="hist-tab active" data-hist="labor">💼 <span data-i18n="deptLabor">ስራና ክህሎት</span></div>
           <div class="hist-tab" data-hist="insurance">🏥 <span data-i18n="deptInsurance">ጤና መድን</span></div>
           <div class="hist-tab" data-hist="social">👥 <span data-i18n="deptSocial2">ማህበራዊ ጉዳይ</span></div>
         </div>
+
+        <div class="filter-bar">
+          <div class="field">
+            <label data-i18n="filterFrom">ከቀን</label>
+            <input type="date" id="filt-from" class="mono">
+          </div>
+          <div class="field">
+            <label data-i18n="filterTo">እስከ ቀን</label>
+            <input type="date" id="filt-to" class="mono">
+          </div>
+          <div class="field">
+            <label data-i18n="filterGender">ጾታ</label>
+            <select id="filt-gender">
+              <option value="" data-i18n="filterAll">ሁሉም</option>
+              <option value="ወንድ" data-i18n="male">ወንድ</option>
+              <option value="ሴት" data-i18n="female">ሴት</option>
+            </select>
+          </div>
+          <div class="field" style="flex:2 1 200px;">
+            <label data-i18n="filterSearch">ፈልግ (ስም/ቀበሌ/ወረዳ/ዞን)</label>
+            <input type="text" id="filt-search" data-i18n-placeholder="filterSearchPh" placeholder="ስም ወይም ቦታ ይጻፉ...">
+          </div>
+          <button type="button" class="ghost small" id="btn-clear-filter" data-i18n="filterClear">✕ አጽዳ</button>
+        </div>
+
         <div class="form-actions" style="justify-content:flex-start;">
           <button type="button" class="ghost small" id="btn-export-csv" data-i18n="exportCsv">⬇️ CSV አውርድ</button>
         </div>
@@ -400,17 +475,15 @@
 
 <script>
 const COLLECTOR_FIELD_TPL = (prefix) => `
-  <div class="grid2">
-    <div class="field">
+  <div class="collector-row">
+    <div class="field wide">
       <label data-i18n="collectorName">👤 የዳታ ሰብሳቢ ስም</label>
       <input type="text" id="${prefix}-collector" data-i18n-placeholder="fullNamePh" placeholder="ሙሉ ስም">
     </div>
-    <div class="field">
+    <div class="field wide">
       <label data-i18n="position">💼 የስራ መደብ</label>
       <input type="text" id="${prefix}-position" data-i18n-placeholder="positionPh" placeholder="ማዕረግ/መደብ">
     </div>
-  </div>
-  <div class="grid3">
     <div class="field">
       <label data-i18n="gender">⚧ ጾታ</label>
       <select id="${prefix}-gender">
@@ -419,21 +492,21 @@ const COLLECTOR_FIELD_TPL = (prefix) => `
       </select>
     </div>
     <div class="field">
-      <label data-i18n="kebele">ቀበሌ</label>
-      <input type="text" id="${prefix}-kebele">
+      <label data-i18n="zone">ዞን</label>
+      <input type="text" id="${prefix}-zone">
     </div>
     <div class="field">
       <label data-i18n="woreda">ወረዳ</label>
       <input type="text" id="${prefix}-woreda">
     </div>
-  </div>
-  <div class="field">
-    <label data-i18n="zone">ዞን</label>
-    <input type="text" id="${prefix}-zone">
-  </div>
-  <div class="field">
-    <label data-i18n="date">📅 ቀን</label>
-    <input type="date" id="${prefix}-date" class="mono">
+    <div class="field">
+      <label data-i18n="kebele">ቀበሌ</label>
+      <input type="text" id="${prefix}-kebele">
+    </div>
+    <div class="field">
+      <label data-i18n="date">📅 ቀን</label>
+      <input type="date" id="${prefix}-date" class="mono">
+    </div>
   </div>
 `;
 document.querySelectorAll('.collector-block').forEach(el=>{
@@ -482,7 +555,12 @@ const I18N = {
     jobType:'የስራ አይነት', count:'ብዛት', addBtn:'+ ጨምር', incomeLevelCount:'የገቢ ደረጃ ብዛት',
     incomeLow:'ዝቅተኛ ገቢ', incomeMid:'መካከለኛ ገቢ', incomeHigh:'ከፍተኛ ገቢ',
     changeCode:'የአድሚን ይለፍ ቃል ቀይር', newCode:'አዲስ የአድሚን ኮድ (ይለፍ ቃል)', newCode2:'አዲስ ኮድ ድገሙ', changeBtn:'ቀይር',
-    pastEntries:'ያለፉ ምዝገባዎች (አድሚን ብቻ)', exportCsv:'⬇️ CSV አውርድ', noData:'ገና ምንም ውሂብ አልተመዘገበም።'
+    pastEntries:'ያለፉ ምዝገባዎች (አድሚን ብቻ)', exportCsv:'⬇️ CSV አውርድ', noData:'ገና ምንም ውሂብ አልተመዘገበም።',
+    settingsTitle:'ሲቲንግ — ኢሜል ማገናኛ', settingsDesc:'አዲስ ምዝገባ ሲመዘገብ ማሳወቂያ ኢሜል እንዲላክ EmailJS መረጃ ያስገቡ (emailjs.com)',
+    settingsToEmail:'የሚደርስበት ኢሜል', settingsServiceId:'EmailJS Service ID', settingsTemplateId:'EmailJS Template ID',
+    settingsPublicKey:'EmailJS Public Key', settingsSave:'ቅንብር አስቀምጥ', settingsTest:'✉️ ሙከራ ላክ',
+    filterFrom:'ከቀን', filterTo:'እስከ ቀን', filterGender:'ጾታ', filterAll:'ሁሉም', filterSearch:'ፈልግ (ስም/ቀበሌ/ወረዳ/ዞን)',
+    filterSearchPh:'ስም ወይም ቦታ ይጻፉ...', filterClear:'✕ አጽዳ'
   },
   en: {
     heroTitle:'Daily Data Registration', heroSubtitle:'Center for fast, accurate recording of field statistics',
@@ -500,7 +578,12 @@ const I18N = {
     jobType:'Job type', count:'Count', addBtn:'+ Add', incomeLevelCount:'Income level count',
     incomeLow:'Low income', incomeMid:'Medium income', incomeHigh:'High income',
     changeCode:'Change Admin Password', newCode:'New admin code (password)', newCode2:'Repeat new code', changeBtn:'Change',
-    pastEntries:'Past Entries (Admin Only)', exportCsv:'⬇️ Download CSV', noData:'No data recorded yet.'
+    pastEntries:'Past Entries (Admin Only)', exportCsv:'⬇️ Download CSV', noData:'No data recorded yet.',
+    settingsTitle:'Settings — Email Connector', settingsDesc:'Enter EmailJS details (emailjs.com) to send a notification email on each new entry',
+    settingsToEmail:'Recipient email', settingsServiceId:'EmailJS Service ID', settingsTemplateId:'EmailJS Template ID',
+    settingsPublicKey:'EmailJS Public Key', settingsSave:'Save Settings', settingsTest:'✉️ Send Test',
+    filterFrom:'From date', filterTo:'To date', filterGender:'Gender', filterAll:'All', filterSearch:'Search (name/kebele/woreda/zone)',
+    filterSearchPh:'Type name or location...', filterClear:'✕ Clear'
   }
 };
 let currentLang = 'am';
@@ -573,6 +656,33 @@ async function sendTelegram(text){
   }catch(e){ console.error('Telegram error', e); }
 }
 
+// ---- Email connector (EmailJS) settings ----
+function loadEmailSettings(){
+  try{ return JSON.parse(localStorage.getItem('stat-email-settings') || '{}'); }
+  catch(e){ return {}; }
+}
+function saveEmailSettingsToStorage(s){
+  localStorage.setItem('stat-email-settings', JSON.stringify(s));
+}
+let emailSettings = loadEmailSettings();
+function fillEmailSettingsForm(){
+  document.getElementById('set-to-email').value = emailSettings.toEmail || '';
+  document.getElementById('set-service-id').value = emailSettings.serviceId || '';
+  document.getElementById('set-template-id').value = emailSettings.templateId || '';
+  document.getElementById('set-public-key').value = emailSettings.publicKey || '';
+}
+async function sendEmailNotification(subject, message){
+  const s = emailSettings;
+  if(!s.toEmail || !s.serviceId || !s.templateId || !s.publicKey) return;
+  try{
+    if(!window.emailjs){ console.warn('EmailJS SDK not loaded'); return; }
+    window.emailjs.init({ publicKey: s.publicKey });
+    await window.emailjs.send(s.serviceId, s.templateId, {
+      to_email: s.toEmail, subject, message
+    });
+  }catch(e){ console.error('Email send error', e); }
+}
+
 ['l-date','i-date','so-date'].forEach(id=>{
   const el = document.getElementById(id);
   if(el) el.value = todayISO();
@@ -637,6 +747,43 @@ document.getElementById('btn-change-code').addEventListener('click', ()=>{
   document.getElementById('new-admin-code2').value='';
   showToast(currentLang==='en'?'Admin code changed for this session':'ኮድ ለዚህ session ተቀይሯል (ገጹን ካደሱ ወደ ነባሩ ይመለሳል)');
 });
+
+document.getElementById('btn-save-settings').addEventListener('click', ()=>{
+  emailSettings = {
+    toEmail: document.getElementById('set-to-email').value.trim(),
+    serviceId: document.getElementById('set-service-id').value.trim(),
+    templateId: document.getElementById('set-template-id').value.trim(),
+    publicKey: document.getElementById('set-public-key').value.trim()
+  };
+  saveEmailSettingsToStorage(emailSettings);
+  const st = document.getElementById('settings-status');
+  st.textContent = currentLang==='en' ? 'Saved on this device' : 'በዚህ መሳሪያ ላይ ተቀምጧል';
+  st.className = 'settings-status ok';
+  showToast(currentLang==='en'?'Settings saved':'ቅንብር ተቀምጧል');
+});
+document.getElementById('btn-test-email').addEventListener('click', async ()=>{
+  const st = document.getElementById('settings-status');
+  if(!document.getElementById('set-to-email').value.trim() || !document.getElementById('set-service-id').value.trim() || !document.getElementById('set-template-id').value.trim() || !document.getElementById('set-public-key').value.trim()){
+    st.textContent = currentLang==='en' ? 'Fill all fields first' : 'መጀመሪያ ሁሉንም መስኮች ይሙሉ';
+    st.className = 'settings-status err';
+    return;
+  }
+  document.getElementById('btn-save-settings').click();
+  st.textContent = currentLang==='en' ? 'Sending...' : 'እየላከ ነው...';
+  st.className = 'settings-status';
+  try{
+    await sendEmailNotification(
+      currentLang==='en' ? 'Test notification' : 'የሙከራ ማሳወቂያ',
+      currentLang==='en' ? 'This is a test email from the Daily Data Registration app.' : 'ይህ ከዕለታዊ መረጃዎች መመዝገቢያ የተላከ የሙከራ ኢሜል ነው።'
+    );
+    st.textContent = currentLang==='en' ? 'Test email sent' : 'የሙከራ ኢሜል ተልኳል';
+    st.className = 'settings-status ok';
+  }catch(e){
+    st.textContent = currentLang==='en' ? 'Send failed — check settings' : 'መላክ አልተሳካም — ቅንብር ያረጋግጡ';
+    st.className = 'settings-status err';
+  }
+});
+fillEmailSettingsForm();
 
 // ---- Department entry tabs ----
 document.querySelectorAll('.dept-tab').forEach(tab=>{
@@ -733,10 +880,47 @@ function renderRankBox(elId, topElId, arr){
     if(topEl) topEl.textContent = '';
     return;
   }
-  box.innerHTML = ranked.slice(0,10).map(([name,count],i)=> `
-    <div class="rank-item"><span class="pos">#${i+1}</span><span style="flex:1;padding:0 10px;">${escapeAttr(name)}</span><span class="mono">${count}</span></div>
-  `).join('');
-  if(topEl) topEl.textContent = `🏆 ${ranked[0][0]}`;
+  const totalAll = ranked.reduce((s,[,c])=> s+c, 0);
+  const pct = (c)=> totalAll ? ((c/totalAll)*100).toFixed(1) : '0.0';
+  const [topName, topCount] = ranked[0];
+  const topPct = pct(topCount);
+
+  const tRankLbl = currentLang==='en' ? 'Rank' : 'ደረጃ';
+  const tNameLbl = currentLang==='en' ? 'Full Name' : 'ሙሉ ስም';
+  const tCountLbl = currentLang==='en' ? 'Entries' : 'ብዛት';
+  const tPctLbl = currentLang==='en' ? '% of Total' : 'ከጠቅላላ %';
+  const ofTotalTxt = currentLang==='en' ? `of total collected` : `ከጠቅላላ የተሰበሰበው`;
+
+  let html = `
+    <div class="rank-top">
+      <span class="pos">🏆</span>
+      <div class="info">
+        <div class="name">${escapeAttr(topName)}</div>
+        <div class="sub">${topCount} ${currentLang==='en'?'entries':'ምዝገባዎች'} · ${ofTotalTxt}</div>
+        <div class="rank-bar-track"><div class="rank-bar-fill" style="width:${topPct}%;"></div></div>
+      </div>
+      <div class="pct">${topPct}%</div>
+    </div>
+  `;
+
+  if(ranked.length > 1){
+    html += `<div class="rank-table-wrap"><table>
+      <thead><tr><th>${tRankLbl}</th><th>${tNameLbl}</th><th>${tCountLbl}</th><th>${tPctLbl}</th></tr></thead>
+      <tbody>
+        ${ranked.map(([name,count],i)=> `
+          <tr>
+            <td class="mono">#${i+1}</td>
+            <td>${escapeAttr(name)}</td>
+            <td class="mono">${count}</td>
+            <td class="mono">${pct(count)}%</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table></div>`;
+  }
+
+  box.innerHTML = html;
+  if(topEl) topEl.textContent = `🏆 ${topName}`;
 }
 function renderRanking(){
   renderRankBox('rank-labor','top-labor', laborEntries);
@@ -779,7 +963,9 @@ document.getElementById('btn-save-labor').addEventListener('click', async ()=>{
       showToast(currentLang==='en'?'Updated':'ተዘምኗል');
     }else{
       await addDoc(collection(db,'labor_tally'), rec);
-      await sendTelegram(`💼 ስራና ክህሎት — ዕለታዊ ቆጠራ\n👤 ሰብሳቢ: ${rec.collectorName||'—'} (${rec.position||'—'})\n📍 ${rec.zone||''}/${rec.woreda||''}/${rec.kebele||''}\n📅 ${rec.ethDate} (${rec.date})\nስራ አጥ ወንድ: ${rec.unempMale}\nስራ አጥ ሴት: ${rec.unempFemale}${rec.notes ? '\n📝 '+rec.notes : ''}`);
+      const laborMsg = `💼 ስራና ክህሎት — ዕለታዊ ቆጠራ\n👤 ሰብሳቢ: ${rec.collectorName||'—'} (${rec.position||'—'})\n📍 ${rec.zone||''}/${rec.woreda||''}/${rec.kebele||''}\n📅 ${rec.ethDate} (${rec.date})\nስራ አጥ ወንድ: ${rec.unempMale}\nስራ አጥ ሴት: ${rec.unempFemale}${rec.notes ? '\n📝 '+rec.notes : ''}`;
+      await sendTelegram(laborMsg);
+      sendEmailNotification('ስራና ክህሎት — ዕለታዊ ቆጠራ', laborMsg);
       showToast(currentLang==='en'?'Saved':'ተመዝግቧል');
     }
     document.getElementById('l-unemp-m').value=''; document.getElementById('l-unemp-f').value=''; document.getElementById('l-notes').value='';
@@ -810,7 +996,9 @@ document.getElementById('btn-save-insurance').addEventListener('click', async ()
       showToast(currentLang==='en'?'Updated':'ተዘምኗል');
     }else{
       await addDoc(collection(db,'insurance_tally'), rec);
-      await sendTelegram(`🏥 ጤና መድን — ዕለታዊ ቆጠራ\n👤 ሰብሳቢ: ${rec.collectorName||'—'} (${rec.position||'—'})\n📍 ${rec.zone||''}/${rec.woreda||''}/${rec.kebele||''}\n📅 ${rec.ethDate} (${rec.date})\nአዲስ ያወጡ ወ: ${rec.newMale} ሴ: ${rec.newFemale}\nያደሱ ወ: ${rec.renewMale} ሴ: ${rec.renewFemale}${rec.notes ? '\n📝 '+rec.notes : ''}`);
+      const insMsg = `🏥 ጤና መድን — ዕለታዊ ቆጠራ\n👤 ሰብሳቢ: ${rec.collectorName||'—'} (${rec.position||'—'})\n📍 ${rec.zone||''}/${rec.woreda||''}/${rec.kebele||''}\n📅 ${rec.ethDate} (${rec.date})\nአዲስ ያወጡ ወ: ${rec.newMale} ሴ: ${rec.newFemale}\nያደሱ ወ: ${rec.renewMale} ሴ: ${rec.renewFemale}${rec.notes ? '\n📝 '+rec.notes : ''}`;
+      await sendTelegram(insMsg);
+      sendEmailNotification('ጤና መድን — ዕለታዊ ቆጠራ', insMsg);
       showToast(currentLang==='en'?'Saved':'ተመዝግቧል');
     }
     ['i-new-m','i-new-f','i-renew-m','i-renew-f'].forEach(id=> document.getElementById(id).value='');
@@ -875,7 +1063,9 @@ document.getElementById('btn-save-social').addEventListener('click', async ()=>{
     }else{
       await addDoc(collection(db,'social_tally'), rec);
       const jobText = Object.keys(jobTallyDraft).length ? '\n💼 ' + Object.entries(jobTallyDraft).map(([k,v])=>`${k}:${v}`).join(', ') : '';
-      await sendTelegram(`👥 ሴቶችና ማህበራዊ ጉዳይ — ዕለታዊ ቆጠራ\n👤 ሰብሳቢ: ${rec.collectorName||'—'} (${rec.position||'—'})\n📍 ${rec.zone||''}/${rec.woreda||''}/${rec.kebele||''}\n📅 ${rec.ethDate} (${rec.date})\nአረጋውያን: ${rec.elderly} · አካል ጉዳተኞች: ${rec.disabled} · ሴቶች: ${rec.women} · ህጻናት: ${rec.children}\nገቢ — ዝቅተኛ:${rec.incomeLow} መካከለኛ:${rec.incomeMid} ከፍተኛ:${rec.incomeHigh}${jobText}${rec.notes ? '\n📝 '+rec.notes : ''}`);
+      const socMsg = `👥 ሴቶችና ማህበራዊ ጉዳይ — ዕለታዊ ቆጠራ\n👤 ሰብሳቢ: ${rec.collectorName||'—'} (${rec.position||'—'})\n📍 ${rec.zone||''}/${rec.woreda||''}/${rec.kebele||''}\n📅 ${rec.ethDate} (${rec.date})\nአረጋውያን: ${rec.elderly} · አካል ጉዳተኞች: ${rec.disabled} · ሴቶች: ${rec.women} · ህጻናት: ${rec.children}\nገቢ — ዝቅተኛ:${rec.incomeLow} መካከለኛ:${rec.incomeMid} ከፍተኛ:${rec.incomeHigh}${jobText}${rec.notes ? '\n📝 '+rec.notes : ''}`;
+      await sendTelegram(socMsg);
+      sendEmailNotification('ሴቶችና ማህበራዊ ጉዳይ — ዕለታዊ ቆጠራ', socMsg);
       showToast(currentLang==='en'?'Saved':'ተመዝግቧል');
     }
     ['so-elderly','so-disabled','so-women','so-children','so-income-low','so-income-mid','so-income-high'].forEach(id=> document.getElementById(id).value='');
@@ -886,6 +1076,35 @@ document.getElementById('btn-save-social').addEventListener('click', async ()=>{
     renderJobTallyList();
     if(isEditing) cancelEdit();
   }catch(e){ console.error(e); showToast(currentLang==='en'?'Error — check Firestore':'ስህተት ተፈጥሯል፣ Firestore ያረጋግጡ'); }
+});
+
+// ---- History filter ----
+function applyFilters(list){
+  const from = document.getElementById('filt-from').value;
+  const to = document.getElementById('filt-to').value;
+  const gender = document.getElementById('filt-gender').value;
+  const search = document.getElementById('filt-search').value.trim().toLowerCase();
+  return list.filter(r=>{
+    if(from && r.date && r.date < from) return false;
+    if(to && r.date && r.date > to) return false;
+    if(gender && r.gender !== gender) return false;
+    if(search){
+      const hay = [r.collectorName,r.position,r.kebele,r.woreda,r.zone].join(' ').toLowerCase();
+      if(!hay.includes(search)) return false;
+    }
+    return true;
+  });
+}
+['filt-from','filt-to','filt-gender'].forEach(id=>{
+  document.getElementById(id).addEventListener('change', ()=> renderHistTable());
+});
+document.getElementById('filt-search').addEventListener('input', ()=> renderHistTable());
+document.getElementById('btn-clear-filter').addEventListener('click', ()=>{
+  document.getElementById('filt-from').value = '';
+  document.getElementById('filt-to').value = '';
+  document.getElementById('filt-gender').value = '';
+  document.getElementById('filt-search').value = '';
+  renderHistTable();
 });
 
 // ---- History table (admin only) ----
@@ -904,6 +1123,7 @@ function renderHistTable(){
   }
   thead.innerHTML = '<tr>' + cols.map(c=>`<th>${c}</th>`).join('') + '</tr>';
 
+  list = applyFilters(list);
   const sorted = list.slice().sort((a,b)=> (b.createdAt||0)-(a.createdAt||0));
   if(sorted.length===0){ tbody.innerHTML=''; emptyEl.classList.remove('hidden'); return; }
   emptyEl.classList.add('hidden');
@@ -999,15 +1219,15 @@ document.getElementById('btn-export-csv').addEventListener('click', ()=>{
   let headers, rows, filename;
   if(activeHistTab === 'labor'){
     headers = ['ቀን','ሰብሳቢ','መደብ','ጾታ','ቀበሌ','ወረዳ','ዞን','ስራ አጥ ወንድ','ስራ አጥ ሴት','ማስታወሻ'];
-    rows = laborEntries.map(r=>[r.date,r.collectorName,r.position,r.gender,r.kebele,r.woreda,r.zone,r.unempMale,r.unempFemale,r.notes]);
+    rows = applyFilters(laborEntries).map(r=>[r.date,r.collectorName,r.position,r.gender,r.kebele,r.woreda,r.zone,r.unempMale,r.unempFemale,r.notes]);
     filename = 'labor_tally.csv';
   }else if(activeHistTab === 'insurance'){
     headers = ['ቀን','ሰብሳቢ','መደብ','ጾታ','ቀበሌ','ወረዳ','ዞን','አዲስ ወንድ','አዲስ ሴት','ያደሱ ወንድ','ያደሱ ሴት','ማስታወሻ'];
-    rows = insuranceEntries.map(r=>[r.date,r.collectorName,r.position,r.gender,r.kebele,r.woreda,r.zone,r.newMale,r.newFemale,r.renewMale,r.renewFemale,r.notes]);
+    rows = applyFilters(insuranceEntries).map(r=>[r.date,r.collectorName,r.position,r.gender,r.kebele,r.woreda,r.zone,r.newMale,r.newFemale,r.renewMale,r.renewFemale,r.notes]);
     filename = 'insurance_tally.csv';
   }else{
     headers = ['ቀን','ሰብሳቢ','መደብ','ጾታ','ቀበሌ','ወረዳ','ዞን','አረጋውያን','አካል ጉዳተኞች','ሴቶች','ህጻናት','ዝቅተኛ ገቢ','መካከለኛ ገቢ','ከፍተኛ ገቢ','ማስታወሻ'];
-    rows = socialEntries.map(r=>[r.date,r.collectorName,r.position,r.gender,r.kebele,r.woreda,r.zone,r.elderly,r.disabled,r.women,r.children,r.incomeLow,r.incomeMid,r.incomeHigh,r.notes]);
+    rows = applyFilters(socialEntries).map(r=>[r.date,r.collectorName,r.position,r.gender,r.kebele,r.woreda,r.zone,r.elderly,r.disabled,r.women,r.children,r.incomeLow,r.incomeMid,r.incomeHigh,r.notes]);
     filename = 'social_tally.csv';
   }
   const lines = [headers.join(',')];
@@ -1022,4 +1242,4 @@ document.getElementById('btn-export-csv').addEventListener('click', ()=>{
 });
 </script>
 </body>
-  </html>
+          </html>
