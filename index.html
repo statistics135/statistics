@@ -137,6 +137,31 @@
   .settings-status{font-size:11.5px;color:var(--text-2);}
   .settings-status.ok{color:var(--teal);}
   .settings-status.err{color:var(--red);}
+
+  .admin-tabs{display:flex;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:4px;margin-bottom:20px;position:sticky;top:8px;z-index:10;}
+  .admin-tab{flex:1;text-align:center;padding:11px 6px;border-radius:6px;cursor:pointer;font-size:12.5px;font-weight:600;color:var(--text-2);border-bottom:3px solid transparent;transition:background .15s,color .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .admin-tab:hover{color:var(--text);}
+  .admin-tab.active{color:var(--teal);background:var(--teal-dim);border-bottom-color:var(--teal);}
+
+  .edit-box{border:1px solid var(--gold);background:var(--gold-dim);border-radius:8px;padding:16px;margin-bottom:18px;}
+  .edit-box .edit-title{font-size:12.5px;color:var(--gold);font-weight:700;margin-bottom:12px;}
+
+  .batch-table-wrap{overflow-x:auto;padding-bottom:4px;}
+  .batch-row{display:flex;flex-wrap:nowrap;gap:8px;align-items:flex-end;padding:12px;background:var(--card);border:1px solid var(--line-strong);border-radius:6px;margin-bottom:8px;min-width:max-content;}
+  .batch-row .field{flex:0 0 120px;margin-bottom:0;}
+  .batch-row .field label{white-space:nowrap;}
+  .batch-row .field.wide{flex:0 0 150px;}
+  .batch-row .field.narrow{flex:0 0 84px;}
+  .batch-row .field.notes-f{flex:0 0 180px;}
+  .batch-row .rm-row{flex-shrink:0;align-self:center;color:var(--red);background:none;border:none;font-size:16px;cursor:pointer;padding:4px 8px;}
+  .batch-row .row-num{flex-shrink:0;align-self:center;font-family:'JetBrains Mono',monospace;color:var(--gold);font-weight:700;width:22px;}
+  .batch-add-actions{display:flex;gap:10px;margin-top:6px;flex-wrap:wrap;justify-content:space-between;}
+
+  .profile-card{display:flex;flex-direction:column;gap:6px;}
+
+  @media(max-width:640px){
+    .admin-tab span{display:none;}
+  }
   .toast{
     position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
     background:var(--teal);color:#08201a;padding:10px 20px;border-radius:6px;font-size:13px;font-weight:600;
@@ -252,6 +277,13 @@
         <button type="button" class="ghost small" id="btn-admin-logout" data-i18n="logout">ውጣ</button>
       </div>
 
+      <div class="admin-tabs">
+        <div class="admin-tab active" data-admin-tab="entry">📝 <span data-i18n="tabEntry">ዕለታዊ ማስገቢያ</span></div>
+        <div class="admin-tab" data-admin-tab="history">📊 <span data-i18n="tabHistory">ማጣሪያ / ያለፉ ምዝገባዎች</span></div>
+        <div class="admin-tab" data-admin-tab="settings">⚙️ <span data-i18n="tabSettings">ሲቲንግ</span></div>
+      </div>
+
+      <div id="admin-panel-entry" class="admin-panel">
       <div class="section-title"><span class="num">01</span> <span data-i18n="dailyEntry">ዕለታዊ ቁጥር ማስገቢያ (አድሚን ብቻ)</span></div>
       <div class="card">
         <div class="dept-tabs">
@@ -262,123 +294,182 @@
 
         <!-- LABOR FORM -->
         <div id="dept-labor">
-          <div class="collector-block" data-prefix="l"></div>
-          <div class="grid2">
-            <div class="field">
-              <label data-i18n="unempMale">ስራ አጥ — ወንድ ብዛት</label>
-              <input type="number" id="l-unemp-m" class="mono" min="0" placeholder="0">
+          <div class="edit-box hidden" id="edit-box-labor">
+            <div class="edit-title" data-i18n="editingTitle">✏️ ምዝገባ በማስተካከል ላይ</div>
+            <div class="collector-block" data-prefix="l"></div>
+            <div class="grid2">
+              <div class="field">
+                <label data-i18n="unempMale">ስራ አጥ — ወንድ ብዛት</label>
+                <input type="number" id="l-unemp-m" class="mono" min="0" placeholder="0">
+              </div>
+              <div class="field">
+                <label data-i18n="unempFemale">ስራ አጥ — ሴት ብዛት</label>
+                <input type="number" id="l-unemp-f" class="mono" min="0" placeholder="0">
+              </div>
             </div>
             <div class="field">
-              <label data-i18n="unempFemale">ስራ አጥ — ሴት ብዛት</label>
-              <input type="number" id="l-unemp-f" class="mono" min="0" placeholder="0">
+              <label data-i18n="notes">📝 ማስታወሻ</label>
+              <textarea id="l-notes" data-i18n-placeholder="notesPh" placeholder="ማንኛውም ማስታወሻ..."></textarea>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="ghost" id="btn-cancel-edit-labor" data-i18n="cancelBtn">ይቅር</button>
+              <button type="button" class="primary" id="btn-save-labor" data-i18n="updateBtn">አዘምን</button>
             </div>
           </div>
-          <div class="field">
-            <label data-i18n="notes">📝 ማስታወሻ</label>
-            <textarea id="l-notes" data-i18n-placeholder="notesPh" placeholder="ማንኛውም ማስታወሻ..."></textarea>
-          </div>
-          <div class="form-actions">
-            <button type="button" class="primary" id="btn-save-labor" data-i18n="save">አስቀምጥ</button>
+
+          <div id="batch-area-labor">
+            <div style="font-size:12px;color:var(--text-2);margin-bottom:8px;" data-i18n="batchHint">በአንድ ጊዜ የፈለጉትን ያህል ረድፎች ጨምረው ያስገቡ፣ ሲጨርሱ "ሁሉንም አስቀምጥ" ይጫኑ</div>
+            <div class="batch-table-wrap"><div id="batch-labor"></div></div>
+            <div class="batch-add-actions">
+              <button type="button" class="ghost small" id="btn-add-row-labor" data-i18n="addRowBtn">+ ረድፍ ጨምር</button>
+              <button type="button" class="primary" id="btn-save-batch-labor" data-i18n="saveAllBtn">✅ ሁሉንም አስቀምጥ</button>
+            </div>
           </div>
         </div>
 
         <!-- INSURANCE FORM -->
         <div id="dept-insurance" class="hidden">
-          <div class="collector-block" data-prefix="i"></div>
-          <div class="grid2">
-            <div class="field">
-              <label data-i18n="newMale">አዲስ ያወጡ — ወንድ</label>
-              <input type="number" id="i-new-m" class="mono" min="0" placeholder="0">
+          <div class="edit-box hidden" id="edit-box-insurance">
+            <div class="edit-title" data-i18n="editingTitle">✏️ ምዝገባ በማስተካከል ላይ</div>
+            <div class="collector-block" data-prefix="i"></div>
+            <div class="grid2">
+              <div class="field">
+                <label data-i18n="newMale">አዲስ ያወጡ — ወንድ</label>
+                <input type="number" id="i-new-m" class="mono" min="0" placeholder="0">
+              </div>
+              <div class="field">
+                <label data-i18n="newFemale">አዲስ ያወጡ — ሴት</label>
+                <input type="number" id="i-new-f" class="mono" min="0" placeholder="0">
+              </div>
+            </div>
+            <div class="grid2">
+              <div class="field">
+                <label data-i18n="renewMale">ያደሱ — ወንድ</label>
+                <input type="number" id="i-renew-m" class="mono" min="0" placeholder="0">
+              </div>
+              <div class="field">
+                <label data-i18n="renewFemale">ያደሱ — ሴት</label>
+                <input type="number" id="i-renew-f" class="mono" min="0" placeholder="0">
+              </div>
             </div>
             <div class="field">
-              <label data-i18n="newFemale">አዲስ ያወጡ — ሴት</label>
-              <input type="number" id="i-new-f" class="mono" min="0" placeholder="0">
+              <label data-i18n="notes">📝 ማስታወሻ</label>
+              <textarea id="i-notes" data-i18n-placeholder="notesPh" placeholder="ማንኛውም ማስታወሻ..."></textarea>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="ghost" id="btn-cancel-edit-insurance" data-i18n="cancelBtn">ይቅር</button>
+              <button type="button" class="primary" id="btn-save-insurance" data-i18n="updateBtn">አዘምን</button>
             </div>
           </div>
-          <div class="grid2">
-            <div class="field">
-              <label data-i18n="renewMale">ያደሱ — ወንድ</label>
-              <input type="number" id="i-renew-m" class="mono" min="0" placeholder="0">
+
+          <div id="batch-area-insurance">
+            <div style="font-size:12px;color:var(--text-2);margin-bottom:8px;" data-i18n="batchHint">በአንድ ጊዜ የፈለጉትን ያህል ረድፎች ጨምረው ያስገቡ፣ ሲጨርሱ "ሁሉንም አስቀምጥ" ይጫኑ</div>
+            <div class="batch-table-wrap"><div id="batch-insurance"></div></div>
+            <div class="batch-add-actions">
+              <button type="button" class="ghost small" id="btn-add-row-insurance" data-i18n="addRowBtn">+ ረድፍ ጨምር</button>
+              <button type="button" class="primary" id="btn-save-batch-insurance" data-i18n="saveAllBtn">✅ ሁሉንም አስቀምጥ</button>
             </div>
-            <div class="field">
-              <label data-i18n="renewFemale">ያደሱ — ሴት</label>
-              <input type="number" id="i-renew-f" class="mono" min="0" placeholder="0">
-            </div>
-          </div>
-          <div class="field">
-            <label data-i18n="notes">📝 ማስታወሻ</label>
-            <textarea id="i-notes" data-i18n-placeholder="notesPh" placeholder="ማንኛውም ማስታወሻ..."></textarea>
-          </div>
-          <div class="form-actions">
-            <button type="button" class="primary" id="btn-save-insurance" data-i18n="save">አስቀምጥ</button>
           </div>
         </div>
 
         <!-- SOCIAL AFFAIRS FORM -->
         <div id="dept-social" class="hidden">
-          <div class="collector-block" data-prefix="so"></div>
-          <div class="grid2">
-            <div class="field">
-              <label data-i18n="elderly">አረጋውያን ብዛት</label>
-              <input type="number" id="so-elderly" class="mono" min="0" placeholder="0">
+          <div class="edit-box hidden" id="edit-box-social">
+            <div class="edit-title" data-i18n="editingTitle">✏️ ምዝገባ በማስተካከል ላይ</div>
+            <div class="collector-block" data-prefix="so"></div>
+            <div class="grid2">
+              <div class="field">
+                <label data-i18n="elderly">አረጋውያን ብዛት</label>
+                <input type="number" id="so-elderly" class="mono" min="0" placeholder="0">
+              </div>
+              <div class="field">
+                <label data-i18n="disabled">አካል ጉዳተኞች ብዛት</label>
+                <input type="number" id="so-disabled" class="mono" min="0" placeholder="0">
+              </div>
             </div>
-            <div class="field">
-              <label data-i18n="disabled">አካል ጉዳተኞች ብዛት</label>
-              <input type="number" id="so-disabled" class="mono" min="0" placeholder="0">
+            <div class="grid2">
+              <div class="field">
+                <label data-i18n="women">ሴቶች ብዛት</label>
+                <input type="number" id="so-women" class="mono" min="0" placeholder="0">
+              </div>
+              <div class="field">
+                <label data-i18n="children">ህጻናት ብዛት (ከ18 በታች)</label>
+                <input type="number" id="so-children" class="mono" min="0" placeholder="0">
+              </div>
             </div>
-          </div>
-          <div class="grid2">
-            <div class="field">
-              <label data-i18n="women">ሴቶች ብዛት</label>
-              <input type="number" id="so-women" class="mono" min="0" placeholder="0">
+
+            <div class="section-title" style="margin:16px 0 8px;"><span class="num">--</span> <span data-i18n="byJobType">በስራ አይነት ብዛት</span></div>
+            <div class="job-add-row">
+              <div class="field">
+                <label data-i18n="jobType">የስራ አይነት</label>
+                <select id="so-job-select"></select>
+              </div>
+              <div class="field" style="max-width:110px;">
+                <label data-i18n="count">ብዛት</label>
+                <input type="number" id="so-job-count" class="mono" min="0" placeholder="0">
+              </div>
+              <button type="button" class="ghost small" id="btn-add-job" data-i18n="addBtn">+ ጨምር</button>
             </div>
+            <div class="job-tally-list" id="so-job-list"></div>
+
+            <div class="section-title" style="margin:16px 0 8px;"><span class="num">--</span> <span data-i18n="incomeLevelCount">የገቢ ደረጃ ብዛት</span></div>
+            <div class="grid3">
+              <div class="field">
+                <label data-i18n="incomeLow">ዝቅተኛ ገቢ</label>
+                <input type="number" id="so-income-low" class="mono" min="0" placeholder="0">
+              </div>
+              <div class="field">
+                <label data-i18n="incomeMid">መካከለኛ ገቢ</label>
+                <input type="number" id="so-income-mid" class="mono" min="0" placeholder="0">
+              </div>
+              <div class="field">
+                <label data-i18n="incomeHigh">ከፍተኛ ገቢ</label>
+                <input type="number" id="so-income-high" class="mono" min="0" placeholder="0">
+              </div>
+            </div>
+
             <div class="field">
-              <label data-i18n="children">ህጻናት ብዛት (ከ18 በታች)</label>
-              <input type="number" id="so-children" class="mono" min="0" placeholder="0">
+              <label data-i18n="notes">📝 ማስታወሻ</label>
+              <textarea id="so-notes" data-i18n-placeholder="notesPh" placeholder="ማንኛውም ማስታወሻ..."></textarea>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="ghost" id="btn-cancel-edit-social" data-i18n="cancelBtn">ይቅር</button>
+              <button type="button" class="primary" id="btn-save-social" data-i18n="updateBtn">አዘምን</button>
             </div>
           </div>
 
-          <div class="section-title" style="margin:16px 0 8px;"><span class="num">--</span> <span data-i18n="byJobType">በስራ አይነት ብዛት</span></div>
-          <div class="job-add-row">
-            <div class="field">
-              <label data-i18n="jobType">የስራ አይነት</label>
-              <select id="so-job-select"></select>
+          <div id="batch-area-social">
+            <div style="font-size:12px;color:var(--text-2);margin-bottom:8px;" data-i18n="batchHint">በአንድ ጊዜ የፈለጉትን ያህል ረድፎች ጨምረው ያስገቡ፣ ሲጨርሱ "ሁሉንም አስቀምጥ" ይጫኑ</div>
+            <div class="batch-table-wrap"><div id="batch-social"></div></div>
+            <div class="batch-add-actions">
+              <button type="button" class="ghost small" id="btn-add-row-social" data-i18n="addRowBtn">+ ረድፍ ጨምር</button>
+              <button type="button" class="primary" id="btn-save-batch-social" data-i18n="saveAllBtn">✅ ሁሉንም አስቀምጥ</button>
             </div>
-            <div class="field" style="max-width:110px;">
-              <label data-i18n="count">ብዛት</label>
-              <input type="number" id="so-job-count" class="mono" min="0" placeholder="0">
-            </div>
-            <button type="button" class="ghost small" id="btn-add-job" data-i18n="addBtn">+ ጨምር</button>
-          </div>
-          <div class="job-tally-list" id="so-job-list"></div>
-
-          <div class="section-title" style="margin:16px 0 8px;"><span class="num">--</span> <span data-i18n="incomeLevelCount">የገቢ ደረጃ ብዛት</span></div>
-          <div class="grid3">
-            <div class="field">
-              <label data-i18n="incomeLow">ዝቅተኛ ገቢ</label>
-              <input type="number" id="so-income-low" class="mono" min="0" placeholder="0">
-            </div>
-            <div class="field">
-              <label data-i18n="incomeMid">መካከለኛ ገቢ</label>
-              <input type="number" id="so-income-mid" class="mono" min="0" placeholder="0">
-            </div>
-            <div class="field">
-              <label data-i18n="incomeHigh">ከፍተኛ ገቢ</label>
-              <input type="number" id="so-income-high" class="mono" min="0" placeholder="0">
-            </div>
-          </div>
-
-          <div class="field">
-            <label data-i18n="notes">📝 ማስታወሻ</label>
-            <textarea id="so-notes" data-i18n-placeholder="notesPh" placeholder="ማንኛውም ማስታወሻ..."></textarea>
-          </div>
-          <div class="form-actions">
-            <button type="button" class="primary" id="btn-save-social" data-i18n="save">አስቀምጥ</button>
           </div>
         </div>
       </div>
+      </div><!-- /admin-panel-entry -->
 
-      <div class="section-title"><span class="num">02</span> <span data-i18n="changeCode">የአድሚን ይለፍ ቃል ቀይር</span></div>
+      <div id="admin-panel-settings" class="admin-panel hidden">
+
+      <div class="section-title"><span class="num">⚙️</span> <span data-i18n="profileTitle">የአድሚን መገለጫ (ፕሮፋይል)</span></div>
+      <div class="card profile-card">
+        <div class="grid2">
+          <div class="field">
+            <label data-i18n="profileDisplayName">የአድሚን ሙሉ ስም</label>
+            <input type="text" id="profile-display-name" data-i18n-placeholder="fullNamePh" placeholder="ሙሉ ስም">
+          </div>
+          <div class="field">
+            <label data-i18n="profileUsername">አዲስ የተጠቃሚ ስም</label>
+            <input type="text" id="profile-username">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="primary small" id="btn-save-profile" data-i18n="profileSave">መገለጫ አስቀምጥ</button>
+        </div>
+      </div>
+
+      <div class="section-title"><span class="num">🔑</span> <span data-i18n="changeCode">የአድሚን ይለፍ ቃል ቀይር</span></div>
       <div class="card">
         <div class="grid2">
           <div class="field">
@@ -395,7 +486,7 @@
         </div>
       </div>
 
-      <div class="section-title"><span class="num">03</span> <span data-i18n="settingsTitle">ሲቲንግ — ኢሜል ማገናኛ</span></div>
+      <div class="section-title"><span class="num">✉️</span> <span data-i18n="settingsTitle">ኢሜል ማገናኛ</span></div>
       <div class="card">
         <div style="font-size:12px;color:var(--text-2);margin-bottom:10px;" data-i18n="settingsDesc">አዲስ ምዝገባ ሲመዘገብ ማሳወቂያ ኢሜል እንዲላክ EmailJS መረጃ ያስገቡ (emailjs.com)</div>
         <div class="grid3">
@@ -423,7 +514,10 @@
         </div>
       </div>
 
-      <div class="section-title"><span class="num">04</span> <span data-i18n="pastEntries">ያለፉ ምዝገባዎች (አድሚን ብቻ)</span></div>
+      </div><!-- /admin-panel-settings -->
+
+      <div id="admin-panel-history" class="admin-panel hidden">
+      <div class="section-title"><span class="num">📊</span> <span data-i18n="pastEntries">ያለፉ ምዝገባዎች (አድሚን ብቻ)</span></div>
       <div class="card">
         <div class="dept-tabs">
           <div class="hist-tab active" data-hist="labor">💼 <span data-i18n="deptLabor">ስራና ክህሎት</span></div>
@@ -466,6 +560,7 @@
         </div>
         <div id="hist-empty" class="empty hidden" data-i18n="noData">ገና ምንም ውሂብ አልተመዘገበም።</div>
       </div>
+      </div><!-- /admin-panel-history -->
     </div>
 
   </div>
@@ -560,7 +655,12 @@ const I18N = {
     settingsToEmail:'የሚደርስበት ኢሜል', settingsServiceId:'EmailJS Service ID', settingsTemplateId:'EmailJS Template ID',
     settingsPublicKey:'EmailJS Public Key', settingsSave:'ቅንብር አስቀምጥ', settingsTest:'✉️ ሙከራ ላክ',
     filterFrom:'ከቀን', filterTo:'እስከ ቀን', filterGender:'ጾታ', filterAll:'ሁሉም', filterSearch:'ፈልግ (ስም/ቀበሌ/ወረዳ/ዞን)',
-    filterSearchPh:'ስም ወይም ቦታ ይጻፉ...', filterClear:'✕ አጽዳ'
+    filterSearchPh:'ስም ወይም ቦታ ይጻፉ...', filterClear:'✕ አጽዳ',
+    tabEntry:'ዕለታዊ ማስገቢያ', tabHistory:'ማጣሪያ / ያለፉ ምዝገባዎች', tabSettings:'ሲቲንግ',
+    editingTitle:'✏️ ምዝገባ በማስተካከል ላይ', cancelBtn:'ይቅር', updateBtn:'አዘምን',
+    batchHint:'በአንድ ጊዜ የፈለጉትን ያህል ረድፎች ጨምረው ያስገቡ፣ ሲጨርሱ "ሁሉንም አስቀምጥ" ይጫኑ',
+    addRowBtn:'+ ረድፍ ጨምር', saveAllBtn:'✅ ሁሉንም አስቀምጥ',
+    profileTitle:'የአድሚን መገለጫ (ፕሮፋይል)', profileDisplayName:'የአድሚን ሙሉ ስም', profileUsername:'አዲስ የተጠቃሚ ስም', profileSave:'መገለጫ አስቀምጥ'
   },
   en: {
     heroTitle:'Daily Data Registration', heroSubtitle:'Center for fast, accurate recording of field statistics',
@@ -583,7 +683,12 @@ const I18N = {
     settingsToEmail:'Recipient email', settingsServiceId:'EmailJS Service ID', settingsTemplateId:'EmailJS Template ID',
     settingsPublicKey:'EmailJS Public Key', settingsSave:'Save Settings', settingsTest:'✉️ Send Test',
     filterFrom:'From date', filterTo:'To date', filterGender:'Gender', filterAll:'All', filterSearch:'Search (name/kebele/woreda/zone)',
-    filterSearchPh:'Type name or location...', filterClear:'✕ Clear'
+    filterSearchPh:'Type name or location...', filterClear:'✕ Clear',
+    tabEntry:'Daily Entry', tabHistory:'Filter / Past Entries', tabSettings:'Settings',
+    editingTitle:'✏️ Editing entry', cancelBtn:'Cancel', updateBtn:'Update',
+    batchHint:'Add as many rows as you need at once, then click "Save All"',
+    addRowBtn:'+ Add Row', saveAllBtn:'✅ Save All',
+    profileTitle:'Admin Profile', profileDisplayName:'Admin full name', profileUsername:'New username', profileSave:'Save Profile'
   }
 };
 let currentLang = 'am';
@@ -784,6 +889,235 @@ document.getElementById('btn-test-email').addEventListener('click', async ()=>{
   }
 });
 fillEmailSettingsForm();
+
+// ---- Admin top-level tabs (Entry / History+Filter / Settings) ----
+document.querySelectorAll('.admin-tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    const target = tab.dataset.adminTab;
+    document.getElementById('admin-panel-entry').classList.toggle('hidden', target!=='entry');
+    document.getElementById('admin-panel-history').classList.toggle('hidden', target!=='history');
+    document.getElementById('admin-panel-settings').classList.toggle('hidden', target!=='settings');
+    if(target==='history') renderHistTable();
+  });
+});
+
+// ---- Admin profile ----
+function loadProfile(){
+  try{ return JSON.parse(localStorage.getItem('stat-admin-profile') || '{}'); }
+  catch(e){ return {}; }
+}
+let adminProfile = loadProfile();
+function fillProfileForm(){
+  document.getElementById('profile-display-name').value = adminProfile.displayName || '';
+  document.getElementById('profile-username').value = '';
+}
+document.getElementById('btn-save-profile').addEventListener('click', ()=>{
+  const dn = document.getElementById('profile-display-name').value.trim();
+  const un = document.getElementById('profile-username').value.trim();
+  adminProfile.displayName = dn;
+  localStorage.setItem('stat-admin-profile', JSON.stringify(adminProfile));
+  if(un){ ADMIN_USERNAME = un; document.getElementById('profile-username').value=''; }
+  showToast(currentLang==='en' ? 'Profile saved' : 'መገለጫ ተቀምጧል');
+});
+fillProfileForm();
+
+// ---- Cancel-edit buttons ----
+['labor','insurance','social'].forEach(d=>{
+  document.getElementById(`btn-cancel-edit-${d}`).addEventListener('click', cancelEdit);
+});
+
+// ---- Batch (multi-row) new-entry system ----
+function blankBatchRow(dept){
+  const base = { collector:'', position:'', gender:'ወንድ', zone:'', woreda:'', kebele:'', date: todayISO(), notes:'' };
+  if(dept==='labor') return {...base, unempMale:'', unempFemale:''};
+  if(dept==='insurance') return {...base, newMale:'', newFemale:'', renewMale:'', renewFemale:''};
+  return {...base, elderly:'', disabled:'', women:'', children:'', jobType: JOB_TYPES[0], jobCount:'', incomeLow:'', incomeMid:'', incomeHigh:''};
+}
+let batchRows = { labor:[blankBatchRow('labor')], insurance:[blankBatchRow('insurance')], social:[blankBatchRow('social')] };
+
+function commonBatchFieldsHtml(row, idx){
+  const L = currentLang==='en';
+  return `
+    <div class="field wide"><label>👤 ${L?'Name':'ስም'}</label><input type="text" data-idx="${idx}" data-field="collector" value="${escapeAttr(row.collector)}"></div>
+    <div class="field wide"><label>💼 ${L?'Position':'መደብ'}</label><input type="text" data-idx="${idx}" data-field="position" value="${escapeAttr(row.position)}"></div>
+    <div class="field narrow"><label>⚧ ${L?'Gender':'ጾታ'}</label><select data-idx="${idx}" data-field="gender">
+      <option value="ወንድ" ${row.gender==='ወንድ'?'selected':''}>${L?'Male':'ወንድ'}</option>
+      <option value="ሴት" ${row.gender==='ሴት'?'selected':''}>${L?'Female':'ሴት'}</option>
+    </select></div>
+    <div class="field narrow"><label>${L?'Zone':'ዞን'}</label><input type="text" data-idx="${idx}" data-field="zone" value="${escapeAttr(row.zone)}"></div>
+    <div class="field narrow"><label>${L?'Woreda':'ወረዳ'}</label><input type="text" data-idx="${idx}" data-field="woreda" value="${escapeAttr(row.woreda)}"></div>
+    <div class="field narrow"><label>${L?'Kebele':'ቀበሌ'}</label><input type="text" data-idx="${idx}" data-field="kebele" value="${escapeAttr(row.kebele)}"></div>
+    <div class="field narrow"><label>📅 ${L?'Date':'ቀን'}</label><input type="date" class="mono" data-idx="${idx}" data-field="date" value="${row.date}"></div>
+  `;
+}
+function deptBatchFieldsHtml(dept, row, idx){
+  const L = currentLang==='en';
+  if(dept==='labor'){
+    return `
+      <div class="field narrow"><label>${L?'Unemp M':'ስ.አጥ ወ'}</label><input type="number" class="mono" min="0" data-idx="${idx}" data-field="unempMale" value="${row.unempMale}"></div>
+      <div class="field narrow"><label>${L?'Unemp F':'ስ.አጥ ሴ'}</label><input type="number" class="mono" min="0" data-idx="${idx}" data-field="unempFemale" value="${row.unempFemale}"></div>
+    `;
+  }
+  if(dept==='insurance'){
+    return `
+      <div class="field narrow"><label>${L?'New M':'አዲስ ወ'}</label><input type="number" class="mono" min="0" data-idx="${idx}" data-field="newMale" value="${row.newMale}"></div>
+      <div class="field narrow"><label>${L?'New F':'አዲስ ሴ'}</label><input type="number" class="mono" min="0" data-idx="${idx}" data-field="newFemale" value="${row.newFemale}"></div>
+      <div class="field narrow"><label>${L?'Renew M':'ያደሱ ወ'}</label><input type="number" class="mono" min="0" data-idx="${idx}" data-field="renewMale" value="${row.renewMale}"></div>
+      <div class="field narrow"><label>${L?'Renew F':'ያደሱ ሴ'}</label><input type="number" class="mono" min="0" data-idx="${idx}" data-field="renewFemale" value="${row.renewFemale}"></div>
+    `;
+  }
+  const jobOptions = JOB_TYPES.map(j=> `<option value="${j}" ${row.jobType===j?'selected':''}>${j}</option>`).join('');
+  return `
+    <div class="field narrow"><label>${L?'Elderly':'አረጋ.'}</label><input type="number" class="mono" min="0" data-idx="${idx}" data-field="elderly" value="${row.elderly}"></div>
+    <div class="field narrow"><label>${L?'Disabled':'አካ.ጉዳ.'}</label><input type="number" class="mono" min="0" data-idx="${idx}" data-field="disabled" value="${row.disabled}"></div>
+    <div class="field narrow"><label>${L?'Women':'ሴቶች'}</label><input type="number" class="mono" min="0" data-idx="${idx}" data-field="women" value="${row.women}"></div>
+    <div class="field narrow"><label>${L?'Children':'ህጻናት'}</label><input type="number" class="mono" min="0" data-idx="${idx}" data-field="children" value="${row.children}"></div>
+    <div class="field narrow"><label>${L?'Job type':'ስራ አይነት'}</label><select data-idx="${idx}" data-field="jobType">${jobOptions}</select></div>
+    <div class="field narrow"><label>${L?'Job #':'ብዛት'}</label><input type="number" class="mono" min="0" data-idx="${idx}" data-field="jobCount" value="${row.jobCount}"></div>
+    <div class="field narrow"><label>${L?'Low inc.':'ዝቅ.ገቢ'}</label><input type="number" class="mono" min="0" data-idx="${idx}" data-field="incomeLow" value="${row.incomeLow}"></div>
+    <div class="field narrow"><label>${L?'Mid inc.':'መካ.ገቢ'}</label><input type="number" class="mono" min="0" data-idx="${idx}" data-field="incomeMid" value="${row.incomeMid}"></div>
+    <div class="field narrow"><label>${L?'High inc.':'ከፍ.ገቢ'}</label><input type="number" class="mono" min="0" data-idx="${idx}" data-field="incomeHigh" value="${row.incomeHigh}"></div>
+  `;
+}
+function batchRowHtml(dept, row, idx){
+  const L = currentLang==='en';
+  const rmBtn = batchRows[dept].length > 1 ? `<button type="button" class="rm-row" data-batch-rm="${dept}" data-idx="${idx}">✕</button>` : '';
+  return `<div class="batch-row">
+    <span class="row-num">#${idx+1}</span>
+    ${commonBatchFieldsHtml(row, idx)}
+    ${deptBatchFieldsHtml(dept, row, idx)}
+    <div class="field notes-f"><label>📝 ${L?'Notes':'ማስታወሻ'}</label><input type="text" data-idx="${idx}" data-field="notes" value="${escapeAttr(row.notes)}"></div>
+    ${rmBtn}
+  </div>`;
+}
+function renderBatchRows(dept){
+  const wrap = document.getElementById(`batch-${dept}`);
+  if(!wrap) return;
+  wrap.innerHTML = batchRows[dept].map((row,idx)=> batchRowHtml(dept,row,idx)).join('');
+}
+['labor','insurance','social'].forEach(dept=>{
+  renderBatchRows(dept);
+  const wrap = document.getElementById(`batch-${dept}`);
+  wrap.addEventListener('input', (e)=>{
+    const t = e.target;
+    if(t.dataset.idx===undefined || !t.dataset.field) return;
+    batchRows[dept][Number(t.dataset.idx)][t.dataset.field] = t.value;
+  });
+  wrap.addEventListener('change', (e)=>{
+    const t = e.target;
+    if(t.dataset.idx===undefined || !t.dataset.field) return;
+    batchRows[dept][Number(t.dataset.idx)][t.dataset.field] = t.value;
+  });
+  wrap.addEventListener('click', (e)=>{
+    const btn = e.target.closest('[data-batch-rm]');
+    if(!btn) return;
+    batchRows[dept].splice(Number(btn.dataset.idx), 1);
+    renderBatchRows(dept);
+  });
+  document.getElementById(`btn-add-row-${dept}`).addEventListener('click', ()=>{
+    const rows = batchRows[dept];
+    const last = rows[rows.length-1];
+    const carried = last ? { collector:last.collector, position:last.position, gender:last.gender, zone:last.zone, woreda:last.woreda, kebele:last.kebele, date:last.date, notes:'' } : {};
+    rows.push({ ...blankBatchRow(dept), ...carried });
+    renderBatchRows(dept);
+  });
+});
+
+function batchRowHasData(dept, row){
+  if((row.collector||'').trim() || (row.notes||'').trim()) return true;
+  if(dept==='labor') return (Number(row.unempMale)||0) + (Number(row.unempFemale)||0) > 0;
+  if(dept==='insurance') return (Number(row.newMale)||0)+(Number(row.newFemale)||0)+(Number(row.renewMale)||0)+(Number(row.renewFemale)||0) > 0;
+  return (Number(row.elderly)||0)+(Number(row.disabled)||0)+(Number(row.women)||0)+(Number(row.children)||0)+(Number(row.jobCount)||0)+(Number(row.incomeLow)||0)+(Number(row.incomeMid)||0)+(Number(row.incomeHigh)||0) > 0;
+}
+
+document.getElementById('btn-save-batch-labor').addEventListener('click', async ()=>{
+  const rows = batchRows.labor.filter(r=> batchRowHasData('labor', r));
+  if(rows.length===0){ showToast(currentLang==='en'?'Enter at least one row':'ቢያንስ አንድ ረድፍ ይሙሉ'); return; }
+  let saved = 0; const names = [];
+  for(const row of rows){
+    const date = row.date || todayISO();
+    const rec = {
+      collectorName:(row.collector||'').trim(), position:(row.position||'').trim(), gender:row.gender,
+      kebele:(row.kebele||'').trim(), woreda:(row.woreda||'').trim(), zone:(row.zone||'').trim(),
+      date, ethDate: toEthiopianDate(date),
+      unempMale: Number(row.unempMale)||0, unempFemale: Number(row.unempFemale)||0,
+      notes:(row.notes||'').trim(), createdAt: Date.now()
+    };
+    try{ await addDoc(collection(db,'labor_tally'), rec); saved++; names.push(rec.collectorName||'—'); }
+    catch(e){ console.error(e); }
+  }
+  if(saved){
+    const msg = `💼 ስራና ክህሎት — ${saved} ${currentLang==='en'?'batch entries saved':'ረድፎች ተመዝግበዋል'}\n👤 ${names.join(', ')}`;
+    sendTelegram(msg); sendEmailNotification('ስራና ክህሎት — ባች ምዝገባ', msg);
+    showToast(`${saved} ${currentLang==='en'?'entries saved':'ረድፎች ተመዝግበዋል'}`);
+  }else{
+    showToast(currentLang==='en'?'Error — check Firestore':'ስህተት ተፈጥሯል፣ Firestore ያረጋግጡ');
+  }
+  batchRows.labor = [blankBatchRow('labor')];
+  renderBatchRows('labor');
+});
+
+document.getElementById('btn-save-batch-insurance').addEventListener('click', async ()=>{
+  const rows = batchRows.insurance.filter(r=> batchRowHasData('insurance', r));
+  if(rows.length===0){ showToast(currentLang==='en'?'Enter at least one row':'ቢያንስ አንድ ረድፍ ይሙሉ'); return; }
+  let saved = 0; const names = [];
+  for(const row of rows){
+    const date = row.date || todayISO();
+    const rec = {
+      collectorName:(row.collector||'').trim(), position:(row.position||'').trim(), gender:row.gender,
+      kebele:(row.kebele||'').trim(), woreda:(row.woreda||'').trim(), zone:(row.zone||'').trim(),
+      date, ethDate: toEthiopianDate(date),
+      newMale: Number(row.newMale)||0, newFemale: Number(row.newFemale)||0,
+      renewMale: Number(row.renewMale)||0, renewFemale: Number(row.renewFemale)||0,
+      notes:(row.notes||'').trim(), createdAt: Date.now()
+    };
+    try{ await addDoc(collection(db,'insurance_tally'), rec); saved++; names.push(rec.collectorName||'—'); }
+    catch(e){ console.error(e); }
+  }
+  if(saved){
+    const msg = `🏥 ጤና መድን — ${saved} ${currentLang==='en'?'batch entries saved':'ረድፎች ተመዝግበዋል'}\n👤 ${names.join(', ')}`;
+    sendTelegram(msg); sendEmailNotification('ጤና መድን — ባች ምዝገባ', msg);
+    showToast(`${saved} ${currentLang==='en'?'entries saved':'ረድፎች ተመዝግበዋል'}`);
+  }else{
+    showToast(currentLang==='en'?'Error — check Firestore':'ስህተት ተፈጥሯል፣ Firestore ያረጋግጡ');
+  }
+  batchRows.insurance = [blankBatchRow('insurance')];
+  renderBatchRows('insurance');
+});
+
+document.getElementById('btn-save-batch-social').addEventListener('click', async ()=>{
+  const rows = batchRows.social.filter(r=> batchRowHasData('social', r));
+  if(rows.length===0){ showToast(currentLang==='en'?'Enter at least one row':'ቢያንስ አንድ ረድፍ ይሙሉ'); return; }
+  let saved = 0; const names = [];
+  for(const row of rows){
+    const date = row.date || todayISO();
+    const jobTypeCounts = {};
+    if(Number(row.jobCount) > 0) jobTypeCounts[row.jobType] = Number(row.jobCount);
+    const rec = {
+      collectorName:(row.collector||'').trim(), position:(row.position||'').trim(), gender:row.gender,
+      kebele:(row.kebele||'').trim(), woreda:(row.woreda||'').trim(), zone:(row.zone||'').trim(),
+      date, ethDate: toEthiopianDate(date),
+      elderly: Number(row.elderly)||0, disabled: Number(row.disabled)||0,
+      women: Number(row.women)||0, children: Number(row.children)||0,
+      jobTypeCounts,
+      incomeLow: Number(row.incomeLow)||0, incomeMid: Number(row.incomeMid)||0, incomeHigh: Number(row.incomeHigh)||0,
+      notes:(row.notes||'').trim(), createdAt: Date.now()
+    };
+    try{ await addDoc(collection(db,'social_tally'), rec); saved++; names.push(rec.collectorName||'—'); }
+    catch(e){ console.error(e); }
+  }
+  if(saved){
+    const msg = `👥 ሴቶችና ማህበራዊ ጉዳይ — ${saved} ${currentLang==='en'?'batch entries saved':'ረድፎች ተመዝግበዋል'}\n👤 ${names.join(', ')}`;
+    sendTelegram(msg); sendEmailNotification('ሴቶችና ማህበራዊ ጉዳይ — ባች ምዝገባ', msg);
+    showToast(`${saved} ${currentLang==='en'?'entries saved':'ረድፎች ተመዝግበዋል'}`);
+  }else{
+    showToast(currentLang==='en'?'Error — check Firestore':'ስህተት ተፈጥሯል፣ Firestore ያረጋግጡ');
+  }
+  batchRows.social = [blankBatchRow('social')];
+  renderBatchRows('social');
+});
 
 // ---- Department entry tabs ----
 document.querySelectorAll('.dept-tab').forEach(tab=>{
@@ -1169,17 +1503,27 @@ function startEdit(dept, id){
   if(!r) return;
   editState = { dept, id };
 
+  // switch to the entry tab
+  document.querySelectorAll('.admin-tab').forEach(t=> t.classList.toggle('active', t.dataset.adminTab==='entry'));
+  document.getElementById('admin-panel-entry').classList.remove('hidden');
+  document.getElementById('admin-panel-history').classList.add('hidden');
+  document.getElementById('admin-panel-settings').classList.add('hidden');
+
   document.querySelectorAll('.dept-tab').forEach(t=> t.classList.toggle('active', t.dataset.dept===dept));
   document.getElementById('dept-labor').classList.toggle('hidden', dept!=='labor');
   document.getElementById('dept-insurance').classList.toggle('hidden', dept!=='insurance');
   document.getElementById('dept-social').classList.toggle('hidden', dept!=='social');
+
+  ['labor','insurance','social'].forEach(d=>{
+    document.getElementById(`edit-box-${d}`).classList.toggle('hidden', d!==dept);
+    document.getElementById(`batch-area-${d}`).classList.toggle('hidden', d===dept);
+  });
 
   if(dept==='labor'){
     fillCollector('l', r);
     document.getElementById('l-unemp-m').value = r.unempMale||'';
     document.getElementById('l-unemp-f').value = r.unempFemale||'';
     document.getElementById('l-notes').value = r.notes||'';
-    document.getElementById('btn-save-labor').textContent = currentLang==='en'?'Update':'አዘምን';
   }else if(dept==='insurance'){
     fillCollector('i', r);
     document.getElementById('i-new-m').value = r.newMale||'';
@@ -1187,7 +1531,6 @@ function startEdit(dept, id){
     document.getElementById('i-renew-m').value = r.renewMale||'';
     document.getElementById('i-renew-f').value = r.renewFemale||'';
     document.getElementById('i-notes').value = r.notes||'';
-    document.getElementById('btn-save-insurance').textContent = currentLang==='en'?'Update':'አዘምን';
   }else{
     fillCollector('so', r);
     document.getElementById('so-elderly').value = r.elderly||'';
@@ -1200,18 +1543,17 @@ function startEdit(dept, id){
     document.getElementById('so-notes').value = r.notes||'';
     jobTallyDraft = {...(r.jobTypeCounts||{})};
     renderJobTallyList();
-    document.getElementById('btn-save-social').textContent = currentLang==='en'?'Update':'አዘምን';
   }
-  document.getElementById('admin-area').scrollIntoView({behavior:'smooth', block:'start'});
+  document.getElementById(`edit-box-${dept}`).scrollIntoView({behavior:'smooth', block:'start'});
   showToast(currentLang==='en'?'Editing — change values then click Update':'ማስተካከያ ላይ — ቀይረው "አዘምን" ይጫኑ');
 }
 
 function cancelEdit(){
   editState = { dept:null, id:null };
-  const t = currentLang==='en' ? 'Save' : 'አስቀምጥ';
-  document.getElementById('btn-save-labor').textContent = t;
-  document.getElementById('btn-save-insurance').textContent = t;
-  document.getElementById('btn-save-social').textContent = t;
+  ['labor','insurance','social'].forEach(d=>{
+    document.getElementById(`edit-box-${d}`).classList.add('hidden');
+    document.getElementById(`batch-area-${d}`).classList.remove('hidden');
+  });
 }
 
 // ---- CSV export ----
@@ -1242,4 +1584,4 @@ document.getElementById('btn-export-csv').addEventListener('click', ()=>{
 });
 </script>
 </body>
-          </html>
+          </html
